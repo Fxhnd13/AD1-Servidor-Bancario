@@ -1,0 +1,27 @@
+{
+  "name": "bank-software-server",
+  "version": "1.0.0",
+  "description": "Server for a bank application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fxhnd13/bank-software-server.git"
+  },
+  "author": "Jose Soberanis, Sofia Quintana, Helmut Luther",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Fxhnd13/bank-software-server/issues"
+  },
+  "homepage": "https://github.com/Fxhnd13/bank-software-server#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
