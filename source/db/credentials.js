@@ -4,7 +4,7 @@ const session = new Pool({
     host: 'localhost',
     user: 'postgres',
     password: 'josecarlos',
-    database: 'bank_db',
+    database: 'bank_server',
     port: '5432'
 });
 

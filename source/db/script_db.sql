@@ -22,8 +22,11 @@ CREATE TABLE bank_user_status_log (
 ALTER TABLE bank_user_status_log ADD CONSTRAINT FK_bank_user_status_log_bank_user FOREIGN KEY (username) REFERENCES bank_user(username);
 
 CREATE TABLE active_session_log (
-    token TEXT PRIMARY KEY
+    token TEXT PRIMARY KEY,
+	username TEXT NOT NULL
 );
+
+ALTER TABLE active_session_log ADD CONSTRAINT FK_active_session_log_bank_user FOREIGN KEY (username) REFERENCES bank_user(username);
 
 CREATE TABLE person (
 	cui BIGINT PRIMARY KEY,
@@ -44,7 +47,7 @@ ALTER TABLE email ADD CONSTRAINT FK_email_bank_user FOREIGN KEY (username) REFER
 
 CREATE TABLE account (
 	id_account SERIAL PRIMARY KEY,
-	cui INT NOT NULL,
+	cui BIGINT NOT NULL,
     id_account_type INT NOT NULL,
     balance DECIMAL
 );
@@ -55,5 +58,5 @@ ALTER TABLE account ADD CONSTRAINT FK_account_person FOREIGN KEY (cui) REFERENCE
 CREATE TABLE account_type (
 	id_account_type SERIAL PRIMARY KEY,
 	description TEXT NOT NULL,
-	interés DECIMAL
+	interes DECIMAL
 );
