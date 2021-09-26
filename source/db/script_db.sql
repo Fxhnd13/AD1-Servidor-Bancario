@@ -21,9 +21,8 @@ CREATE TABLE bank_user_status_log (
 
 ALTER TABLE bank_user_status_log ADD CONSTRAINT FK_bank_user_status_log_bank_user FOREIGN KEY (username) REFERENCES bank_user(username);
 
-CREATE TABLE logged_user_log (
-    id_logged_user_log SERIAL PRIMARY KEY,
-    token TEXT NOT NULL
+CREATE TABLE active_session_log (
+    token TEXT PRIMARY KEY
 );
 
 CREATE TABLE person (
