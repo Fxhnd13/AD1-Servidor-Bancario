@@ -10,4 +10,4 @@ const session = new Pool({
 
 module.exports = {
     session
-};
+}; 

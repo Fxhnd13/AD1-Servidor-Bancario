@@ -1,0 +1,68 @@
+user { //Usuarios
+	username (PK)
+	password
+	user_type (FK references user_type -> id)
+	cui (FK references person -> cui)
+} //Verificar la existencia de un usuario por cui, una persona solo puede una cuenta del mismo tipo
+
+admintrador = 0
+tramites = 1
+cajero = 2
+cliente = 3
+
+user_type { //Tipos de usuario
+	id_user_type (PK)
+	description
+}
+
+bank_user_status_log { //Verificar que usuario del banco tienen acceso a la aplicación
+	id_bank_user_status_log (PK) 
+	access
+	email (FK references user -> email)
+}
+
+logged_user_log { //Verificar si el usuario solo tiene una cuenta activa
+	id_logged_user_log (PK)
+	token
+}
+
+person {
+	cui (PK) 
+	name
+	surname
+	address
+	phone_number
+	birth_day
+	gender
+}
+
+email {
+	cui
+	email
+}
+
+account {
+	id_account
+	cui
+	id_account_type ( FK references account_type -> id_account_type)
+	balance
+}
+
+account_type {
+	id_account_type (PK)
+	description
+	interés 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
