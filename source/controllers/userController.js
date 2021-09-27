@@ -1,31 +1,30 @@
-const { response } = require('express');
-const accessDb = require('../db/credentials'); //Variable de acceso a la base de datos
+const userDb = require("../models/user");
+const { existAccount } = require("../models/account");
 
-const login = async (req, res) => {
-    res.send("Se ha iniciado sesión correctamente.");
+const createUser = async(req, res) => {
+    const userType = req.body.userType;
+    if((await userDb.getUserByUsername(req.body.username)) == undefined){
+        if(userType == 1){ //si se crea un usuario cliente
+            if(await existAccount(req.body.cui)){
+                userDb.saveUser(req.body.username,req.body.password,userType,req.body.cui);
+                res.status(200).json({mensaje:"Se ha creado su usuario correctamente.",error:""});
+            }else{
+                res.status(400).json({mensaje:"No se ha creado su usuario.",error:"No existe una cuenta bancaria ligada a su persona."});
+            }
+        }else{ //si se crea un usuario del banco
+            userDb.saveUser(req.body.username,req.body.password,userType,req.body.cui);
+            res.status(200).json({mensaje:"Se ha creado el usuario correctamente",error:""});
+        }
+    }else{
+        res.status(400).json({mensaje:"No se ha creado su usuario.",error:"Ya existe un usuario con ese nombre."});
+    }
 };
 
-const logout = async (req, res) => {
-    res.send("Se ha eliminado la sesión activa, ya puede iniciar sesion en otro dispositivo.");
-};
-
-const createUser = (req, res) => {
-    accessDb.db.collection('user').doc('prueba').set({
-        username: req.body.username,
-        password: req.body.password,
-        user_type: req.body.user_type,
-        cui: req.body.cui
-    });
-    res.send("Se ha creado un usuario.");
-};
-
-const updateUser = async (req, res) => {
+const updateUser = (req, res) => {
     res.send("Se ha actualizado a un usuario.");
 };
 
 module.exports = {
-    login,
-    logout,
     createUser,
     updateUser
 };
