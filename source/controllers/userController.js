@@ -3,6 +3,13 @@ const userDb = require("../models/user");
 const bcrypt = require("bcrypt");
 var BCRYPT_SALT_ROUNDS = 3;
 
+/**
+ * @description Method that receives all the user information for create a new one
+ * @param req.body.username Username for the new user
+ * @param req.body.password Password for the new user
+ * @param req.body.userType Type for the new user
+ * @param req.body.cui Cui from the new user
+ */
 const createUser = async(req, res) => {
     const userType = req.body.userType;
     if((await userDb.getUserByUsername(req.body.username)) == undefined){
@@ -23,11 +30,15 @@ const createUser = async(req, res) => {
     }
 };
 
+/**
+ * @description Method that receives a new password and an old one, so one user can update her password.
+ * @param req.body.token Authentication token
+ * @param req.body.oldPassword Password for verify the identity of the user
+ * @param req.body.newPassword New password to save in the database
+ */
 const updateUserPassword = (req, res) => {
-    //verificar autenticacion
-    const authenticationToken = await getActiveSessionByToken(req.body.token);
-    if(authenticationToken != undefined){
-        //verificar que sea el usuario sea el con la contraseña antigua
+    const authenticationToken = await getActiveSessionByToken(req.body.token); //Verificamos sesion
+    if(authenticationToken != undefined){ 
         const user = await userDb.getUserByUsername(authenticationToken.username);
         if(await bcrypt.compare(req.body.oldPassword, user.password)){
             if(req.body.newPassword === req.body.oldPassword){

@@ -5,6 +5,11 @@ const bcrypt = require("bcrypt");
 const { getUserByUsername } = require("../models/user");
 const { saveActiveSession, getActiveSessionByUsername, getActiveSessionByToken, deleteActiveSession } = require('../models/active_session_log');
 
+/**
+ * @description Method that verifies if another session is active and create a new session if there is no one existing.
+ * @param req.body.username username of the user
+ * @param req.body.password password of the user
+ */
 const login = async (req, res) => {
     const user = await getUserByUsername(req.body.username);
     if(user != undefined){
@@ -24,6 +29,10 @@ const login = async (req, res) => {
     }
 };
 
+/**
+ * @description Method for delete the current active session in the database for an user
+ * @param req.body.token Authentication token
+ */
 const logout = async (req, res) => {
     const authenticationToken = await getActiveSessionByToken(req.body.token);
     if(authenticationToken != undefined){
