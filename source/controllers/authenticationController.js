@@ -1,13 +1,14 @@
 const authenticationConf = require("../confs/config"); //Aquí será para usar la llave básica de encriptación
 const jwt = require('jsonwebtoken'); //Indicamos que usaremos JsonWebToken
+const bcrypt = require("bcrypt");
 
-const { getUserByUsername, authenticateUser } = require("../models/user");
+const { getUserByUsername } = require("../models/user");
 const { saveActiveSession, getActiveSessionByUsername, getActiveSessionByToken, deleteActiveSession } = require('../models/active_session_log');
 
 const login = async (req, res) => {
     const user = await getUserByUsername(req.body.username);
     if(user != undefined){
-        if(await authenticateUser(req.body.password,user.password)){
+        if(await bcrypt.compare(req.body.password,user.password)){
             if((await getActiveSessionByUsername(user.username)) != undefined){
                 res.status(403).json({token:"", error:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
             }else{
