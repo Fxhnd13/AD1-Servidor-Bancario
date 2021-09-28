@@ -1,3 +1,4 @@
+const { getActiveSessionByToken } = require("../models/active_session_log");
 const { existAccount } = require("../models/account");
 const user_db = require("../models/user");
 const bcrypt = require("bcrypt");
@@ -15,7 +16,7 @@ const createUser = async(req, res) => {
     if((await user_db.getUserByUsername(req.body.username)) == undefined){
         if(user_type == 1){ //si se crea un usuario cliente
             if(await existAccount(req.body.cui)){
-                const hashed_password = await bcrypt.hash(password,BCRYPT_SALT_ROUNDS);
+                const hashed_password = await bcrypt.hash(req.body.password,BCRYPT_SALT_ROUNDS);
                 user_db.saveUser(req.body.username,hashed_password,user_type,req.body.cui);
                 res.status(200).json({mensaje:"Se ha creado su usuario correctamente."});
             }else{
@@ -37,7 +38,7 @@ const createUser = async(req, res) => {
  * @param req.body.old_password Password for verify the identity of the user
  * @param req.body.new_password New password to save in the database
  */
-const updateUserPassword = (req, res) => {
+const updateUserPassword = async (req, res) => {
     const authentication_token = await getActiveSessionByToken(req.body.token); //Verificamos sesion
     if(authentication_token != undefined){ 
         const user = await user_db.getUserByUsername(authentication_token.username);
