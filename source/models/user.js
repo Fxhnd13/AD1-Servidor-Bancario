@@ -1,37 +1,37 @@
-const access = require("../db/credentials");
+//https://sequelize.org/v3/docs/models-definition/
 
-/**
- * @description Get a user from the database using his username
- * @param username Username of the user to get from database
- * @returns An 'Object' with the table bank_user atributes or undefined if not exits
- */
-const getUserByUsername = async (username) => {
-    const result = await access.session.query("SELECT * FROM bank_user WHERE username='"+username+"'");
-    return (result.rowCount > 0)? result.rows[0] : undefined;
-};
+const { sequelize } = require("../db/credentials");
+const { DataTypes } = require('sequelize');
 
-/**
- * @description Save all the information for a new user in the database
- * @param username Username of the new user
- * @param hashed_password Encripted password of the new user
- * @param userType Type of the new user
- * @param cui Cui of the new user
- */
-const saveUser = async(username, hashed_password, userType, cui) => {
-    await access.session.query("INSERT INTO bank_user VALUES ($1,$2,$3,$4)",[username,hashed_password,userType,cui]);
-};
-
-/**
- * @description Save a new password for a user in the database
- * @param username Username of the user who wants to update his password
- * @param hashed_password Encripted password to update
- */
-const saveNewPassword = async(username, hashed_password) => {
-    await access.session.query("UPDATE bank_user SET password=$1 WHERE username=$2",[hashed_password,username]);
-};
+var Bank_User = sequelize.define(
+    'bank_user', {
+        username: {
+            primaryKey: true,
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        password: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        user_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        cui: {
+            type: DataTypes.BIGINT,
+            allowNull: false
+            /* references: {
+                model: Person,
+                key: 'cui'
+            } */
+        }
+    }, {
+        timestamps: false,
+        freezeTableName: true // Model tableName will be the same as the model name
+    }
+);
 
 module.exports = {
-    getUserByUsername,
-    saveUser,
-    saveNewPassword
+    Bank_User
 }
