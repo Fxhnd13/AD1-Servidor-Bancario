@@ -7,6 +7,7 @@ app.use(express.urlencoded({extended: false})); //Indicamos que no se admitiran 
 //Indicamos la ubicacion de las rutas
 app.use(require('./routes/userRoutes')); //Rutas para el manejo de usuarios
 app.use(require('./routes/authenticationRoutes')); //Rutas para el manejo de autenticacion inicial
+app.use(require('./routes/dbRoutes'));
 
 app.listen(3000); //Puerto en el que levantaremos el servidor
 console.log('*******************************'); //Se muestra en la terminal en la que montamos el servidor
