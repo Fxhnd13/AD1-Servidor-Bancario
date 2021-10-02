@@ -1,5 +1,7 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
+const { Person } = require('./person');
+const { Account_Type } = require("./account_type");
 
 var Account = sequelize.define(
     'account', {
@@ -11,11 +13,19 @@ var Account = sequelize.define(
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false
+            allowNull: false,
+            references: {
+                model: Person,
+                key: 'cui'
+            }
         },
         id_account_type: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: false,
+            references: {
+                model: Account_Type,
+                key: 'id_account_type'
+            }
         },
         balance:{
             type: DataTypes.DECIMAL,
