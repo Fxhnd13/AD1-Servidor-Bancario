@@ -1,6 +1,6 @@
 const { Active_Session_Log } = require('../models/active_session_log');
 const { Account } = require('../models/account');
-const { Bank_User } = require('../models/user');
+const { Bank_User } = require('../models/bank_user');
 
 const bcrypt = require("bcrypt");
 var BCRYPT_SALT_ROUNDS = 3;
