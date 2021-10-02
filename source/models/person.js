@@ -1,4 +1,4 @@
-const { sequelize } = require("../db/credentialsSq");
+const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 
 const Person = sequelize.define(
