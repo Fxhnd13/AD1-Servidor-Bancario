@@ -12,7 +12,7 @@ var BCRYPT_SALT_ROUNDS = 3;
  * @param req.body.user_type Type for the new user
  * @param req.body.cui Cui from the new user
  */
-const createUser = async(req, res) => {
+const create_user = async(req, res) => {
     Bank_User.findOne({ where: { username: req.body.username } }).then(user => {
         if(user == null){
             bcrypt.hash(req.body.password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
@@ -43,7 +43,7 @@ const createUser = async(req, res) => {
  * @param req.body.old_password Password for verify the identity of the user
  * @param req.body.new_password New password to save in the database
  */
-const updateUserPassword = async (req, res) => {
+const update_user_password = async (req, res) => {
     Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
         if(session == null){
             res.status(403).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
@@ -69,6 +69,6 @@ const updateUserPassword = async (req, res) => {
 };
 
 module.exports = {
-    createUser,
-    updateUserPassword
+    create_user,
+    update_user_password
 };
