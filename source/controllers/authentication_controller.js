@@ -17,15 +17,13 @@ const login = async (req, res) => {
         }else{
             bcrypt.compare(req.body.password,user.password).then(areEqual =>{
                 if(areEqual){
-                    Active_Session_Log.findOne({where:{username: user.username}}).then(session => {
-                        if(session == null){
-                            const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
-                            Active_Session_Log.create({username: user.username, token: token});
-                            res.status(200).json({username: user.username,user_type: user.user_type, token: token});
-                        }else{
-                            res.status(403).json({error:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
-                        }
-                    });
+                    if(is_logged_in){
+                        const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
+                        Active_Session_Log.create({username: user.username, token: token});
+                        res.status(200).json({username: user.username,user_type: user.user_type, token: token});
+                    }else{
+                        res.status(403).json({error:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
+                    }
                 }else{
                     res.status(403).json({error:"La contraseña proporcionada no es la correcta"});
                 }
@@ -39,12 +37,23 @@ const login = async (req, res) => {
  * @param req.body.token Authentication token
  */
 const logout = async (req, res) => {
-    Active_Session_Log.findOne({where: {token: req.body.token}}).then(session => {
+    Active_Session_Log.findOne({where:{token:req.body.token}}).then(session=>{
         if(session == null){
             res.status(403).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
             session.destroy();
             res.status(200).json({mensaje:"Se ha cerrado sesion correctamente."});
+        }
+
+    });
+};
+
+const is_logged_in = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.body.token}}).then(session=>{
+        if(session == null){
+            return false;
+        }else{
+            return true;
         }
     });
 };
