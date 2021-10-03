@@ -2,7 +2,7 @@ const authentication_conf = require("../confs/config"); //Aquí será para usar 
 const jwt = require('jsonwebtoken'); //Indicamos que usaremos JsonWebToken
 const bcrypt = require("bcrypt");
 
-const { Bank_User } = require('../models/user');
+const { Bank_User } = require('../models/bank_user');
 const { Active_Session_Log } = require('../models/active_session_log');
 
 /**

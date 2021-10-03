@@ -1,21 +1,21 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
-const { Bank_User } = require("./bank_user");
 
-const Active_Session_Log = sequelize.define(
-    'active_session_log' , {
-        token: {
+const Request = sequelize.define(
+    'request', { 
+        id_request: {
+            type: DataTypes.INTEGER,
             primaryKey: true,
+            allowNull: false,
+            autoIncrement: true
+        },
+        request_type: {
             type: DataTypes.TEXT,
             allowNull: false
         },
-        username: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+        date: {
+            type: DataTypes.DATEONLY,
+            allowNull: false
         }
     }, {
         timestamps: false,
@@ -24,5 +24,5 @@ const Active_Session_Log = sequelize.define(
 );
 
 module.exports = {
-    Active_Session_Log
+    Request
 }

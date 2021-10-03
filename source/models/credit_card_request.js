@@ -1,15 +1,18 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
+const { Request } = require('./request');
 const { Person } = require('./person');
-const { Account_Type } = require("./account_type");
 
-var Account = sequelize.define(
-    'account', {
-        id_account: {
-            primaryKey: true,
+const Credit_Card_Request = sequelize.define(
+    'credit_card_request', {
+        id_request: {
             type: DataTypes.INTEGER,
+            primaryKey: true,
             allowNull: false,
-            autoIncrement: true
+            references: {
+                model: Request,
+                key: 'id_request'
+            }
         },
         cui: {
             type: DataTypes.BIGINT,
@@ -19,18 +22,13 @@ var Account = sequelize.define(
                 key: 'cui'
             }
         },
-        id_account_type: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Account_Type,
-                key: 'id_account_type'
-            }
-        },
-        balance:{
+        monthly_income: {
             type: DataTypes.DECIMAL,
-            allowNull: false,
-            defaultValue: 0.0
+            allowNull: false
+        },
+        desire_amount: {
+            type: DataTypes.DECIMAL,
+            allowNull: false
         }
     }, {
         timestamps: false,
@@ -39,5 +37,5 @@ var Account = sequelize.define(
 );
 
 module.exports = {
-    Account
+    Credit_Card_Request
 }
