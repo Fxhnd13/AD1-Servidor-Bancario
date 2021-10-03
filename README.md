@@ -11,6 +11,7 @@ Server for a bank-software, using node as backEnd and Sequelize as our ORM
 
 ### Running the server
 `npm run dev` -> if we need to prove some changes
+
 `node source/index.js` -> if we need only put our server on
 
 ### Maping database
