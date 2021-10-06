@@ -52,6 +52,11 @@ const syncronization = async (req, res) => {
         {cui: 1000000000005, name: "Helmut", surname: "Luther", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"},
         {cui: 1000000000006, name: "Alexander", surname: "Montejo", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"}
     ]);
+    await Account.bulkCreate([
+        {cui: 1000000000004, id_account_type: 1, balance: 0},
+        {cui: 1000000000005, id_account_type: 1, balance: 250},
+        {cui: 1000000000006, id_account_type: 1, balance: 1000}
+    ])
     bcrypt.hash("pass",BCRYPT_SALT_ROUNDS).then(async hashed_password => {
         await Bank_User.bulkCreate([
             {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001},
