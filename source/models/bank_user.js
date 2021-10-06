@@ -1,15 +1,28 @@
+//https://sequelize.org/v3/docs/models-definition/
+
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 const { Person } = require('./person');
-const { Account_Type } = require("./account_type");
+const { Bank_User_Type } = require('./bank_user_type');
 
-var Account = sequelize.define(
-    'account', {
-        id_account: {
+var Bank_User = sequelize.define(
+    'bank_user', {
+        username: {
             primaryKey: true,
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        password: {
+            type: DataTypes.TEXT,
+            allowNull: false
+        },
+        user_type: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            autoIncrement: true
+            references: {
+                model: Bank_User_Type,
+                key: 'id_bank_user_type'
+            }
         },
         cui: {
             type: DataTypes.BIGINT,
@@ -18,19 +31,6 @@ var Account = sequelize.define(
                 model: Person,
                 key: 'cui'
             }
-        },
-        id_account_type: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Account_Type,
-                key: 'id_account_type'
-            }
-        },
-        balance:{
-            type: DataTypes.DECIMAL,
-            allowNull: false,
-            defaultValue: 0.0
         }
     }, {
         timestamps: false,
@@ -39,5 +39,5 @@ var Account = sequelize.define(
 );
 
 module.exports = {
-    Account
+    Bank_User
 }

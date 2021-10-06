@@ -1,0 +1,37 @@
+const { sequelize } = require("../db/credentials");
+const { DataTypes } = require('sequelize');
+const { Account_Type } = require('./account_type');
+const { Request } = require('./request');
+
+const Account_Request = sequelize.define(
+    'account_request', {
+        id_request:{
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false,
+            references: {
+                model: Request,
+                key: 'id_request'
+            }
+        },
+        cui:{
+            type: DataTypes.BIGINT,
+            allowNull: false
+        },
+        account_type: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: Account_Type,
+                key: 'id_account_type'
+            }
+        }
+    }, {
+        timestamps: false,
+        freezeTableName: true
+    }
+);
+
+module.exports = {
+    Account_Request
+}
