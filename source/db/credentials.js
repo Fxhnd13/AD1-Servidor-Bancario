@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize');
 
-var sequelize = new Sequelize('bank_server', 'postgres', 'josecarlos', {
+/* var sequelize = new Sequelize('bank_server', 'postgres', 'josecarlos', {
     host: 'localhost',
     dialect: 'postgres',
     pool: {
@@ -8,9 +8,9 @@ var sequelize = new Sequelize('bank_server', 'postgres', 'josecarlos', {
         min: 0,
         idle: 10000
     }
-});
+}); */
 
-/* var sequelize = new Sequelize(
+var sequelize = new Sequelize(
         'd9n5uc8j2k3lad',
         'sxningfregfomg', 
         'c202177f18da3a3ca4189e49042aa8119c26137ed45568d0b6a79ad399d39e84', {
@@ -22,7 +22,7 @@ var sequelize = new Sequelize('bank_server', 'postgres', 'josecarlos', {
         min: 0,
         idle: 10000
     }
-}); */
+});
 
 module.exports = {
     sequelize
