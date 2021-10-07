@@ -26,9 +26,18 @@ const create_user = async(req, res) => {
                         }
                     });
                 }else{
-                    //Verificar si se encuentra autenticado como administrador
-                    Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
-                    res.status(200).json({mensaje:"Se ha creado su usuario correctamente."});
+                    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+                        if(session == null){
+                            res.status(401).json({error: "El token que posee ha expirado, inicie sesion nuevamente."})
+                        }else{
+                            Bank_User.findOne({where: {username: session.username}}).then(bank_user=>{
+                            if(bank_user.user_type >=3 ){
+                                Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                                res.status(200).json({mensaje:"Se ha creado su usuario correctamente."});
+                            }
+                        });
+                        }
+                    });
                 }
             });
         }else{
@@ -44,9 +53,10 @@ const create_user = async(req, res) => {
  * @param req.body.new_password New password to save in the database
  */
 const update_user_password = async (req, res) => {
-    Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
+    //Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(403).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
+            res.status(401).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
             Bank_User.findOne({ where: { username: session.username } }).then(user => {
                 bcrypt.compare(req.body.old_password, user.password).then(areEqual => {

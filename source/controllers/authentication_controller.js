@@ -37,9 +37,10 @@ const login = async (req, res) => {
  * @param req.body.token Authentication token
  */
 const logout = async (req, res) => {
-    Active_Session_Log.findOne({where:{token:req.body.token}}).then(session=>{
+    //Active_Session_Log.findOne({where:{token:req.body.token}}).then(session=>{
+    Active_Session_Log.findOne({where:{token: req.headers.token }}).then(session=>{
         if(session == null){
-            res.status(403).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
+            res.status(401).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
             session.destroy();
             res.status(200).json({mensaje:"Se ha cerrado sesion correctamente."});
@@ -49,7 +50,8 @@ const logout = async (req, res) => {
 };
 
 const is_logged_in = (req, res) => {
-    Active_Session_Log.findOne({where: {token: req.body.token}}).then(session=>{
+    //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
             return false;
         }else{
