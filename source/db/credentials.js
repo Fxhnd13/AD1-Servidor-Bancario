@@ -16,8 +16,13 @@ var sequelize = new Sequelize(
         'c202177f18da3a3ca4189e49042aa8119c26137ed45568d0b6a79ad399d39e84', {
     host: 'ec2-54-145-110-118.compute-1.amazonaws.com',
     dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false // <<<<<<< YOU NEED THIS
+        }
+    },
     port: 5432,
-    ssl: true,
     pool: {
         max: 5,
         min: 0,
