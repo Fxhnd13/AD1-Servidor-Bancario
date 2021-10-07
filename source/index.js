@@ -10,6 +10,7 @@ app.use(require('./routes/authentication_routes')); //Rutas para el manejo de au
 app.use(require('./routes/person_routes'));
 app.use(require('./routes/client_request_routes'));
 app.use(require('./routes/db_routes'));
+app.use(require('./routes/email_routes'));
 
 app.listen(3000); //Puerto en el que levantaremos el servidor
 console.log('*******************************'); //Se muestra en la terminal en la que montamos el servidor

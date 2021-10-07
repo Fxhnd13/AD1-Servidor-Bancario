@@ -78,9 +78,10 @@ function account_request(req, res, id_request, cui){
 }
 
 const create_request = (req, res) => {
-    Active_Session_Log.findOne({where: {token: req.body.token }, raw: true}).then(session =>{
+    //Active_Session_Log.findOne({where: {token: req.body.token }, raw: true}).then(session =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(403).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
+            res.status(401).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
                 Request.create({ request_type: req.body.request_type, date: sequelize.fn('NOW')}).then(new_request =>{
@@ -106,9 +107,10 @@ const create_request = (req, res) => {
 };
 
 const get_all_request = (req, res) =>{
-    Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
+    //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(403).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
+            res.status(401).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Request.findAll({raw: true}).then(requests => {
                 res.status(200).json(requests);
@@ -118,9 +120,10 @@ const get_all_request = (req, res) =>{
 };
 
 const get_request_between_two_dates = (req, res) =>{
-    Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
+    //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(403).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
+            res.status(401).json({error: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             console.log("Fecha inicial: "+req.body.initial_date);
             console.log("Fecha Final: "+req.body.final_date);
