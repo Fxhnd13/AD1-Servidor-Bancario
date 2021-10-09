@@ -10,6 +10,15 @@ const { Request } = require("../models/request");
 const { Update_Data_Request } = require("../models/update_data_request");
 const { Op } = require('sequelize');
 
+/**
+ * @description Method that creates a update data request
+ * @param id_request Number of request
+ * @param cui Identification to the person who wants to be updated
+ * @param req.body.address Information to be updated
+ * @param req.body.phone_number Information to be updated
+ * @param req.body.civil_status Information to be updated
+ * @param req.body.ocupation Information to be updated
+ */
 function update_data_request(req, res, id_request, cui){
     Update_Data_Request.create({
         id_request: id_request,
@@ -23,6 +32,13 @@ function update_data_request(req, res, id_request, cui){
     });
 }
 
+/**
+ * @description Method that creates a card cancellation request
+ * @param id_request Number of request
+ * @param req.body.id_card Identification of the card to be cancelled
+ * @param req.body.type Type of card (credit=0/debit=1)
+ * @param req.body.cause Cause of cancellation
+ */
 function card_cancellation_request(req, res, id_request){
     Card_Cancellation_Request.create({
         id_request: id_request,
@@ -34,6 +50,13 @@ function card_cancellation_request(req, res, id_request){
     });
 }
 
+/**
+ * @description Method that creates a credit card request
+ * @param id_request Number of request
+ * @param cui Identification of the person who made the request
+ * @param req.body.monthly_income Monthly income of the person who create the request
+ * @param req.body.desire_amount Desire amount for the credit card
+ */
 function credit_card_request(req, res, id_request, cui){
     Credit_Card_Request.create({
         id_request: id_request,
@@ -45,6 +68,11 @@ function credit_card_request(req, res, id_request, cui){
     });
 }
 
+/**
+ * @description Method that creates a debit card request
+ * @param id_request Number of request
+ * @param req.body.id_account Linked account
+ */
 function debit_card_request(req, res, id_request, cui){
     Debit_Card_Request.create({
         id_request: id_request,
@@ -54,6 +82,15 @@ function debit_card_request(req, res, id_request, cui){
     });
 }
 
+/**
+ * @description Method that creates a loan request
+ * @param id_request Number of request
+ * @param cui Identification of the person who made the request
+ * @param req.body.amount Desire amount
+ * @param req.body.monthly_income Monthly income of the person who made the request
+ * @param req.body.cause Cause of the loan
+ * @param req.body.guarantor_cui Identification of the guarantor
+ */
 function loan_request(req, res, id_request, cui){
     Loan_Request.create({
         id_request: id_request,
@@ -67,6 +104,12 @@ function loan_request(req, res, id_request, cui){
     });
 }
 
+/**
+ * @description Method that creates an account request
+ * @param id_request Number of request
+ * @param cui Identification of the person who made the request
+ * @param req.body.account_type Type of account
+ */
 function account_request(req, res, id_request, cui){
     Account_Request.create({
         id_request: id_request,
@@ -77,6 +120,10 @@ function account_request(req, res, id_request, cui){
     });
 }
 
+/**
+ * @description Method that verifies the authentication and create a request
+ * @param req.body.request_type Type of the request
+ */
 const create_request = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token }, raw: true}).then(session =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
@@ -106,6 +153,9 @@ const create_request = (req, res) => {
     });
 };
 
+/**
+ * @description Method that return a json with all created request
+ */
 const get_all_request = (req, res) =>{
     //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
@@ -119,6 +169,9 @@ const get_all_request = (req, res) =>{
     });
 };
 
+/**
+ * @description Method that return a json with all created request between two dates
+ */
 const get_request_between_two_dates = (req, res) =>{
     //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
