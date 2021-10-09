@@ -11,7 +11,7 @@ const { Active_Session_Log } = require('../models/active_session_log');
  * @param req.body.password password of the user
  */
 const login = async (req, res) => {
-    Bank_User.findOne({where:{username: req.body.username}}).then(user =>{
+    Bank_User.findOne({where:{username: req.body.username}, raw: true}).then(user =>{
         if(user == null){
             res.status(403).json({information_message:"El usuario "+req.body.username+" no se encuentra registrado."});
         }else{
@@ -51,7 +51,7 @@ const logout = async (req, res) => {
 
 const is_logged_in = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session=>{
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             return false;
         }else{

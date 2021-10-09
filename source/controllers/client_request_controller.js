@@ -19,16 +19,20 @@ const { Op } = require('sequelize');
  * @param req.body.civil_status Information to be updated
  * @param req.body.ocupation Information to be updated
  */
-function update_data_request(req, res, id_request, cui){
-    Update_Data_Request.create({
-        id_request: id_request,
-        cui: cui,
-        address: req.body.address,
-        phone_number: req.body.phone_number,
-        civil_status: req.body.civil_status,
-        ocupation: req.body.ocupation
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de actualización de datos.'});
+function create_update_data_request(req, res){
+    create_request(req, res).then(informacion => {
+        if(informacion != undefined){
+            Update_Data_Request.create({
+                id_request: informacion.id_request,
+                cui: informacion.cui,
+                address: req.body.address,
+                phone_number: req.body.phone_number,
+                civil_status: req.body.civil_status,
+                ocupation: req.body.ocupation
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de actualización de datos.'});
+            });
+        }
     });
 }
 
@@ -39,14 +43,18 @@ function update_data_request(req, res, id_request, cui){
  * @param req.body.type Type of card (credit=0/debit=1)
  * @param req.body.cause Cause of cancellation
  */
-function card_cancellation_request(req, res, id_request){
-    Card_Cancellation_Request.create({
-        id_request: id_request,
-        id_card: req.body.id_card,
-        type: req.body.type,
-        cause: req.body.cause
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});
+function create_card_cancellation_request(req, res){
+    create_request(req, res).then(informacion =>{
+        if(informacion != undefined){
+            Card_Cancellation_Request.create({
+                id_request: informacion.id_request,
+                id_card: req.body.id_card,
+                type: req.body.type,
+                cause: req.body.cause
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});
+            });
+        }
     });
 }
 
@@ -57,14 +65,18 @@ function card_cancellation_request(req, res, id_request){
  * @param req.body.monthly_income Monthly income of the person who create the request
  * @param req.body.desire_amount Desire amount for the credit card
  */
-function credit_card_request(req, res, id_request, cui){
-    Credit_Card_Request.create({
-        id_request: id_request,
-        cui: cui,
-        monthly_income: req.body.monthly_income,
-        desire_amount: req.body.desire_amount
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de credito.'});
+function create_credit_card_request(req, res){
+    create_request(req, res).then(informacion =>{
+        if(informacion != undefined){
+            Credit_Card_Request.create({
+                id_request: informacion.id_request,
+                cui: informacion.cui,
+                monthly_income: req.body.monthly_income,
+                desire_amount: req.body.desire_amount
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de credito.'});
+            });
+        }
     });
 }
 
@@ -73,12 +85,16 @@ function credit_card_request(req, res, id_request, cui){
  * @param id_request Number of request
  * @param req.body.id_account Linked account
  */
-function debit_card_request(req, res, id_request, cui){
-    Debit_Card_Request.create({
-        id_request: id_request,
-        id_account: req.body.id_account
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de debito.'});
+function create_debit_card_request(req, res){
+    create_request(req, res).then(informacion => {
+        if(informacion != undefined){
+            Debit_Card_Request.create({
+                id_request: informacion.id_request,
+                id_account: req.body.id_account
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de debito.'});
+            });
+        }
     });
 }
 
@@ -91,16 +107,20 @@ function debit_card_request(req, res, id_request, cui){
  * @param req.body.cause Cause of the loan
  * @param req.body.guarantor_cui Identification of the guarantor
  */
-function loan_request(req, res, id_request, cui){
-    Loan_Request.create({
-        id_request: id_request,
-        cui: cui,
-        amount: req.body.amount,
-        monthly_income: req.body.monthly_income,
-        cause: req.body.cause,
-        guarantor_cui: req.body.guarantor_cui
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de prestamo bancario.'});
+function create_loan_request(req, res){
+    create_request(req, res).then(informacion =>{
+        if(informacion != undefined){
+            Loan_Request.create({
+                id_request: informacion.id_request,
+                cui: informacion.cui,
+                amount: req.body.amount,
+                monthly_income: req.body.monthly_income,
+                cause: req.body.cause,
+                guarantor_cui: req.body.guarantor_cui
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de prestamo bancario.'});
+            });
+        }
     });
 }
 
@@ -110,13 +130,17 @@ function loan_request(req, res, id_request, cui){
  * @param cui Identification of the person who made the request
  * @param req.body.account_type Type of account
  */
-function account_request(req, res, id_request, cui){
-    Account_Request.create({
-        id_request: id_request,
-        cui: cui,
-        account_type: req.body.account_type
-    }).then(()=> {
-        res.status(200).json({information_message:'Se ha creado una solicitud de creacion de cuenta.'});
+function create_account_request(req, res){
+    create_request(req, res).then(informacion =>{
+        if(informacion != undefined){
+            Account_Request.create({
+                id_request: informacion.id_request,
+                cui: informacion.cui,
+                account_type: req.body.account_type
+            }).then(()=> {
+                res.status(200).json({information_message:'Se ha creado una solicitud de creacion de cuenta.'});
+            });
+        }
     });
 }
 
@@ -126,27 +150,16 @@ function account_request(req, res, id_request, cui){
  */
 const create_request = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token }, raw: true}).then(session =>{
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
                 Request.create({ request_type: req.body.request_type, date: sequelize.fn('NOW')}).then(new_request =>{
-                    if(req.body.request_type == 'update_data'){
-                        update_data_request(req, res, new_request.id_request, bank_user.cui);
-                    }else if(req.body.request_type == 'card_cancellation'){
-                        card_cancellation_request(req, res, new_request.id_request, bank_user.cui);
-                    }else if(req.body.request_type == 'credit_card'){
-                        credit_card_request(req, res, new_request.id_request, bank_user.cui);
-                    }else if(req.body.request_type == 'debit_card'){
-                        debit_card_request(req, res, new_request.id_request, bank_user.cui);
-                    }else if(req.body.request_type == 'loan'){
-                        loan_request(req, res, new_request.id_request, bank_user.cui);
-                    }else if(req.body.request_type == 'account'){
-                        account_request(req, res, new_request.id_request, bank_user.cui);
-                    }else{
-                        res.status(403).json({information_message: 'No existe el tipo de solicitud que realizó.'});
-                    }
+                    return json({
+                        id_request: new_request.id_request,
+                        cui: bank_user.cui
+                    });
                 });
             });
         }
@@ -158,7 +171,7 @@ const create_request = (req, res) => {
  */
 const get_all_request = (req, res) =>{
     //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session =>{
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
@@ -196,7 +209,12 @@ const get_request_between_two_dates = (req, res) =>{
 };
 
 module.exports = {
-    create_request,
+    create_account_request,
+    create_card_cancellation_request,
+    create_credit_card_request,
+    create_debit_card_request,
+    create_update_data_request,
+    create_loan_request,
     get_all_request,
     get_request_between_two_dates
 }

@@ -5,11 +5,11 @@ const { Person } = require('../models/person');
 const create_person = (req, res) => {
     console.log(req.body.token);
     //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session => {
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente"});
         }else{
-            Bank_User.findOne({where: {username: session.username}}).then(user => {
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
                 if(user.user_type >= 3){
                     Person.create({
                         cui: req.body.cui,
@@ -33,11 +33,11 @@ const create_person = (req, res) => {
 
 const update_person = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session =>{
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente."});
         }else{
-            Bank_User.findOne({where: {username: session.username}}).then(user => {
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
                 if(user.user_type >= 3){
                     Person.findOne({where: {cui: req.body.cui}}).then(person=>{
                         person.setAttributes({
