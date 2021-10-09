@@ -20,20 +20,20 @@ const create_user = async(req, res) => {
                     Account.count({ where: { cui: req.body.cui }}).then(accounts => {
                         if(accounts > 0){
                             Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
-                            res.status(200).json({mensaje:"Se ha creado su usuario correctamente."});
+                            res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                         }else{
-                            res.status(400).json({error:"No existe una cuenta bancaria ligada a su persona."});
+                            res.status(400).json({information_message:"No existe una cuenta bancaria ligada a su persona."});
                         }
                     });
                 }else{
                     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
                         if(session == null){
-                            res.status(401).json({error: "El token que posee ha expirado, inicie sesion nuevamente."})
+                            res.status(401).json({information_message: "El token que posee ha expirado, inicie sesion nuevamente."})
                         }else{
                             Bank_User.findOne({where: {username: session.username}}).then(bank_user=>{
                             if(bank_user.user_type >=3 ){
                                 Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
-                                res.status(200).json({mensaje:"Se ha creado su usuario correctamente."});
+                                res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                             }
                         });
                         }
@@ -41,7 +41,7 @@ const create_user = async(req, res) => {
                 }
             });
         }else{
-            res.status(400).json({error:"Ya existe un usuario con ese nombre."});
+            res.status(400).json({information_message:"Ya existe un usuario con ese nombre."});
         }
     });
 };
@@ -56,21 +56,21 @@ const update_user_password = async (req, res) => {
     //Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(401).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
+            res.status(401).json({information_message:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
             Bank_User.findOne({ where: { username: session.username } }).then(user => {
                 bcrypt.compare(req.body.old_password, user.password).then(areEqual => {
                     if(areEqual){
                         if(req.body.new_password === req.body.old_password){
-                            res.status(403).json({error:"La nueva contraseña es igual a la anterior, no se realizaron modificacioens."});
+                            res.status(403).json({information_message:"La nueva contraseña es igual a la anterior, no se realizaron modificacioens."});
                         }else{
                             bcrypt.hash(req.body.new_password, BCRYPT_SALT_ROUNDS).then(hashed_password => {
                                 user.update({ password: hashed_password });
-                                res.status(200).json({mensaje:"Se ha actualizado la contraseña correctamente."});
+                                res.status(200).json({information_message:"Se ha actualizado la contraseña correctamente."});
                             });
                         }
                     }else{
-                        res.status(403).json({error:"La contraseña ingresada no es correcta."});
+                        res.status(403).json({information_message:"La contraseña ingresada no es correcta."});
                     }
                 });
             });

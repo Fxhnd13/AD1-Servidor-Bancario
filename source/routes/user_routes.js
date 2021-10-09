@@ -1,6 +1,7 @@
 const { Router } = require('express'); //Que usaremos la funcion Router, del paquete express
 const router = Router(); //Creamos un router
 
+
 //Importamos las funciones de userConroller que usaremos
 const { create_user, update_user_password } = require('../controllers/user_controller');
 
