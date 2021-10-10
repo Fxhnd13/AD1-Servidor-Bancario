@@ -7,7 +7,7 @@ const create_person = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session => {
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(401).json({error:"El token de sesion ha expirado, inicie sesión nuevamente"});
+            res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente"});
         }else{
             Bank_User.findOne({where: {username: session.username}}).then(user => {
                 if(user.user_type >= 3){
@@ -22,9 +22,9 @@ const create_person = (req, res) => {
                         gender: req.body.gender,
                         ocupation: req.body.ocupation
                     });
-                    res.status(200).json({mensaje: "Se ha creado a la persona."});
+                    res.status(200).json({information_message: "Se ha creado a la persona."});
                 }else{
-                    res.status(403).json({error:"No posee permisos para realizar esta accion."});
+                    res.status(403).json({information_message:"No posee permisos para realizar esta accion."});
                 }
             });
         }
@@ -35,7 +35,7 @@ const update_person = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
         if(session == null){
-            res.status(401).json({error:"El token de sesion ha expirado, inicie sesión nuevamente."});
+            res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente."});
         }else{
             Bank_User.findOne({where: {username: session.username}}).then(user => {
                 if(user.user_type >= 3){
@@ -48,9 +48,9 @@ const update_person = (req, res) => {
                         });
                         person.save();
                     });
-                    res.status(200).json({mensaje: "Se han actualizado los datos."});
+                    res.status(200).json({information_message: "Se han actualizado los datos."});
                 }else{
-                    res.status(403).json({error:"No posee permisos para realizar esta accion."});
+                    res.status(403).json({information_message:"No posee permisos para realizar esta accion."});
                 }
             });
         }
