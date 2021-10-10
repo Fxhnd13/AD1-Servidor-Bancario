@@ -13,7 +13,7 @@ var BCRYPT_SALT_ROUNDS = 3;
  * @param req.body.cui Cui from the new user
  */
 const create_user = async(req, res) => {
-    Bank_User.findOne({ where: { username: req.body.username } }).then(user => {
+    Bank_User.findOne({ where: { username: req.body.username }, raw: true}).then(user => {
         if(user == null){
             bcrypt.hash(req.body.password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
                 if(req.body.user_type == 1){
@@ -26,11 +26,11 @@ const create_user = async(req, res) => {
                         }
                     });
                 }else{
-                    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+                    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
                         if(session == null){
                             res.status(401).json({information_message: "El token que posee ha expirado, inicie sesion nuevamente."})
                         }else{
-                            Bank_User.findOne({where: {username: session.username}}).then(bank_user=>{
+                            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                             if(bank_user.user_type >=3 ){
                                 Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
                                 res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
@@ -54,7 +54,7 @@ const create_user = async(req, res) => {
  */
 const update_user_password = async (req, res) => {
     //Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
