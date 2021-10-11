@@ -41,8 +41,8 @@ const syncronization = async (req, res) => {
         {description: "Administrador"}
     ]);
     await Account_Type.bulkCreate([
-        {description: "Cuenta de ahorro"},
-        {description: "Cuenta monetaria"}
+        {description: "Cuenta de ahorro",interest_rate: 0.15},
+        {description: "Cuenta monetaria",interest_rate: 0}
     ]);
     await Person.bulkCreate([
         {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
@@ -65,6 +65,12 @@ const syncronization = async (req, res) => {
             {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004}
         ]);
     });
+    await Email.bulkCreate([
+        {username: "user1", email: 'jcsru13@gmail.com'},
+        {username: "user2", email: 'jcsru13@gmail.com'},
+        {username: "user3", email: 'jcsru13@gmail.com'},
+        {username: "user4", email: 'jcsru13@gmail.com'}
+    ]);
     res.send('Base de datos sincronizada');
 };
 

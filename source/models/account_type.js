@@ -12,6 +12,10 @@ const Account_Type = sequelize.define(
         description: {
             type: DataTypes.TEXT,
             allowNull: false
+        },
+        interest_rate: {
+            type: DataTypes.NUMBER,
+            allowNull: false
         }
     }, {
         timestamps: false,

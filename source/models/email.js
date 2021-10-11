@@ -1,16 +1,16 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
-const { Person } = require('./person');
+const { Bank_User } = require("./bank_user");
 
 const Email = sequelize.define(
     'email', {
-        cui: {
-            type: DataTypes.BIGINT,
+        username: {
+            type: DataTypes.STRING,
             primaryKey: true,
             allowNull: false,
             references: {
-                model: Person,
-                key: 'cui'
+                model: Bank_User,
+                key: 'username'
             }
         },
         email: {
