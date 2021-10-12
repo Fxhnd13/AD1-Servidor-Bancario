@@ -3,16 +3,9 @@
     "info": {
         "title": "Bank server API",
         "version": "1.0.0",
-        "description": "Bank Software server implemented in NodeJs"
+        "description": "Software de servidor bancario implementado en NodeJs"
     },
-    "servers": [
-        {
-            "url": "http://localhost:3000"
-        },
-        {
-            "url": "https://analisis-bank-server.herokuapp.com/"
-        }
-    ],
+    "host": "analisis-bank-server.herokuapp.com",
     "tags": [
         {
             "name": "Usuario",
@@ -37,6 +30,22 @@
         {
             "name": "Correo",
             "description": "Todo sobre correos"
+        },
+        {
+            "name": "Tarjeta",
+            "description": "Todo sobre tarjetas de credito/debito"
+        },
+        {
+            "name": "Prestamo",
+            "description": "Todo sobre prestamos bancarios"
+        },
+        {
+            "name": "Cuenta",
+            "description": "Todo sobre cuentas bancarias"
+        },
+        {
+            "name": "Servicio",
+            "description": "Todo sobre los servicios ofrecidos por el sistema bancario"
         }
     ],
     "paths": {
@@ -764,7 +773,7 @@
                         }
                     },
                     "403":{
-                        "description": "Error: Usuario no existe/contraseña incorrecta/Ya se encuentra una sesion activa",
+                        "description": "Error: Usuario no existe/contraseña incorrecta | Ya se encuentra una sesion activa",
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
@@ -795,6 +804,233 @@
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
+                    }
+                }
+            }
+        },
+        "/user/password_recovery":{
+            "post":{
+                "tags":["Usuario"],
+                "summary": "Recuperacion de contraseña",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description": "Username de la cuenta sobre la que se desea recuperar la contraseña",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "500":{
+                        "description": "Ha ocurrido un error en el servidor, no se pudo enviar el correo de recuperacion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/card/statement":{
+            "get":{
+                "tags":["Tarjeta"],
+                "summary": "Ver el estado de una tarjeta de credito junto con los pagos ligada a esta",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_card",
+                        "description": "Identificador/No de tarjeta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/loan/statement":{
+            "get":{
+                "tags":["Prestamo"],
+                "summary": "Ver el estado de un prestamo bancario así como los pagos realizados.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_loan",
+                        "description": "Identificador/No de prestamo.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/statement":{
+            "get":{
+                "tags":["Cuenta"],
+                "summary": "Ver el estado de una cuenta así como los movimientos ligados a esta.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_account",
+                        "description": "Identificador/No de cuenta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/services/active":{
+            "get":{
+                "tags":["Servicio"],
+                "summary": "Ver un listado de los servicios bancarios de los que un usuario hace uso.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/transfer_on_app":{
+            "post":{
+                "tags":["Cuenta"],
+                "summary": "Transferencia bancaria realizada desde aplicación web/movil por un cliente.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_origin_account",
+                        "description": "Identificador/No de cuenta origen.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_destination_account",
+                        "description": "Identificador/No de cuenta destino.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description": "Cantidad a ser transferida.",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Cuenta (origen/destino) inexistente | Cuenta sin fondos"
                     }
                 }
             }

@@ -1,6 +1,10 @@
 const { Active_Session_Log } = require('../models/active_session_log');
 const { Account } = require('../models/account');
 const { Bank_User } = require('../models/bank_user');
+const { Email } = require('../models/email');
+const { Op } = require('sequelize');
+const { generate_password } = require('./authentication_controller');
+
 
 const bcrypt = require("bcrypt");
 var BCRYPT_SALT_ROUNDS = 3;
@@ -13,13 +17,14 @@ var BCRYPT_SALT_ROUNDS = 3;
  * @param req.body.cui Cui from the new user
  */
 const create_user = async(req, res) => {
-    Bank_User.findOne({ where: { username: req.body.username }, raw: true}).then(user => {
+    Bank_User.findOne({ where: { [Op.or]: [{ username: req.body.username},{[Op.and]:[{cui: req.body.cui},{user_type: req.body.user_type}]}]}, raw: true}).then(user => {
         if(user == null){
             bcrypt.hash(req.body.password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
                 if(req.body.user_type == 1){
                     Account.count({ where: { cui: req.body.cui }}).then(accounts => {
                         if(accounts > 0){
                             Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                            Email.create({ username: req.body.username, email: req.body.email });
                             res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                         }else{
                             res.status(400).json({information_message:"No existe una cuenta bancaria ligada a su persona."});
@@ -33,6 +38,7 @@ const create_user = async(req, res) => {
                             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                             if(bank_user.user_type >=3 ){
                                 Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                                Email.create({ username: req.body.username, email: req.body.email });
                                 res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                             }
                         });
@@ -41,7 +47,7 @@ const create_user = async(req, res) => {
                 }
             });
         }else{
-            res.status(400).json({information_message:"Ya existe un usuario con ese nombre."});
+            res.status(400).json({information_message:"Ya existe un usuario con ese nombre o su persona ya posee una cuenta del tipo deseado."});
         }
     });
 };
@@ -78,7 +84,20 @@ const update_user_password = async (req, res) => {
     });
 };
 
+const password_recovery = (req, res) => {
+    Email.findOne({ where: {username: req.body.username}, raw: true }).then(email=>{
+        const new_password = generate_password(8);
+        bcrypt.hash(new_password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
+            Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
+                bank_user.update({password: hashed_password});
+                send_password_recovery_email(email, hashed_password);
+            });
+        });
+    });
+};
+
 module.exports = {
     create_user,
-    update_user_password
+    update_user_password,
+    password_recovery
 };
