@@ -30,6 +30,5 @@ const send_password_recovery_email = (email, password) => {
 };
 
 module.exports = {
-    send_test_email,
     send_password_recovery_email
 }

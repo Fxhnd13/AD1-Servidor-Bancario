@@ -1,0 +1,9 @@
+,
+        "/path":{
+            "method":{
+                "tags":[""],
+                "summary": "Descripcion",
+                "parameters": [],
+                "responses": {}
+            }
+        }
