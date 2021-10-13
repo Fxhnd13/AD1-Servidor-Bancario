@@ -25,12 +25,7 @@ const login = async (req, res) => {
                         res.status(403).json({message:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
                     }
                 }else{
-                    res.status(403).json({
-                        status: 403,
-                        error: 'Contraseña incorrecta',
-                        message: 'Contraseña incorrecta2',
-                        path: '¿path?'
-                    });
+                    res.status(403).json(new Error('Contraseña incorrecta'));
                 }
             });
         }
