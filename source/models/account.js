@@ -6,8 +6,8 @@ const { Account_Type } = require("./account_type");
 var Account = sequelize.define(
     'account', {
         id_account: {
+            type: DataTypes.BIGINT,
             primaryKey: true,
-            type: DataTypes.INTEGER,
             allowNull: false,
             autoIncrement: true
         },
@@ -34,7 +34,8 @@ var Account = sequelize.define(
         }
     }, {
         timestamps: false,
-        freezeTableName: true // Model tableName will be the same as the model name
+        freezeTableName: true, // Model tableName will be the same as the model name
+        initialAutoIncrement: 100000000000
     }
 );
 
