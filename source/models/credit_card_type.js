@@ -1,19 +1,25 @@
+//https://sequelize.org/v3/docs/models-definition/
+
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 
-const Account_Type = sequelize.define(
-    'account_type', {
-        id_account_type: {
+var Credit_Card_Type = sequelize.define(
+    'credit_card_type', {
+        id_credit_card_type:{
             type: DataTypes.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
-            allowNull: false
+            allowNull: false,
+            autoIncrement: true
         },
-        description: {
+        description:{
             type: DataTypes.TEXT,
             allowNull: false
         },
-        interest_rate: {
+        credit_limit:{
+            type: DataTypes.DECIMAL,
+            allowNull: false,
+        },
+        interest_rate:{
             type: DataTypes.DECIMAL,
             allowNull: false
         }
@@ -24,5 +30,5 @@ const Account_Type = sequelize.define(
 );
 
 module.exports = {
-    Account_Type
+    Credit_Card_Type
 }
