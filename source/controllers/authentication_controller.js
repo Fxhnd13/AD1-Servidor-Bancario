@@ -11,7 +11,7 @@ const { Active_Session_Log } = require('../models/active_session_log');
  * @param req.body.password password of the user
  */
 const login = async (req, res) => {
-    Bank_User.findOne({where:{username: req.body.username}}).then(user =>{
+    Bank_User.findOne({where:{username: req.body.username}, raw: true}).then(user =>{
         if(user == null){
             res.status(403).json({message:"El usuario "+req.body.username+" no se encuentra registrado."});
         }else{
@@ -40,10 +40,10 @@ const logout = async (req, res) => {
     //Active_Session_Log.findOne({where:{token:req.body.token}}).then(session=>{
     Active_Session_Log.findOne({where:{token: req.headers.token }}).then(session=>{
         if(session == null){
-            res.status(401).json({error:"El token que posee ha expirado, inicie sesion nuevamente."});
+            res.status(401).json({information_message:"El token que posee ha expirado, inicie sesion nuevamente."});
         }else{
             session.destroy();
-            res.status(200).json({mensaje:"Se ha cerrado sesion correctamente."});
+            res.status(200).json({information_message:"Se ha cerrado sesion correctamente."});
         }
 
     });
@@ -51,7 +51,7 @@ const logout = async (req, res) => {
 
 const is_logged_in = (req, res) => {
     //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session=>{
-    Active_Session_Log.findOne({where: {token: req.headers.token}}).then(session=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             return false;
         }else{
@@ -60,7 +60,18 @@ const is_logged_in = (req, res) => {
     });
 };
 
+const generate_password = (length) => {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+};
+
 module.exports = {
     login,
-    logout
+    logout,
+    generate_password
 }

@@ -32,10 +32,10 @@ const Person = sequelize.define(
             type: DataTypes.CHAR,
             allowNull: true
         },
-        /* civil_status:{
+        civil_status:{
             type: DataTypes.TEXT,
             allowNull: true
-        },*/
+        },
         ocupation:{
             type: DataTypes.TEXT,
             allowNull: true

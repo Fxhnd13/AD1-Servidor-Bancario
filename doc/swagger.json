@@ -1,0 +1,1136 @@
+{    
+    "swagger": "2.0",
+    "info": {
+        "title": "Bank server API",
+        "version": "1.0.0",
+        "description": "Software de servidor bancario implementado en NodeJs"
+    },
+    "host": "analisis-bank-server.herokuapp.com",
+    "tags": [
+        {
+            "name": "Usuario",
+            "description": "Todo sobre usuarios"
+        },
+        {
+            "name": "Solicitud",
+            "description": "Todo sobre solicitudes"
+        },
+        {
+            "name": "Autenticacion",
+            "description": "Todo sobre autenticacion"
+        },
+        {
+            "name": "Persona",
+            "description": "Todo sobre personas"
+        },
+        {
+            "name": "Base de datos",
+            "description": "Todo sobre la base de datos"
+        },
+        {
+            "name": "Correo",
+            "description": "Todo sobre correos"
+        },
+        {
+            "name": "Tarjeta",
+            "description": "Todo sobre tarjetas de credito/debito"
+        },
+        {
+            "name": "Prestamo",
+            "description": "Todo sobre prestamos bancarios"
+        },
+        {
+            "name": "Cuenta",
+            "description": "Todo sobre cuentas bancarias"
+        },
+        {
+            "name": "Servicio",
+            "description": "Todo sobre los servicios ofrecidos por el sistema bancario"
+        }
+    ],
+    "paths": {
+        "/user":{
+            "post": {
+                "tags": ["Usuario"],
+                "summary": "Crea un nuevo usuario del sistema bancario en la base de datos",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description": "Username para el nuevo usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "user1"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "password",
+                        "description": "Password para el nuevo usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "pass"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "user_type",
+                        "description": "Tipo de usuario para el nuevo usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "items": {
+                                "enum": [1,2,3,4]
+                            }
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "cui",
+                        "description": "Cui de la persona propietaria del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1000000000001
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "400":{
+                        "description": "Error: Inexistencia de cuenta bancaria",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Usuario"],
+                "summary": "Actualiza la contraseña de un usuario.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "old_password",
+                        "description": "Antigua contraseña para verificar la identidad del usuario.",
+                        "required": true,
+                        "schema": {
+                            "type":"string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "new_password",
+                        "description": "Nueva contraseña para modificar al usuario.",
+                        "required": true,
+                        "schema": {
+                            "type":"string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Contraseña incorrecta o antigua y nueva contraseña son iguales (no hay cambios).",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/credit_card":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de tarjeta de credito",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "monthly_income",
+                        "description": "Ingresos mensuales del solicitante.",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "desire_amount",
+                        "description": "Cantidad deseada.",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/dedit_card":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de tarjeta de debito",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_account",
+                        "description": "Identificador de la cuenta a la que se encontrará ligada.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/account":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de cuenta bancaria",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "account_type",
+                        "description": "Tipo de cuenta que se desea abrir",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/update_data":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de actualizacion de datos",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "address",
+                        "description": "Direccion a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "phone_number",
+                        "description": "Numero telefonico a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "civil_status",
+                        "description": "Estado civil a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "ocupation",
+                        "description": "Ocupacion a actualizar.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/loan":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de prestamo bancario",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description": "Cantidad a prestar",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "monthly_income",
+                        "description": "Ingresos mensuales del solicitante",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "cause",
+                        "description": "Motivo del prestamo",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "guarantor_cui",
+                        "description": "Cui del fiador",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/card_cancellation":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Crear una solicitud de cancelacion de tarjeta",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_card",
+                        "description": "Identificador de la tarjeta a cancelar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "type",
+                        "description": "Tipo de tarjeta (credito/debito)",
+                        "required": true,
+                        "schema": {
+                            "type":"integer",
+                            "enum": [1,2]
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "cause",
+                        "description": "Motivo de la cancelacion",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/all":{
+            "get": {
+                "tags": ["Solicitud"],
+                "summary": "Obtiene todas las solicitudes creadas",
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/request"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/all_between_two_dates":{
+            "get": {
+                "tags": ["Solicitud"],
+                "summary": "Obtiene todas las solicitudes creadas en un periodo de tiempo.",
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/request"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/person": {
+            "post":{
+                "tags": ["Persona"],
+                "summary": "Guarda la informacion de una persona en la base de datos",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "cui",
+                        "description": "Cui de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "name",
+                        "description": "Nombre de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "surname",
+                        "description": "Apellido de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "address",
+                        "description": "Direccion de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "phone_number",
+                        "description": "Cui de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "birth_day",
+                        "description": "Fecha de nacimiento de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "civi_status",
+                        "description": "Estado civil de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "gender",
+                        "description": "Genero de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "ocupation",
+                        "description": "Ocupacion de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Persona"],
+                "summary": "Actualiza la información de una persona en la base de datos",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "address",
+                        "description": "Direccion de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "phone_number",
+                        "description": "Cui de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "civi_status",
+                        "description": "Estado civil de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "gender",
+                        "description": "Genero de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "ocupation",
+                        "description": "Ocupacion de la persona a guardar en la base de datos.",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/db":{
+            "post": {
+                "tags": ["Base de datos"],
+                "summary": "Mapea la base de datos e inserta información inicial",
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/email":{
+            "post": {
+                "tags": ["Correo"],
+                "summary": "No hace nada actualmente",
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/login":{
+            "post": {
+                "tags": ["Autenticacion"],
+                "summary": "Inicia sesion en el dispositivo que realice la solicitud",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description": "Username para iniciar sesion",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "password",
+                        "description": "Contraseña para iniciar sesion",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object",
+                            "properties": {
+                                "username":{
+                                    "type": "string"
+                                },
+                                "user_type":{
+                                    "type": "string"
+                                },
+                                "token": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Usuario no existe/contraseña incorrecta | Ya se encuentra una sesion activa",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout":{
+            "post": {
+                "tags": ["Autenticacion"],
+                "summary": "Cierra sesion en el dispositivo que realice la solicitud",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/password_recovery":{
+            "post":{
+                "tags":["Usuario"],
+                "summary": "Recuperacion de contraseña",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description": "Username de la cuenta sobre la que se desea recuperar la contraseña",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "500":{
+                        "description": "Ha ocurrido un error en el servidor, no se pudo enviar el correo de recuperacion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/card/statement":{
+            "get":{
+                "tags":["Tarjeta"],
+                "summary": "Ver el estado de una tarjeta de credito junto con los pagos ligada a esta",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_card",
+                        "description": "Identificador/No de tarjeta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/loan/statement":{
+            "get":{
+                "tags":["Prestamo"],
+                "summary": "Ver el estado de un prestamo bancario así como los pagos realizados.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_loan",
+                        "description": "Identificador/No de prestamo.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/statement":{
+            "get":{
+                "tags":["Cuenta"],
+                "summary": "Ver el estado de una cuenta así como los movimientos ligados a esta.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_account",
+                        "description": "Identificador/No de cuenta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/services/active":{
+            "get":{
+                "tags":["Servicio"],
+                "summary": "Ver un listado de los servicios bancarios de los que un usuario hace uso.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/transfer_on_app":{
+            "post":{
+                "tags":["Cuenta"],
+                "summary": "Transferencia bancaria realizada desde aplicación web/movil por un cliente.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_origin_account",
+                        "description": "Identificador/No de cuenta origen.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_destination_account",
+                        "description": "Identificador/No de cuenta destino.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description": "Cantidad a ser transferida.",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Cuenta (origen/destino) inexistente | Cuenta sin fondos"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "information_message":{
+            "type": "string",
+            "description": "Un mensaje que informa el estado de la accion solicitada.",
+            "example": "La accion ha sido realizada con éxito./Ha ocurrido un error."
+        },
+        "account_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "account_type":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "account":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "active_session_log":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "bank_user_status_log":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "bank_user_type":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "bank_user":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "card_cancellation_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "credit_card_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "debit_card_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "email":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "loan_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "person":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "request":{
+            "type": "object",
+            "properties": {
+
+            }
+        },
+        "update_data_request":{
+            "type": "object",
+            "properties": {
+
+            }
+        }
+    }
+}
