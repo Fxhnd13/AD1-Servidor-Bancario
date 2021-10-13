@@ -16,7 +16,7 @@ var Payment_Log = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                Model: Loan,
+                model: Loan,
                 key: 'id_loan'
             }
         },
@@ -38,7 +38,7 @@ var Payment_Log = sequelize.define(
         }
     }, {
         timestamps: false,
-        freezeTableName: true // Model tableName will be the same as the model name
+        freezeTableName: true // model tableName will be the same as the model name
     }
 );
 

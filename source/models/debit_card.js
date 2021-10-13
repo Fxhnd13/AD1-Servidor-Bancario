@@ -20,7 +20,7 @@ var Debit_Card = sequelize.define(
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {
-                Model: Account,
+                model: Account,
                 key: 'id_account'
             }
         }
