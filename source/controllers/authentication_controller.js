@@ -13,7 +13,7 @@ const { Active_Session_Log } = require('../models/active_session_log');
 const login = async (req, res) => {
     Bank_User.findOne({where:{username: req.body.username}, raw: true}).then(user =>{
         if(user == null){
-            res.status(403).json({message:"El usuario "+req.body.username+" no se encuentra registrado."});
+            res.status(403).json({information_message:"El usuario "+req.body.username+" no se encuentra registrado."});
         }else{
             bcrypt.compare(req.body.password,user.password).then(areEqual =>{
                 if(areEqual){
@@ -22,10 +22,10 @@ const login = async (req, res) => {
                         Active_Session_Log.create({username: user.username, token: token});
                         res.status(200).json({username: user.username,user_type: user.user_type, token: token});
                     }else{
-                        res.status(403).json({message:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
+                        res.status(403).json({information_message:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
                     }
                 }else{
-                    res.status(403).json(new Error('Contraseña incorrecta'));
+                    res.status(403).json({information_message:"La contraseña proporcionada no es la correcta"});
                 }
             });
         }
