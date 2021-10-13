@@ -25,7 +25,12 @@ const login = async (req, res) => {
                         res.status(403).json({message:"Ya se encuentra una sesion activa para el usuario "+req.body.username});
                     }
                 }else{
-                    res.status(403).json({message:"La contraseña proporcionada no es la correcta"});
+                    res.status(403).json({
+                        status: 403,
+                        error: 'Contraseña incorrecta',
+                        message: 'Contraseña incorrecta2',
+                        path: '¿path?'
+                    });
                 }
             });
         }
