@@ -21,7 +21,7 @@ var Credit_Card = sequelize.define(
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {
-                Model: Person,
+                model: Person,
                 key: 'cui'
             }
         },
@@ -29,7 +29,7 @@ var Credit_Card = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                Model: Credit_Card_Type,
+                model: Credit_Card_Type,
                 key: 'id_credit_card_type'
             }
         },

@@ -16,7 +16,7 @@ var Card_Payment_Log = sequelize.define(
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {
-                Model: Card,
+                model: Card,
                 key: 'id_card'
             }
         },

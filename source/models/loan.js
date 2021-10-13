@@ -24,7 +24,7 @@ var Loan = sequelize.define(
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {
-                Model: Person,
+                model: Person,
                 key: 'cui'
             }
         },
