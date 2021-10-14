@@ -40,30 +40,36 @@ const transfer_on_app = (req, res) => {
     });
 };
 
-const account_statement = (req, res) => {
+const account_statement = async (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
         if(session == null){
-            //error de expiracion
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
         }else{
             //verificar primero que sea el dueño
             Account.findOne({where : {id_account: req.body.id_account}, raw: true}).then(account => {
-                var movements = [];
-                Deposit.findAll({where: {destination_account: req.body.id_account}, raw: true}).then(deposits => {
-                    deposits.forEach(deposit => {
-                        movements.push({movement_type: 'Deposito', amount: deposit.amount, date_time: deposit.date_time});
-                    });
+                Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
+                    if((account.cui == bank_user.cui) || (session.user_type > 2)){
+                        var movements = [];
+                        await Deposit.findAll({where: {destination_account: req.body.id_account}, raw: true}).then(deposits => {
+                            deposits.forEach(deposit => {
+                                movements.push({movement_type: 'Deposito', amount: deposit.amount, date_time: deposit.date_time});
+                            });
+                        });
+                        await Withdrawal.findAll({where: {origin_account: req.body.id_account}, raw: true}).then(withdrawals => {
+                            withdrawals.forEach(withdrawal => {
+                                movements.push({movement_type: 'Retiro', amount: withdrawal.amount, date_time: withdrawal.date_time});
+                            });
+                        });
+                        res.status(200).json({
+                            id_account: account.id_account,
+                            id_account_type: account.id_account_type,
+                            balance: account.balance,
+                            movements: movements
+                        });
+                    }else{
+                        res.status(403).json({information_message: 'No tiene acceso a esta información, la cuenta no le pertenece.'});
+                    }
                 });
-                Withdrawal.findAll({where: {origin_account: req.body.id_account}, raw: true}).then(withdrawals => {
-                    withdrawals.forEach(withdrawal => {
-                        movements.push({movement_type: 'Retiro', amount: withdrawal.amount, date_time: withdrawal.date_time});
-                    });
-                });
-                res.status(200).json({
-                    id_account: account.id_account,
-                    id_account_type: account.id_account_type,
-                    balance: account.balance,
-                    movements: movements
-                })
             });
         }
     });
