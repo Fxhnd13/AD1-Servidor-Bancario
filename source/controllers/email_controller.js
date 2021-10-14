@@ -1,4 +1,7 @@
 var nodemailer = require('nodemailer');
+const { Account } = require('../models/account');
+const { Bank_User } = require('../models/bank_user');
+const { Email } = require('../models/email');
 const sender = 'AD1.Bank.Server@gmail.com';
 
 var transporter = nodemailer.createTransport({
@@ -49,8 +52,26 @@ const send_withdrawal_email = (email, origin_account, amount, date_time) => {
   send_email(mailOptions);
 };
 
+const send_transfer_email = (transfer) => {
+  Account.findOne({where: {id_account: transfer.origin_account}, raw: true}).then(origin_account => {
+    Bank_User.findOne({where: {cui: origin_account.cui}, raw: true}).then(bank_user =>{
+      Email.findOne({where: {username: bank_user.username}, raw: true}).then(email => {
+        send_withdrawal_email(email.email, origin_account.id_account, transfer.amount, transfer.date_time);
+      });
+    });
+  });
+  Account.findOne({where: {id_account: transfer.destination_account}, raw: true}).then(destination_account => {
+    Bank_User.findOne({where: {cui: origin_account.cui}, raw: true}).then(bank_user =>{
+      Email.findOne({where: {username: bank_user.username}, raw: true}).then(email => {
+        send_deposit_email(email.email, destination_account.id_account, transfer.amount, transfer.date_time);
+      });
+    });
+  });
+}
+
 module.exports = {
     send_password_recovery_email,
     send_deposit_email,
-    send_withdrawal_email
+    send_withdrawal_email,
+    send_transfer_email
 }
