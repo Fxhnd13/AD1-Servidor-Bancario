@@ -3,6 +3,8 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 const { Account } = require('./account');
+const { send_deposit_email, send_withdrawal_email } = require('../controllers/email_controller');
+const { Email } = require("./email");
 
 var Transfer = sequelize.define(
     'transfer', {
