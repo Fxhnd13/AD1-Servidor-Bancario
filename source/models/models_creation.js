@@ -13,14 +13,26 @@ const { Loan_Request } = require('./loan_request');
 const { Update_Data_Request } = require('./update_data_request');
 const { Card_Cancellation_Request } = require('./card_cancellation_request');
 const { Account_Request } = require('./account_request');
+const { Credit_Card_Type } = require('./credit_card_type');
+const { Deposit } = require('./deposit');
+const { Withdrawal } = require('./withdrawal');
+const { Transfer } = require('./transfer');
+const { Payment_Delay } = require('./payment_delay');
+const { Payment_Log } = require('./payment_log');
+const { Card_Payment_Log } = require('./card_payment_log');
+const { Loan } = require('./loan');
+const { Credit_Card } = require('./credit_card');
+const { Debit_Card } = require('./debit_card');
+const { Card } = require('./card');
 
 const bcrypt = require("bcrypt");
 var BCRYPT_SALT_ROUNDS = 3;
 
 const syncronization = async (req, res) => {
-    await Person.sync({force: true});
     await Bank_User_Type.sync({force: true});
     await Account_Type.sync({force: true});
+    await Credit_Card_Type.sync({force: true});
+    await Person.sync({force: true});
     await Bank_User.sync({force: true});
     await Active_Session_Log.sync({force: true});
     await Account.sync({force: true});
@@ -33,6 +45,16 @@ const syncronization = async (req, res) => {
     await Update_Data_Request.sync({force: true});
     await Card_Cancellation_Request.sync({force: true});
     await Account_Request.sync({force: true});
+    await Card.sync({force: true});
+    await Credit_Card.sync({force: true});
+    await Debit_Card.sync({force: true});
+    await Loan.sync({force: true});
+    await Card_Payment_Log.sync({force: true});
+    await Deposit.sync({force: true});
+    await Payment_Delay.sync({force: true});
+    await Payment_Log.sync({force: true});
+    await Transfer.sync({force: true});
+    await Withdrawal.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
         {description: "Cliente"},
@@ -64,13 +86,13 @@ const syncronization = async (req, res) => {
             {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003},
             {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004}
         ]);
+        await Email.bulkCreate([
+            {username: 'user1', email: 'jcsru13@gmail.com'},
+            {username: 'user2', email: 'jcsru13@gmail.com'},
+            {username: 'user3', email: 'jcsru13@gmail.com'},
+            {username: 'user4', email: 'jcsru13@gmail.com'}
+        ]);
     });
-    await Email.bulkCreate([
-        {username: "user1", email: 'jcsru13@gmail.com'},
-        {username: "user2", email: 'jcsru13@gmail.com'},
-        {username: "user3", email: 'jcsru13@gmail.com'},
-        {username: "user4", email: 'jcsru13@gmail.com'}
-    ]);
     res.send('Base de datos sincronizada');
 };
 
