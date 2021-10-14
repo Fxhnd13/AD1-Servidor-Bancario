@@ -25,7 +25,7 @@ var Withdrawal = sequelize.define(
                 key: 'id_account'
             }
         },
-        cashier_username:{
+        responsible_username:{
             type: DataTypes.TEXT,
             allowNull: false,
             references: {

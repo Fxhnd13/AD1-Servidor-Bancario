@@ -53,7 +53,7 @@ const syncronization = async (req, res) => {
     await Deposit.sync({force: true});
     await Payment_Delay.sync({force: true});
     await Payment_Log.sync({force: true});
-    await Transfer.sync({force: true});
+    //await Transfer.sync({force: true});
     await Withdrawal.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
