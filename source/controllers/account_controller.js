@@ -16,18 +16,18 @@ const transfer_on_app = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
                 if(bank_user.user_type == 1){
-                    Account.findAndCountAll({where:{[Op.or]: [{id_account: req.body.origin_account},{id_account: req.body.destination_account}]}}).then(accounts => {
+                    Account.findAndCountAll({where:{[Op.or]: [{id_account: req.body.id_origin_account},{id_account: req.body.id_destination_account}]}}).then(accounts => {
                         if(accounts.count == 2){
-                            var origin_account = (accounts.rows[0].id_account == req.body.origin_account)? accounts.rows[0] : accounts.rows[1];
-                            var destination_account = (accounts.rows[0].id_account == req.body.destination_account)? accounts.rows[0] : accounts.rows[1];
+                            var origin_account = (accounts.rows[0].id_account == req.body.id_origin_account)? accounts.rows[0] : accounts.rows[1];
+                            var destination_account = (accounts.rows[0].id_account == req.body.id_destination_account)? accounts.rows[0] : accounts.rows[1];
                             if(origin_account.cui == bank_user.cui){
                                 if(parseFloat(origin_account.balance) >= parseFloat(req.body.amount)){
                                     origin_account.update({balance: parseFloat(origin_account.balance)-parseFloat(req.body.amount)});
                                     destination_account.update({balance: parseFloat(destination_account.balance)+parseFloat(req.body.amount)});
-                                    Withdrawal.create({amount: req.body.amount, origin_account: req.body.origin_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(withdrawal => {
+                                    Withdrawal.create({amount: req.body.amount, origin_account: req.body.id_origin_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(withdrawal => {
                                         send_withdrawal_email(withdrawal);
                                     });
-                                    Deposit.create({amount: req.body.amount, destination_account: req.body.destination_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(deposit =>{
+                                    Deposit.create({amount: req.body.amount, destination_account: req.body.id_destination_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(deposit =>{
                                         send_deposit_email(deposit);
                                     });
                                     res.status(200).json({information_message: 'Se ha realizado la transferencia con exito'});
@@ -38,7 +38,7 @@ const transfer_on_app = (req, res) => {
                                 res.status(400).json({information_message: 'No eres el dueño de al cuenta origen seleccionada.'});
                             }
                         }else{
-                            res.status(400).json({information_message: 'La cuenta destino ingresada, no existe.'});
+                            res.status(403).json({information_message: 'La cuenta destino ingresada, no existe.'});
                         }
                     });
                 }else{

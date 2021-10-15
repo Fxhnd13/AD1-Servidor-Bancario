@@ -20,7 +20,7 @@ var Payment_Log = sequelize.define(
                 key: 'id_loan'
             }
         },
-        payment_date:{
+        date:{
             type: DataTypes.DATEONLY,
             allowNull: false
         },
