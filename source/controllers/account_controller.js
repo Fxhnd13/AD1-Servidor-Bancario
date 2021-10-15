@@ -2,7 +2,8 @@ const { Active_Session_Log } = require("../models/active_session_log");
 const { Bank_User } = require("../models/bank_user");
 const { Op } = require('sequelize');
 const { Account } = require("../models/account");
-const { send_deposit_email } = require("./email_controller");
+const { send_transfer_email } = require("./email_controller");
+const { Card_Payment_Log } = require("../models/card_payment_log");
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -58,6 +59,13 @@ const account_statement = async (req, res) => {
                         await Withdrawal.findAll({where: {origin_account: req.body.id_account}, raw: true}).then(withdrawals => {
                             withdrawals.forEach(withdrawal => {
                                 movements.push({movement_type: 'Retiro', amount: withdrawal.amount, date_time: withdrawal.date_time});
+                            });
+                        });
+                        await Debit_Card.findOne({where: {id_account: account.id_account}, raw: true}).then(debit_card => {
+                            Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true}).then(payments => {
+                                payments.forEach(payment => {
+                                    movements.push({movement_type: 'Retiro con tarjeta', amount: payment.amount, date_time: payment.date_time});
+                                });
                             });
                         });
                         res.status(200).json({
