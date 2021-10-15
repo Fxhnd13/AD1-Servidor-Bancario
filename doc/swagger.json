@@ -864,11 +864,86 @@
                     "200":{
                         "description": "ok",
                         "schema":{
-                            "type": "object"
+                            "type": "object",
+                            "properties": {
+                                "id_card":{
+                                    "type": "integer",
+                                    "description": "Identificador de la tarjeta"
+                                },
+                                "owner_cui":{
+                                    "type": "integer",
+                                    "description": "Cui del propietario de la tarjeta"
+                                },
+                                "credit_card_type":{
+                                    "type": "integer",
+                                    "description": "Tipo de tarejta (SOLO TAREJTA DE CREDITO)"
+                                },
+                                "credit_limit":{
+                                    "type": "number",
+                                    "description": "Limite de credito (SOLO TARJETA DE CREDITO)"
+                                },
+                                "interest_rate":{
+                                    "type": "number",
+                                    "description": "Interes que posee la tarjeta la momento de ser creada. (SOLO TARJETA DE CREDITO)"
+                                },
+                                "cutoff_date":{
+                                    "type": "integer",
+                                    "description": "No. de día del mes en el que se cobrará lo gastado por la tarjeta (SOLO TARJETA DE CREDITO)"
+                                },
+                                "balance":{
+                                    "type": "number",
+                                    "description": "Saldo actual de la tarjeta (SOLO TARJETA DE CREDITO)"
+                                },
+                                "id_account":{
+                                    "type": "integer",
+                                    "description": "Cuenta ligada a tarjeta (SOLO TARJETA DE DEBITO)"
+                                },
+                                "payments":{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id_card_payment": {
+                                                "type": "integer",
+                                                "description": "Identificador del pago con tarjeta realizado."
+                                            },
+                                            "id_card":{
+                                                "type": "integer",
+                                                "description": "Identificador de la tarjeta"
+                                            },
+                                            "amount":{
+                                                "type": "number",
+                                                "description": "Cantidad de dinero refernte al movimiento."
+                                            },
+                                            "date_time":{
+                                                "type": "date",
+                                                "description": "Fecha y hora en la que se realizó dicha operacion."
+                                            },
+                                            "description":{
+                                                "type": "string",
+                                                "description": "Descripcion de lo que se compro con la tarjeta."
+                                            }
+                                        }
+                                    }
+                                },
+                                "payments_delay":{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {}
+                                    }
+                                }
+                            }
                         }
                     },
                     "401":{
                         "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No existe una tarjeta con el id seleccionado.\nNo tiene acceso a esta información.",
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
@@ -901,11 +976,75 @@
                     "200":{
                         "description": "ok",
                         "schema":{
-                            "type": "object"
+                            "type": "object",
+                            "properties": {
+                                "id_loan":{
+                                    "type": "integer",
+                                    "description": "Identificador del prestamo bancario"
+                                },
+                                "owner_cui":{
+                                    "type": "integer",
+                                    "description": "Cui del propietario del prestamo"
+                                },
+                                "guarantor_cui":{
+                                    "type": "integer",
+                                    "description": "Cui del fiador del prestamo"
+                                },
+                                "amount":{
+                                    "type": "number",
+                                    "description": "Cantidad del prestamo realizdo"
+                                },
+                                "interest_rate":{
+                                    "type": "number",
+                                    "description": "Interes del prestamo bancario"
+                                },
+                                "payment_date":{
+                                    "type": "integer",
+                                    "description": "Día del mes en el que deberá realizar un pago"
+                                },
+                                "payments":{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id_payment":{
+                                                "type": "integer",
+                                                "description": "Identificador del pago realizado"
+                                            },
+                                            "id_loan":{
+                                                "type": "integer",
+                                                "description": "Identificador del prestamo al que se abono"
+                                            },
+                                            "date":{
+                                                "type": "date",
+                                                "description": "Fecha en la que se realizó el pago."
+                                            },
+                                            "amount":{
+                                                "type": "number",
+                                                "description": "Cantidad de dinero que se abono"
+                                            },
+                                            "balance":{
+                                                "type": "number",
+                                                "description": "Saldo actual de la cuenta"
+                                            },
+                                            "total_payment":{
+                                                "type": "number",
+                                                "description": "Cantidad total pagada"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                     "401":{
                         "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee acceso a esta información",
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
@@ -938,11 +1077,51 @@
                     "200":{
                         "description": "ok",
                         "schema":{
-                            "type": "object"
+                            "type": "object",
+                            "properties": {
+                                "id_account":{
+                                    "type": "integer",
+                                    "description": "Identificador de la cuenta"
+                                },
+                                "id_account_type":{
+                                    "type": "integer",
+                                    "description": "Tipo de cuenta (Monetaria/ahorro)"
+                                },
+                                "balance":{
+                                    "type": "number",
+                                    "description": "Saldo actual de la cuenta"
+                                },
+                                "movements":{
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "movement_type": {
+                                                "type": "string",
+                                                "description": "Tipo de movimiento (retiro/deposito/retiro con tarjeta)"
+                                            },
+                                            "amount":{
+                                                "type": "number",
+                                                "description": "Cantidad de dinero refernte al movimiento."
+                                            },
+                                            "date_time":{
+                                                "type": "date",
+                                                "description": "Fecha y hora en la que se realizó dicha operacion."
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                     "401":{
                         "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee acceso a esta información",
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
@@ -1020,6 +1199,12 @@
                     "200":{
                         "description": "ok",
                         "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "400":{
+                        "description": "Error: Un usario que no sea tipo cliente no puede realizar esta accion\nNo es dueño de la cuenta origen\nLa cuenta origen no posee los fondos necesarios",
+                        "schema": {
                             "$ref": "#/definitions/information_message"
                         }
                     },
