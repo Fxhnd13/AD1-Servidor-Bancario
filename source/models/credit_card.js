@@ -61,5 +61,5 @@ var Credit_Card = sequelize.define(
 );
 
 module.exports = {
-    Credit_Card
+    card_statement
 }
