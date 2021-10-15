@@ -2,6 +2,7 @@ var nodemailer = require('nodemailer');
 const { Account } = require('../models/account');
 const { Bank_User } = require('../models/bank_user');
 const { Email } = require('../models/email');
+const { Withdrawal } = require('../models/withdrawal');
 const sender = 'AD1.Bank.Server@gmail.com';
 
 var transporter = nodemailer.createTransport({
@@ -32,46 +33,40 @@ const send_password_recovery_email = (email, password) => {
   send_email(mailOptions);
 };
 
-const send_deposit_email = (email, destination_account, amount, date_time) => {
-  var mailOptions = {
-    from: sender,
-    to: email,
-    subject: 'Deposito bancario',
-    text: 'Se ha realizado un deposito en su cuenta No. '+destination_account+', una cantidad de Q '+amount+' con fecha y hora equivalentes a '+date_time
-  }
-  send_email(mailOptions);
-};
-
-const send_withdrawal_email = (email, origin_account, amount, date_time) => {
-  var mailOptions = {
-    from: sender,
-    to: email,
-    subject: 'Retiro bancario',
-    text: 'Se ha realizado un retiro de su cuenta No. '+origin_account+', una cantidad de Q '+amount+' con fecha y hora equivalentes a '+date_time
-  }
-  send_email(mailOptions);
-};
-
-const send_transfer_email = (transfer) => {
-  Account.findOne({where: {id_account: transfer.origin_account}, raw: true}).then(origin_account => {
-    Bank_User.findOne({where: {cui: origin_account.cui}, raw: true}).then(bank_user =>{
+const send_deposit_email = (deposit) => {
+  Account.findOne({where: {id_account: deposit.destination_account}, raw: true}).then(destination_account => {
+    Bank_User.findOne({where: {cui: destination_account.cui}, raw: true}).then(bank_user =>{
       Email.findOne({where: {username: bank_user.username}, raw: true}).then(email => {
-        send_withdrawal_email(email.email, origin_account.id_account, transfer.amount, transfer.date_time);
+        var mailOptions = {
+          from: sender,
+          to: email.email,
+          subject: 'Deposito bancario',
+          text: 'Se ha realizado un deposito en su cuenta No. '+destination_account.id_account+', una cantidad de Q '+deposit.amount+' con fecha y hora equivalentes a '+deposit.date_time
+        }
+        send_email(mailOptions);
       });
     });
   });
-  Account.findOne({where: {id_account: transfer.destination_account}, raw: true}).then(destination_account => {
+};
+
+const send_withdrawal_email = (Withdrawal) => {
+  Account.findOne({where: {id_account: Withdrawal.origin_account}, raw: true}).then(origin_account => {
     Bank_User.findOne({where: {cui: origin_account.cui}, raw: true}).then(bank_user =>{
       Email.findOne({where: {username: bank_user.username}, raw: true}).then(email => {
-        send_deposit_email(email.email, destination_account.id_account, transfer.amount, transfer.date_time);
+        var mailOptions = {
+          from: sender,
+          to: email.email,
+          subject: 'Retiro bancario',
+          text: 'Se ha realizado un retiro de su cuenta No. '+origin_account.id_account+', una cantidad de Q '+withdrawal.amount+' con fecha y hora equivalentes a '+withdrawal.date_time
+        }
+        send_email(mailOptions);
       });
     });
   });
-}
+};
 
 module.exports = {
     send_password_recovery_email,
     send_deposit_email,
-    send_withdrawal_email,
-    send_transfer_email
+    send_withdrawal_email
 }

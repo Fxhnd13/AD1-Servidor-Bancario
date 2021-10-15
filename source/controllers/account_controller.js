@@ -2,8 +2,10 @@ const { Active_Session_Log } = require("../models/active_session_log");
 const { Bank_User } = require("../models/bank_user");
 const { Op } = require('sequelize');
 const { Account } = require("../models/account");
-const { send_transfer_email } = require("./email_controller");
+const { send_deposit_email, send_withdrawal_email } = require("./email_controller");
 const { Card_Payment_Log } = require("../models/card_payment_log");
+const { Withdrawal } = require("../models/withdrawal");
+const { Deposit } = require('../models/deposit');
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -20,8 +22,11 @@ const transfer_on_app = (req, res) => {
                                 if(origin_account.balance < req.body.amount){
                                     origin_account.update({balance: origin_account.balance-req.body.amount});
                                     destination_account.update({balance: destination_account.balance+req.body.amount});
-                                    Transfer.create({amount: req.body.amount,origin_account: req.body.origin_account,destination_account: req.body.destination_account,date_time: sequelize.fn('NOW')}).then(transfer => {
-                                        send_transfer_email(transfer);
+                                    Withdrawal.create({amount: req.body.amount, origin_account: req.body.origin_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(withdrawal => {
+                                        send_withdrawal_email(withdrawal);
+                                    });
+                                    Deposit.create({amount: req.body.amount, destination_account: req.body.destination_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(deposit =>{
+                                        send_deposit_email(deposit);
                                     });
                                 }else{
                                     res.status(400).json({information_message: 'La cuenta origen no posee los fondos necesarios para realizar la transferencia.'})
