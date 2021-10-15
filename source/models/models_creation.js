@@ -26,6 +26,7 @@ const { Debit_Card } = require('./debit_card');
 const { Card } = require('./card');
 
 const bcrypt = require("bcrypt");
+const { sequelize } = require('../db/credentials');
 var BCRYPT_SALT_ROUNDS = 3;
 
 const syncronization = async (req, res) => {
@@ -53,7 +54,7 @@ const syncronization = async (req, res) => {
     await Deposit.sync({force: true});
     await Payment_Delay.sync({force: true});
     await Payment_Log.sync({force: true});
-    await Transfer.sync({force: true});
+    //await Transfer.sync({force: true});
     await Withdrawal.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
@@ -65,6 +66,11 @@ const syncronization = async (req, res) => {
     await Account_Type.bulkCreate([
         {description: "Cuenta de ahorro",interest_rate: 0.15},
         {description: "Cuenta monetaria",interest_rate: 0}
+    ]);
+    await Credit_Card_Type.bulkCreate([
+        {description: 'Platinum', credit_limit: 2000, interest_rate: 0.1},
+        {description: 'Gold', credit_limit: 5000, interest_rate: 0.2},
+        {description: 'Black', credit_limit: 12000, interest_rate: 0.3}
     ]);
     await Person.bulkCreate([
         {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
@@ -78,21 +84,69 @@ const syncronization = async (req, res) => {
         {cui: 1000000000004, id_account_type: 1, balance: 0},
         {cui: 1000000000005, id_account_type: 1, balance: 250},
         {cui: 1000000000006, id_account_type: 1, balance: 1000}
-    ])
-    bcrypt.hash("pass",BCRYPT_SALT_ROUNDS).then(async hashed_password => {
+    ]);
+    await bcrypt.hash("pass",BCRYPT_SALT_ROUNDS).then(async hashed_password => {
         await Bank_User.bulkCreate([
             {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001},
             {username: 'user2', password: hashed_password, user_type: 3, cui: 1000000000002},
             {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003},
-            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004}
+            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004},
+            {username: 'user5', password: hashed_password, user_type: 1, cui: 1000000000005},
+            {username: 'user6', password: hashed_password, user_type: 1, cui: 1000000000006},
         ]);
         await Email.bulkCreate([
             {username: 'user1', email: 'jcsru13@gmail.com'},
             {username: 'user2', email: 'jcsru13@gmail.com'},
             {username: 'user3', email: 'jcsru13@gmail.com'},
-            {username: 'user4', email: 'jcsru13@gmail.com'}
+            {username: 'user4', email: 'jcsru13@gmail.com'},
+            {username: 'user5', email: 'jcsru13@gmail.com'},
+            {username: 'user6', email: 'jcsru13@gmail.com'}
         ]);
     });
+    await Card.bulkCreate([
+        {pin: 1010, card_type: 'credit', expiration_date: '2025-12-12'},
+        {pin: 1010, card_type: 'credit', expiration_date: '2025-12-12'},
+        {pin: 1010, card_type: 'debit', expiration_date: '2025-12-12'},
+    ]);
+    await Credit_Card.bulkCreate([
+        {id_card: 1, owner_cui: 1000000000001, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, cutoff_date: 16, balance: 0},
+        {id_card: 2, owner_cui: 1000000000002, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, cutoff_date: 16, balance: 0}
+    ]);
+    await Debit_Card.bulkCreate([
+        {id_card: 3, id_account: 1}
+    ]);
+    await Deposit.bulkCreate([
+        {amount: 200, destination_account: 1, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 50, destination_account: 1, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 100, destination_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 200, destination_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 300, destination_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 500, destination_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 600, destination_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+    ]);
+    await Withdrawal.bulkCreate([
+        {amount: 200, origin_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 200, origin_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')},
+        {amount: 200, origin_account: 2, responsible_username: 'user2', date_time: sequelize.fn('NOW')}
+    ]);
+    await Card_Payment_Log.bulkCreate([
+        {id_card: 1, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de chocolate'},
+        {id_card: 1, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de vainilla'},
+        {id_card: 1, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de fresa'},
+        {id_card: 2, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de cafe'},
+        {id_card: 3, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de limon'},
+        {id_card: 3, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de ron con pasas'}
+    ]);
+    await Loan.create({owner_cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, interest_rate: 0.3, payment_date: 3});
+    await Payment_Log.bulkCreate([
+        {id_loan: 1, payment_date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
+        {id_loan: 1, payment_date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
+        {id_loan: 1, payment_date: '2021-06-02', amount: 500, balance: 3500, total_payment: 1500},
+        {id_loan: 1, payment_date: '2021-07-02', amount: 500, balance: 3000, total_payment: 2000},
+        {id_loan: 1, payment_date: '2021-08-02', amount: 500, balance: 2500, total_payment: 2500},
+        {id_loan: 1, payment_date: '2021-09-02', amount: 500, balance: 2000, total_payment: 3000},
+        {id_loan: 1, payment_date: '2021-10-02', amount: 500, balance: 1500, total_payment: 3500}
+    ]);
     res.send('Base de datos sincronizada');
 };
 

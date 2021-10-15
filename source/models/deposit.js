@@ -7,7 +7,7 @@ const { Account } = require('./account');
 
 var Deposit = sequelize.define(
     'deposit', {
-        id_withdrawal:{
+        id_deposit:{
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
@@ -25,7 +25,7 @@ var Deposit = sequelize.define(
                 key: 'id_account'
             }
         },
-        cashier_username:{
+        responsible_username:{
             type: DataTypes.TEXT,
             allowNull: false,
             references: {

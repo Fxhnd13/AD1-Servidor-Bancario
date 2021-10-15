@@ -3,6 +3,7 @@ const app = express(); //Inicializamos una 'variable'
 const swagger_ui = require('swagger-ui-express');
 const swagger_doc = require('../doc/swagger.json');
 const cors = require('cors');
+var cron = require('node-cron');
 
 app.use(express.json());//middleware -> Como se van a comunicar con este servidor, habilitamos json's
 app.use(express.urlencoded({extended: false})); //Indicamos que no se admitiran formularios complejos (imagenes, etc)
@@ -16,8 +17,15 @@ app.use(require('./routes/person_routes'));
 app.use(require('./routes/client_request_routes'));
 app.use(require('./routes/db_routes'));
 app.use(require('./routes/email_routes'));
+app.use(require('./routes/account_routes'));
+app.use(require('./routes/loan_routes'));
+app.use(require('./routes/card_routes'));
 
 app.listen(process.env.PORT || 3000); //Puerto en el que levantaremos el servidor
 console.log('*******************************'); //Se muestra en la terminal en la que montamos el servidor
 console.log('*****Servidor iniciado*********');
 console.log('*******************************');
+
+cron.schedule('0 0 0 * * *', () => {
+  console.log('running a task every day');
+});

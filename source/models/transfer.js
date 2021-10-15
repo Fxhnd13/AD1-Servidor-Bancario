@@ -8,7 +8,7 @@ const { Email } = require("./email");
 
 var Transfer = sequelize.define(
     'transfer', {
-        id_withdrawal:{
+        id_transfer:{
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
