@@ -49,8 +49,8 @@ const send_deposit_email = (deposit) => {
   });
 };
 
-const send_withdrawal_email = (Withdrawal) => {
-  Account.findOne({where: {id_account: Withdrawal.origin_account}, raw: true}).then(origin_account => {
+const send_withdrawal_email = (withdrawal) => {
+  Account.findOne({where: {id_account: withdrawal.origin_account}, raw: true}).then(origin_account => {
     Bank_User.findOne({where: {cui: origin_account.cui}, raw: true}).then(bank_user =>{
       Email.findOne({where: {username: bank_user.username}, raw: true}).then(email => {
         var mailOptions = {

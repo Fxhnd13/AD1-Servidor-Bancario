@@ -11,6 +11,10 @@ var Card = sequelize.define(
             allowNull: false,
             autoIncrement: true
         },
+        card_type:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         pin:{
             type: DataTypes.STRING,
             allowNull: false
