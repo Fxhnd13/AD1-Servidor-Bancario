@@ -1,4 +1,9 @@
 const { Bank_User } = require("../models/bank_user");
+const { Active_Session_Log } = require('../models/active_session_log');
+const { Credit_Card } = require('../models/credit_card');
+const { Debit_Card } = require('../models/debit_card');
+const { Account } = require('../models/account');
+const { Card_Payment_Log } = require('../models/card_payment_log');
 
 const card_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
