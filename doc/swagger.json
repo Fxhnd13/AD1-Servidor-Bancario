@@ -866,6 +866,26 @@
                 }
             }
         },
+        "/user/all":{
+            "get": {
+                
+            }
+        },
+        "/user/bank":{
+            "get": {
+
+            }
+        },
+        "/user/revoke_access":{
+            "put": {
+
+            }
+        },
+        "/user/email":{
+            "put": {
+
+            }
+        },
         "/card/statement":{
             "get":{
                 "tags":["Tarjeta"],

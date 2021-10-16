@@ -150,11 +150,24 @@ const revoke_access = (req, res) => {
     });
 };
 
+const update_email = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Email.findOne({where: {username: session.username}}).then(email => {
+                email.update({email: req.body.email});
+            });
+        }
+    });
+};
+
 module.exports = {
     create_user,
     update_user_password,
     password_recovery,
     revoke_access,
     get_all_users,
-    get_bank_users
+    get_bank_users,
+    update_email
 };
