@@ -10,11 +10,11 @@ const loan_statement = (req, res) => {
         }else{
             Loan.findOne({where : {id_loan: req.body.id_loan}, raw: true}).then(loan => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
-                    if((loan.owner_cui == bank_user.cui) || (bank_user.user_type > 2)){
+                    if((loan.cui == bank_user.cui) || (bank_user.user_type > 2)){
                         Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true}).then(payments =>{
                             res.status(200).json({
                                 id_loan: loan.id_loan,
-                                owner_cui: loan.owner_cui,
+                                cui: loan.cui,
                                 guarantor_cui: loan.guarantor_cui,
                                 amount: loan.amount,
                                 interest_rate: loan.interest_rate,
