@@ -96,8 +96,65 @@ const password_recovery = (req, res) => {
     });
 };
 
+const get_all_users = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findAll().then(users=>{
+                        res.status(200).json({users: users});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const get_bank_users = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
+                        res.status(200).json({users: users});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const revoke_access = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findOne({where: {username: req.body.username}}).then(bank_user_to_revoke_access=>{
+                        bank_user_to_revoke_access.update({access: false});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
 module.exports = {
     create_user,
     update_user_password,
-    password_recovery
+    password_recovery,
+    revoke_access,
+    get_all_users,
+    get_bank_users
 };
