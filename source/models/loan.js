@@ -12,7 +12,7 @@ var Loan = sequelize.define(
             allowNull: false,
             autoIncrement: true
         },
-        owner_cui:{
+        cui:{
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {

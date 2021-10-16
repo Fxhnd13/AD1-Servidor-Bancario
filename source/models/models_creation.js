@@ -109,8 +109,8 @@ const syncronization = async (req, res) => {
         {pin: 1010, card_type: 'debit', expiration_date: '2025-12-12'},
     ]);
     await Credit_Card.bulkCreate([
-        {id_card: 1, owner_cui: 1000000000001, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, cutoff_date: 16, balance: 0},
-        {id_card: 2, owner_cui: 1000000000002, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, cutoff_date: 16, balance: 0}
+        {id_card: 1, cui: 1000000000001, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, cutoff_date: 16, balance: 0},
+        {id_card: 2, cui: 1000000000002, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, cutoff_date: 16, balance: 0}
     ]);
     await Debit_Card.bulkCreate([
         {id_card: 3, id_account: 1}
@@ -137,15 +137,15 @@ const syncronization = async (req, res) => {
         {id_card: 3, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de limon'},
         {id_card: 3, amount: 10, date_time: sequelize.fn('NOW'), description: 'Helado Sarita de ron con pasas'}
     ]);
-    await Loan.create({owner_cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, interest_rate: 0.3, payment_date: 3});
+    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, interest_rate: 0.3, payment_date: 3});
     await Payment_Log.bulkCreate([
-        {id_loan: 1, payment_date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
-        {id_loan: 1, payment_date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
-        {id_loan: 1, payment_date: '2021-06-02', amount: 500, balance: 3500, total_payment: 1500},
-        {id_loan: 1, payment_date: '2021-07-02', amount: 500, balance: 3000, total_payment: 2000},
-        {id_loan: 1, payment_date: '2021-08-02', amount: 500, balance: 2500, total_payment: 2500},
-        {id_loan: 1, payment_date: '2021-09-02', amount: 500, balance: 2000, total_payment: 3000},
-        {id_loan: 1, payment_date: '2021-10-02', amount: 500, balance: 1500, total_payment: 3500}
+        {id_loan: 1, date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
+        {id_loan: 1, date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
+        {id_loan: 1, date: '2021-06-02', amount: 500, balance: 3500, total_payment: 1500},
+        {id_loan: 1, date: '2021-07-02', amount: 500, balance: 3000, total_payment: 2000},
+        {id_loan: 1, date: '2021-08-02', amount: 500, balance: 2500, total_payment: 2500},
+        {id_loan: 1, date: '2021-09-02', amount: 500, balance: 2000, total_payment: 3000},
+        {id_loan: 1, date: '2021-10-02', amount: 500, balance: 1500, total_payment: 3500}
     ]);
     res.send('Base de datos sincronizada');
 };
