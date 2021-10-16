@@ -29,7 +29,7 @@ const Person = sequelize.define(
             allowNull: true
         },
         gender: {
-            type: DataTypes.CHAR,
+            type: DataTypes.TEXT,
             allowNull: true
         },
         civil_status:{

@@ -27,11 +27,11 @@ const card_statement = (req, res) => {
 const credit_card_statement = (req, res, session) => {
     Credit_Card.findOne({where : {id_card: req.body.id_card}, raw: true}).then(credit_card => {
         Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
-            if((credit_card.owner_cui == bank_user.cui) || (bank_user.user_type > 2)){
+            if((credit_card.cui == bank_user.cui) || (bank_user.user_type > 2)){
                 Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments =>{
                     res.status(200).json({
                         id_card: credit_card.id_card,
-                        owner_cui: credit_card.owner_cui,
+                        cui: credit_card.cui,
                         credit_card_type: credit_card.credit_card_type,
                         credit_limit: credit_card.credit_limit,
                         interest_rate: credit_card.interest_rate,
@@ -55,7 +55,7 @@ const debit_card_statement = (req, res, session) => {
                     Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true}).then(payments =>{
                         res.status(200).json({
                             id_card: debit_card.id_card,
-                            owner_cui: account.cui,
+                            cui: account.cui,
                             id_account: debit_card.id_account,
                             payments: payments
                         });

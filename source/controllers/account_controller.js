@@ -106,7 +106,32 @@ const account_statement = async (req, res) => {
     });
 };
 
+const account_avaliable_for_debit_card = (req, res) =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session =>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                Account.findAll({where: {cui: bank_user.cui}, raw: true}).then(accounts=>{
+                    var accounts_avaliable_promises = [];
+                    accounts.forEach(account=>{
+                        accounts_avaliable_promises.push(Debit_Card.findOne({where: {id_account: account.id_account}, raw: true}));
+                    });
+                    Promise.all(accounts_avaliable_promises).then(avaliable_accounts =>{
+                        var result = []; var contador=0;
+                        avaliable_accounts.forEach(avaliable_account =>{
+                            if(avaliable_account == null) result.push({id_account: accounts[contador++].id_account});
+                        });
+                        res.status(200).json({accounts: result});
+                    });
+                });
+            });
+        }
+    });
+}; 
+
 module.exports = {
     transfer_on_app,
-    account_statement
+    account_statement,
+    account_avaliable_for_debit_card
 }

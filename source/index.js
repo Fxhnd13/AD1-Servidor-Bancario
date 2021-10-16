@@ -20,6 +20,7 @@ app.use(require('./routes/email_routes'));
 app.use(require('./routes/account_routes'));
 app.use(require('./routes/loan_routes'));
 app.use(require('./routes/card_routes'));
+app.use(require('./routes/service_routes'));
 
 app.listen(process.env.PORT || 3000); //Puerto en el que levantaremos el servidor
 console.log('*******************************'); //Se muestra en la terminal en la que montamos el servidor

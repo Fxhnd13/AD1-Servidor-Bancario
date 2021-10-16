@@ -17,7 +17,7 @@ var Credit_Card = sequelize.define(
                 key: 'id_card'
             }
         },
-        owner_cui:{
+        cui:{
             type: DataTypes.BIGINT,
             allowNull: false,
             references: {
