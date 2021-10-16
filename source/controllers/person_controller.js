@@ -57,7 +57,22 @@ const update_person = (req, res) => {
     });
 };
 
+const get_person_information = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session =>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                Person.findOne({where: {cui: bank_user.cui}, raw: true}).then(person=>{
+                    res.status(200).json(person);
+                })
+            })
+        }
+    })
+};
+
 module.exports = {
     create_person,
-    update_person
+    update_person,
+    get_person_information
 }

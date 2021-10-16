@@ -2,7 +2,7 @@ const { Router } = require('express'); //Que usaremos la funcion Router, del paq
 const router = Router(); //Creamos un router
 
 //Importamos las funciones de userConroller que usaremos
-const { active_services } = require('../models/service_controller');
+const { active_services } = require('../controllers/service_controller');
 
 router.get('/services/active', active_services);
 

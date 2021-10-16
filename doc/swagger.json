@@ -512,6 +512,33 @@
                 }
             }
         },
+        "/person/information":{
+            "get": {
+                "tags": ["Persona"],
+                "summary": "Obtiene toda la información de una persona",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                             "$ref": "#/definitions/person"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
         "/person": {
             "post":{
                 "tags": ["Persona"],
@@ -1157,6 +1184,42 @@
                 }
             }
         },
+        "/account/avaliable_for_debit_card":{
+            "get":{
+                "tags": ["Cuenta"],
+                "summary": "Obtener un listado con los identificadores/No. de cuenta que no poseen una tarjeta de credito.",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "Ok",
+                        "schema":{
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id_account":{
+                                        "type": "integer",
+                                        "description": "Identificador de la cuenta disponible."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
         "/account/transfer_on_app":{
             "post":{
                 "tags":["Cuenta"],
@@ -1302,7 +1365,42 @@
         "person":{
             "type": "object",
             "properties": {
-
+                "cui":{
+                    "type": "integer",
+                    "description": "Cui de la persona"
+                },
+                "name":{
+                    "type": "string",
+                    "description": "Nombre de la persona"
+                },
+                "surname":{
+                    "type": "string",
+                    "description": "Apellido de la persona"
+                },
+                "address":{
+                    "type": "string",
+                    "description": "Direccion de la persona"
+                },
+                "phone_number": {
+                    "type": "integer",
+                    "description": "Numero telefonico de la persona"
+                },
+                "birth_day":{
+                    "type": "date",
+                    "description": "Fecha de nacimiento de la persona"
+                },
+                "gender": {
+                    "type": "string",
+                    "description": "Genero de la persona"
+                },
+                "civil_status":{
+                    "type": "string",
+                    "description": "Estado civil de la persona"
+                },
+                "ocupation":{
+                    "type": "string",
+                    "description": "Ocupación de la persona"
+                }
             }
         },
         "request":{
