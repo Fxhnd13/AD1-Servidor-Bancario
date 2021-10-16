@@ -31,6 +31,10 @@ var Bank_User = sequelize.define(
                 model: Person,
                 key: 'cui'
             }
+        },
+        access: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
         }
     }, {
         timestamps: false,

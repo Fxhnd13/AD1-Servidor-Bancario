@@ -15,19 +15,23 @@ const login = async (req, res) => {
         if(user == null){
             res.status(403).json({information_message:"El usuario "+req.body.username+" no se encuentra registrado"});
         }else{
-            bcrypt.compare(req.body.password,user.password).then(areEqual =>{
-                if(areEqual){
-                    if(is_logged_in){
-                        const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
-                        Active_Session_Log.create({username: user.username, token: token});
-                        res.status(200).json({username: user.username,user_type: user.user_type, token: token});
+            if(user.access){
+                bcrypt.compare(req.body.password,user.password).then(areEqual =>{
+                    if(areEqual){
+                        if(is_logged_in){
+                            const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
+                            Active_Session_Log.create({username: user.username, token: token});
+                            res.status(200).json({username: user.username,user_type: user.user_type, token: token});
+                        }else{
+                            res.status(403).json({information_message:"Ya se encuentra una sesion activa para el usuario: "+req.body.username});
+                        }
                     }else{
-                        res.status(403).json({information_message:"Ya se encuentra una sesion activa para el usuario: "+req.body.username});
+                        res.status(403).json({information_message:"La contraseña proporcionada no es la correcta."});
                     }
-                }else{
-                    res.status(403).json({information_message:"La contraseña proporcionada no es la correcta."});
-                }
-            });
+                });
+            }else{
+                res.status(403).json({information_message: 'Esta cuenta ya no posee acceso al sistema bancario.'});
+            }
         }
     });
 };

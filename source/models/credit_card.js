@@ -45,8 +45,12 @@ var Credit_Card = sequelize.define(
             type: DataTypes.DECIMAL,
             allowNull: false
         },
+        payment:{
+            type: DataTypes.DECIMAL,
+            allowNull: false
+        },
         cutoff_date:{
-            type: DataTypes.INTEGER,
+            type: DataTypes.DATEONLY,
             allowNull: false
         },
         balance:{

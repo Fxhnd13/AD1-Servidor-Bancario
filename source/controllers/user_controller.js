@@ -23,7 +23,7 @@ const create_user = async(req, res) => {
                 if(req.body.user_type == 1){
                     Account.count({ where: { cui: req.body.cui }}).then(accounts => {
                         if(accounts > 0){
-                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
                             Email.create({ username: req.body.username, email: req.body.email });
                             res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                         }else{
@@ -37,7 +37,7 @@ const create_user = async(req, res) => {
                         }else{
                             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                             if(bank_user.user_type >=3 ){
-                                Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                                Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
                                 Email.create({ username: req.body.username, email: req.body.email });
                                 res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                             }

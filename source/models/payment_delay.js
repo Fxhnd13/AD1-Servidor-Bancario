@@ -2,7 +2,7 @@
 
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
-const { Person } = require('./person');
+const { Credit_Card } = require("./credit_card");
 
 var Payment_Delay = sequelize.define(
     'payment_delay', {
@@ -12,24 +12,24 @@ var Payment_Delay = sequelize.define(
             allowNull: false,
             autoIncrement: true
         },
-        cui:{
+        id_card:{
             type: DataTypes.BIGINT,
             allowNull: false,
             references:{
-                model: Person,
-                key: 'cui'
+                model: Credit_Card,
+                key: 'id_card'
             }
         },
         interest_rate:{
             type: DataTypes.DECIMAL,
             allowNull: false
         },
-        last_date_charged:{
-            type: DataTypes.DATEONLY,
-            allowNull: false
-        },
         total_debt:{
             type: DataTypes.DECIMAL,
+            allowNull: false
+        },
+        canceled:{
+            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     }, {
