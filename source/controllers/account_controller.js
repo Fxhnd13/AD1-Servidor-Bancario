@@ -24,10 +24,10 @@ const transfer_on_app = (req, res) => {
                                 if(parseFloat(origin_account.balance) >= parseFloat(req.body.amount)){
                                     origin_account.update({balance: parseFloat(origin_account.balance)-parseFloat(req.body.amount)});
                                     destination_account.update({balance: parseFloat(destination_account.balance)+parseFloat(req.body.amount)});
-                                    Withdrawal.create({amount: req.body.amount, origin_account: req.body.id_origin_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(withdrawal => {
+                                    Withdrawal.create({amount: req.body.amount, origin_account: req.body.id_origin_account, responsible_username: bank_user.username, date_time: new Date(Date.now())}).then(withdrawal => {
                                         send_withdrawal_email(withdrawal);
                                     });
-                                    Deposit.create({amount: req.body.amount, destination_account: req.body.id_destination_account, responsible_username: bank_user.username, date_time: sequelize.fn('NOW')}).then(deposit =>{
+                                    Deposit.create({amount: req.body.amount, destination_account: req.body.id_destination_account, responsible_username: bank_user.username, date_time: new Date(Date.now())}).then(deposit =>{
                                         send_deposit_email(deposit);
                                     });
                                     res.status(200).json({information_message: 'Se ha realizado la transferencia con exito'});

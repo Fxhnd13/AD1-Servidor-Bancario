@@ -23,7 +23,7 @@ const create_user = async(req, res) => {
                 if(req.body.user_type == 1){
                     Account.count({ where: { cui: req.body.cui }}).then(accounts => {
                         if(accounts > 0){
-                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
                             Email.create({ username: req.body.username, email: req.body.email });
                             res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                         }else{
@@ -37,7 +37,7 @@ const create_user = async(req, res) => {
                         }else{
                             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                             if(bank_user.user_type >=3 ){
-                                Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui });
+                                Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
                                 Email.create({ username: req.body.username, email: req.body.email });
                                 res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                             }
@@ -96,8 +96,78 @@ const password_recovery = (req, res) => {
     });
 };
 
+const get_all_users = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findAll().then(users=>{
+                        res.status(200).json({users: users});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const get_bank_users = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
+                        res.status(200).json({users: users});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const revoke_access = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type == 4){
+                    Bank_User.findOne({where: {username: req.body.username}}).then(bank_user_to_revoke_access=>{
+                        bank_user_to_revoke_access.update({access: false});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const update_email = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Email.findOne({where: {username: session.username}}).then(email => {
+                email.update({email: req.body.email});
+            });
+        }
+    });
+};
+
 module.exports = {
     create_user,
     update_user_password,
-    password_recovery
+    password_recovery,
+    revoke_access,
+    get_all_users,
+    get_bank_users,
+    update_email
 };

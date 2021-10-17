@@ -32,12 +32,24 @@ var Loan = sequelize.define(
             type: DataTypes.DECIMAL,
             allowNull: false
         },
+        balance:{
+            type: DataTypes.DECIMAL,
+            allowNull: false
+        },
+        monthly_payment:{
+            type: DataTypes.DECIMAL,
+            allowNull: false
+        },
         interest_rate:{
             type: DataTypes.DECIMAL,
             allowNull: false
         },
-        payment_date:{
-            type: DataTypes.INTEGER,
+        cutoff_date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false
+        },
+        state:{
+            type: DataTypes.TEXT,
             allowNull: false
         }
     }, {

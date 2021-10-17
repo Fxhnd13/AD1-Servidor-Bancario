@@ -5,6 +5,8 @@ const { Credit_Card } = require('../models/credit_card');
 const { Debit_Card } = require('../models/debit_card');
 const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
+const { sequelize } = require("../db/credentials");
+const { Payment_Delay } = require("../models/payment_delay");
 
 const card_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
@@ -29,15 +31,18 @@ const credit_card_statement = (req, res, session) => {
         Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
             if((credit_card.cui == bank_user.cui) || (bank_user.user_type > 2)){
                 Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments =>{
-                    res.status(200).json({
-                        id_card: credit_card.id_card,
-                        cui: credit_card.cui,
-                        credit_card_type: credit_card.credit_card_type,
-                        credit_limit: credit_card.credit_limit,
-                        interest_rate: credit_card.interest_rate,
-                        cutoff_date: credit_card.cutoff_date,
-                        balance: credit_card.balance,
-                        payments: payments
+                    Payment_Delay.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments_delayed =>{
+                        res.status(200).json({
+                            id_card: credit_card.id_card,
+                            cui: credit_card.cui,
+                            credit_card_type: credit_card.credit_card_type,
+                            credit_limit: credit_card.credit_limit,
+                            interest_rate: credit_card.interest_rate,
+                            cutoff_date: credit_card.cutoff_date,
+                            balance: credit_card.balance,
+                            payments: payments,
+                            payments_delayed: payments_delayed
+                        });
                     });
                 });
             }else{
@@ -68,6 +73,30 @@ const debit_card_statement = (req, res, session) => {
     });
 };
 
+const credit_card_verfication = ()=>{
+    const actual_date = new Date(Date.now());
+    Credit_Card.findAll({where: {cutoff_date: actual_date}}).then(credit_cards=>{
+        credit_cards.forEach(credit_card => {
+            actual_date.setMonth((actual_date.getMonth()==11)? 0 : actual_date.getMonth()+1);
+            credit_card.cutoff_date = actual_date;
+            if(parseFloat(credit_card.payment) >= (parseFloat(credit_card.balance)*parseFloat(credit_card.minimal_payment))){
+                credit_card.balance = parseFloat(credit_card.balance) - parseFloat(credit_card.payment);
+            }else{
+                Payment_Delay.create({
+                    cui: credit_card.cui,
+                    interest_rate: credit_card.interest_rate,
+                    total_debt: credit_card.balance,
+                    canceled: false
+                });
+                credit_card.balance = 0;
+            }
+            credit_card.payment = 0;
+            credit_card.save();
+        });
+    });
+};
+
 module.exports = {
-    card_statement
+    card_statement,
+    credit_card_verfication
 }
