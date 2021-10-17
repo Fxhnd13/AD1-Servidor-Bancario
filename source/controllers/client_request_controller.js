@@ -155,7 +155,7 @@ const create_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: req.body.request_type, date: sequelize.fn('NOW')}).then(new_request =>{
+                Request.create({ request_type: req.body.request_type, date: new Date(Date.now())}).then(new_request =>{
                     return json({
                         id_request: new_request.id_request,
                         cui: bank_user.cui
