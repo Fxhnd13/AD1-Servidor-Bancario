@@ -26,7 +26,7 @@ const send_email = async(mailOptions) =>{
 const send_password_recovery_email = (email, password) => {
   var mailOptions = {
     from: sender,
-    to: email,
+    to: email.email,
     subject: 'Recuperación de contraseña',
     text: 'Se ha solicitado una recuperacion de contraseña.\n La nueva contraseña es: '+password+'\n Si usted no ha solicitado esta recuperacion de contraseña dirijase a su centro bancario más cercano.'
   }
