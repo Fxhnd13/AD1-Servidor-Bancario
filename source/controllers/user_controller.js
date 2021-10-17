@@ -4,6 +4,7 @@ const { Bank_User } = require('../models/bank_user');
 const { Email } = require('../models/email');
 const { Op } = require('sequelize');
 const { generate_password } = require('./authentication_controller');
+const { send_password_recovery_email } = require('./email_controller');
 
 
 const bcrypt = require("bcrypt");
@@ -91,6 +92,7 @@ const password_recovery = (req, res) => {
             Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
                 bank_user.update({password: hashed_password});
                 send_password_recovery_email(email, hashed_password);
+                res.status(200).json({information_message: 'Se ha cambiado la contraseña con éxito, por favor, revise su correo electronico.'});
             });
         });
     });
