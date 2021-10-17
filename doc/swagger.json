@@ -943,7 +943,7 @@
         "/user/revoke_access":{
             "put": {
                 "tags":["Usuario"],
-                "summary": "Ver un listado de todos los usuarios existentes en el sistema bancario.",
+                "summary": "Denega el acceso de un usuario al sistema",
                 "parameters":[
                     {
                         "in": "header",
