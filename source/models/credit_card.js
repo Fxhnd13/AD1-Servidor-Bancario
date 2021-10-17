@@ -4,7 +4,6 @@ const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 const { Card } = require('./card');
 const { Credit_Card_Type } = require('./credit_card_type');
-const { Person } = require('./person');
 
 var Credit_Card = sequelize.define(
     'credit_card', {
@@ -15,14 +14,6 @@ var Credit_Card = sequelize.define(
             references: {
                 model: Card,
                 key: 'id_card'
-            }
-        },
-        cui:{
-            type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
             }
         },
         credit_card_type:{

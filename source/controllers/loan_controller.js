@@ -35,7 +35,7 @@ const loan_statement = (req, res) => {
 
 const loan_verification = ()=>{
     const actual_date = new Date(Date.now());
-    Loan.findAll({where: {cutoff_date: actual_date}}).then(loans=>{
+    Loan.findAll({where: {cutoff_date: actual_date, canceled: false}}).then(loans=>{
         loans.forEach(loan => {
             actual_date.setMonth((actual_date.getMonth()==11)? 0 : actual_date.getMonth()+1);
             loan.cutoff_date = actual_date;
@@ -67,7 +67,7 @@ const create_loan = (req, res)=>{
                         monthly_payment: req.body.monthly_payment,
                         interest_rate: req.body.interest_rate,
                         cutoff_date: req.body.cutoff_date,
-                        State: 'activo'
+                        canceled: false
                     }).then(()=>{
                         res.status(200).json({information_message: 'Se ha registrado el prestamo bancario con éxito.'});
                     });
