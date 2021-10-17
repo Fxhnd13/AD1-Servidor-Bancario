@@ -7,7 +7,6 @@ const { Card_Payment_Log } = require("../models/card_payment_log");
 const { Withdrawal } = require("../models/withdrawal");
 const { Deposit } = require('../models/deposit');
 const { Debit_Card } = require('../models/debit_card');
-const { sequelize } = require("../db/credentials");
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -130,8 +129,156 @@ const account_avaliable_for_debit_card = (req, res) =>{
     });
 }; 
 
+const create_account = (req, res)=>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type > 2){
+                    Account.create({
+                        cui: req.body.cui,
+                        id_account_type: req.body.id_account_type,
+                        balance: req.body.balance
+                    }).then(()=>{
+                        res.status(200).json({information_message: 'La cuenta se ha creado exitosamente'});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const get_all_accounts = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type > 2){
+                    Account.findAll().then(accounts=>{
+                        res.status(200).json({accounts: accounts});
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const get_account_by_id = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type > 2){
+                    Account.findOne({where: {id_account: req.body.id_account}}).then(account=>{
+                        res.status(200).json(account);
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });    
+};
+
+const update_account = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type > 2){
+                    res.status(500).json({information_message: 'Sin implementar aún.'});
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });  
+};
+
+const do_deposit = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type == 2){
+                    Account.findOne({where: {id_account: req.body.destination_account}}).then(account=>{
+                        if(account != null){
+                            Deposit.create({
+                                amount: req.body.amount,
+                                destination_account: req.body.destination_account,
+                                responsible_username: bank_user.username,
+                                date_time: new Date(Date.now())
+                            }).then(deposit=>{
+                                account.update({balance: (parseFloat(account.balance)+parseFloat(req.body.amount))}).then(()=>{
+                                    send_deposit_email(deposit);
+                                    res.status(200).json({information_message: 'Se ha realizado el deposito correctamente.'});
+                                });
+                            })
+                        }else{
+                            res.status(403).json({information_message: 'La cuenta a la que desea depositar no existe.'});
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });  
+};
+
+const do_withdrawal = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
+                if(bank_user.user_type == 2){
+                    Account.findOne({where: {id_account: req.body.destination_account}}).then(account=>{
+                        if(account != null){
+                            if(parseFloat(account.balance) >= parseFloat(req.body.amount)){
+                                Withdrawal.create({
+                                    amount: req.body.amount,
+                                    origin_account: req.body.origin_account,
+                                    responsible_username: bank_user.username,
+                                    date_time: new Date(Date.now())
+                                }).then(withdrawal=>{
+                                    account.update({balance: (parseFloat(account.balance)+parseFloat(req.body.amount))}).then(()=>{
+                                        send_withdrawal_email(withdrawal);
+                                        res.status(200).json({information_message: 'Se ha realizado el retiro correctamente.'});
+                                    });
+                                });
+                            }else{
+                                res.status(403).json({information_message: 'La cuenta no posee los fondos necesarios para realizar esta acción.'});
+                            }
+                        }else{
+                            res.status(403).json({information_message: 'La cuenta de la que desea retirar no existe.'});
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });  
+};
+
 module.exports = {
     transfer_on_app,
     account_statement,
-    account_avaliable_for_debit_card
+    account_avaliable_for_debit_card,
+    create_account,
+    update_account,
+    get_account_by_id,
+    get_all_accounts,
+    do_deposit,
+    do_withdrawal
 }

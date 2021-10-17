@@ -213,7 +213,7 @@
                 }
             }
         },
-        "/request/dedit_card":{
+        "/request/debit_card":{
             "post": {
                 "tags": ["Solicitud"],
                 "summary": "Crear una solicitud de tarjeta de debito",
@@ -868,22 +868,164 @@
         },
         "/user/all":{
             "get": {
-                
+                "tags":["Usuario"],
+                "summary": "Ver un listado de todos los usuarios existentes en el sistema bancario.",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "type": "object",
+                                "$ref":"#/definitions/bank_user"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No existe una tarjeta con el id seleccionado.\nNo tiene acceso a esta información.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/user/bank":{
             "get": {
-
+                "tags":["Usuario"],
+                "summary": "Ver un listado de todos los usuarios que trabajan en el sistema bancario.",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "type": "object",
+                                "$ref":"#/definitions/bank_user"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No existe una tarjeta con el id seleccionado.\nNo tiene acceso a esta información.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/user/revoke_access":{
             "put": {
-
+                "tags":["Usuario"],
+                "summary": "Ver un listado de todos los usuarios existentes en el sistema bancario.",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description": "Username del usuario al que se le denegará el acceso.",
+                        "schema":{
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "type": "object",
+                                "$ref":"#/definitions/bank_user"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No existe una tarjeta con el id seleccionado.\nNo tiene acceso a esta información.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/user/email":{
             "put": {
-
+                "tags":["Usuario"],
+                "summary": "Actualizar el correo electronico de un usuario.",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "email",
+                        "description": "Nuevo correo electronico a almacenar en el sistema para notificar al usuario.",
+                        "schema":{
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No existe una tarjeta con el id seleccionado.\nNo tiene acceso a esta información.",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/card/statement":{
@@ -917,7 +1059,7 @@
                                     "type": "integer",
                                     "description": "Identificador de la tarjeta"
                                 },
-                                "owner_cui":{
+                                "cui":{
                                     "type": "integer",
                                     "description": "Cui del propietario de la tarjeta"
                                 },
@@ -1029,7 +1171,7 @@
                                     "type": "integer",
                                     "description": "Identificador del prestamo bancario"
                                 },
-                                "owner_cui":{
+                                "cui":{
                                     "type": "integer",
                                     "description": "Cui del propietario del prestamo"
                                 },
@@ -1097,6 +1239,22 @@
                         }
                     }
                 }
+            }
+        },
+        "/loan":{
+            "post":{
+
+            },
+            "get":{
+
+            },
+            "put":{
+
+            }
+        },
+        "/loan/all":{
+            "get":{
+
             }
         },
         "/account/statement":{
@@ -1174,6 +1332,33 @@
                         }
                     }
                 }
+            }
+        },
+        "/account":{
+            "get":{
+
+            },
+            "put":{
+
+            }
+        },
+        "/account/create":{
+            "post":{
+            }
+        },
+        "/account/all":{
+            "get":{
+
+            }
+        },
+        "/account/deposit":{
+            "post":{
+
+            }
+        },
+        "/account/withdrawal":{
+            "post":{
+
             }
         },
         "/services/active":{

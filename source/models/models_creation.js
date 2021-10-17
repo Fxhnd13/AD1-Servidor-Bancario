@@ -137,7 +137,7 @@ const syncronization = async (req, res) => {
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de limon'},
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de ron con pasas'}
     ]);
-    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', state: 'active'});
+    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', state: 'activo'});
     await Payment_Log.bulkCreate([
         {id_loan: 1, date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
         {id_loan: 1, date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
