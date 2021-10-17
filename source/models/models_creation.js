@@ -104,13 +104,13 @@ const syncronization = async (req, res) => {
         ]);
     });
     await Card.bulkCreate([
-        {pin: 1010, card_type: 'credit', expiration_date: '2025-12-12'},
-        {pin: 1010, card_type: 'credit', expiration_date: '2025-12-12'},
-        {pin: 1010, card_type: 'debit', expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000001, card_type: 'credit', expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000002, card_type: 'credit', expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000004, card_type: 'debit', expiration_date: '2025-12-12'},
     ]);
     await Credit_Card.bulkCreate([
-        {id_card: 1, cui: 1000000000001, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
-        {id_card: 2, cui: 1000000000002, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
+        {id_card: 1, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
+        {id_card: 2, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
     ]);
     await Debit_Card.bulkCreate([
         {id_card: 3, id_account: 1}
@@ -137,7 +137,7 @@ const syncronization = async (req, res) => {
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de limon'},
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de ron con pasas'}
     ]);
-    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', state: 'activo'});
+    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', canceled: false});
     await Payment_Log.bulkCreate([
         {id_loan: 1, date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
         {id_loan: 1, date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},

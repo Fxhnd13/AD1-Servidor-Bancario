@@ -14,9 +14,9 @@ const card_statement = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
         }else{
             Card.findOne({where: {id_card: req.body.id_card}, raw: true}).then(card =>{
-                if(card.card_type == 'credit'){
+                if(card.card_type == 1){
                     credit_card_statement(req, res, session);
-                }else if(card.card_type == 'debit'){
+                }else if(card.card_type == 2){
                     debit_card_statement(req, res, session);
                 }else{
                     res.status(403).json({information_message: 'No existe el tipo de tarjeta solicitado.'});

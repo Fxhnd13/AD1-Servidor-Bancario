@@ -2,6 +2,7 @@
 
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
+const { Person } = require('./person');
 
 var Card = sequelize.define(
     'card', {
@@ -11,8 +12,16 @@ var Card = sequelize.define(
             allowNull: false,
             autoIncrement: true
         },
+        cui:{
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            references: {
+                model: Person,
+                key: 'cui'
+            }
+        },
         card_type:{
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         pin:{

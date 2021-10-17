@@ -432,8 +432,8 @@
                     },
                     {
                         "in": "body",
-                        "name": "type",
-                        "description": "Tipo de tarjeta (credito/debito)",
+                        "name": "card_type",
+                        "description": "Tipo de tarjeta (credito=1/debito=2)",
                         "required": true,
                         "schema": {
                             "type":"integer",
@@ -470,6 +470,13 @@
             "get": {
                 "tags": ["Solicitud"],
                 "summary": "Obtiene todas las solicitudes creadas",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200":{
                         "description": "ok",
@@ -493,6 +500,25 @@
             "get": {
                 "tags": ["Solicitud"],
                 "summary": "Obtiene todas las solicitudes creadas en un periodo de tiempo.",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "initial_date",
+                        "description":"Fecha inicial sobre la cual se tendrá la busqueda",
+                        "required": true,
+                        "type": "date"
+                    },{
+                        "in": "body",
+                        "name": "final_date",
+                        "description":"Fecha final sobre la cual se tendrá la busqueda",
+                        "required": true,
+                        "type": "date"
+                    }
+                ],
                 "responses": {
                     "200":{
                         "description": "ok",
@@ -964,11 +990,7 @@
                     "200":{
                         "description": "ok",
                         "schema":{
-                            "type":"array",
-                            "items":{
-                                "type": "object",
-                                "$ref":"#/definitions/bank_user"
-                            }
+                            "$ref": "#/definitions/information_message"
                         }
                     },
                     "401":{
@@ -1243,18 +1265,172 @@
         },
         "/loan":{
             "post":{
-
+                "tags":["Prestamo"],
+                "summary": "Crear un nuevo prestamo bancario",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "cui",
+                        "description":"Cui de la persona que solicitó el prestamo",
+                        "required": true,
+                        "type":"integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "guarantor_cui",
+                        "description":"Cui de la persona que es fiadora de la persona que solicito el prestamo",
+                        "required": true,
+                        "type":"integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description":"Cantidad que se prestó",
+                        "required": true,
+                        "type":"number"
+                    },
+                    {
+                        "in": "body",
+                        "name": "monthly_payment",
+                        "description":"Cantidad acordada a pagar mensualmente",
+                        "required": true,
+                        "type":"number"
+                    },
+                    {
+                        "in": "body",
+                        "name": "interest_rate",
+                        "description":"Interes del prestamo, así como el interes que se aplicará sobre cada pago por retraso",
+                        "required": true,
+                        "type":"number"
+                    },
+                    {
+                        "in": "body",
+                        "name": "cutoff_date",
+                        "description":"Fecha en la que se aplicará pago por mora",
+                        "required": true,
+                        "type":"date"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta acción",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
             },
             "get":{
-
+                "tags":["Prestamo"],
+                "summary": "Obtener un prestamo bancario por id",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_loan",
+                        "description":"Identificador/No. de prestamo bancario",
+                        "required": true,
+                        "type":"integer"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref":"#/definitions/loan"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee acceso a esta información",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             },
             "put":{
-
+                "tags":["Prestamo"],
+                "summary": "Editar un prestamo bancario",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    }
+                ],
+                "responses":{
+                    "500":{
+                        "description": "Error: Sin implementar",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                },
+                "deprecated": true
             }
         },
         "/loan/all":{
             "get":{
+                "tags":["Prestamo"],
+                "summary": "Obtener un listado de todos los prestamos registrados",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    }
 
+                ],
+                "responses":{
+                    "200":{
+                        "description": "Ok",
+                        "schema":{
+                            "type":"array",
+                            "items":{
+                                "$ref":"#/definitions/loan"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/account/statement":{
@@ -1336,29 +1512,229 @@
         },
         "/account":{
             "get":{
-
+                "tags":["Cuenta"],
+                "summary": "Obtiene al información de una cuenta bancaria por identificador",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_account",
+                        "description":"Identificador/No. de cuenta que se busca",
+                        "required": true,
+                        "type":"integer"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "Ok",
+                        "schema":{
+                            "$ref":"#/definitions/account"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{ 
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee acceso a esta información",
+                        "schema":{
+                             "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             },
             "put":{
-
+                "tags":["Cuenta"],
+                "summary": "Edita la información de una cuenta bancaria",
+                "parameters":[],
+                "responses":{},
+                "deprecated": true
             }
         },
         "/account/create":{
             "post":{
+                "tags":["Cuenta"],
+                "summary": "Crea una nueva cuenta bancaria",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "cui",
+                        "description":"Cui del que será propietario de la cuenta bancaria",
+                        "required": true,
+                        "type":"integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_account_type",
+                        "description":"Tipo de cuenta bancaria a crear (Ahorro=1/Monetaria=2)",
+                        "required": true,
+                        "type":"integer",
+                        "items": {
+                            "enum": [1,2]
+                        }
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/account/all":{
             "get":{
-
+                "tags":["Cuenta"],
+                "summary": "Obtiene un listado de todas las cuentas bancarias",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "array",
+                            "items":{
+                                "$ref":"#/definitions/account"
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/account/deposit":{
             "post":{
-
+                "tags":["Cuenta"],
+                "summary": "Realiza un deposito en una cuenta bancaria",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "destination_account",
+                        "description":"Identificador/No. de cuenta a la que se hara el deposito",
+                        "required": true,
+                        "type":"integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description":"Cantidad del deposito",
+                        "required": true,
+                        "type":"number"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/account/withdrawal":{
             "post":{
-
+                "tags":["Cuenta"],
+                "summary": "Realiza un retiro de una cuenta bancaria",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "origin_account",
+                        "description":"Identificador/No. de cuenta de la que se hara el retiro",
+                        "required": true,
+                        "type":"integer"
+                    },
+                    {
+                        "in": "body",
+                        "name": "amount",
+                        "description":"Cantidad del deposito",
+                        "required": true,
+                        "type":"number"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
             }
         },
         "/services/active":{
@@ -1498,73 +1874,436 @@
         "account_request":{
             "type": "object",
             "properties": {
-
+                "id_resquest":{
+                    "type": "integer",
+                    "description":"Identificador de la solicitud"
+                },
+                "cui":{
+                    "type": "integer",
+                    "description": "Cui del solicitante"
+                },
+                "account_type":{
+                    "type": "integer",
+                    "enum":[1,2],
+                    "description": "Tipo de cuenta bancaria solicitada"
+                }
             }
         },
         "account_type":{
             "type": "object",
             "properties": {
-
+                "id_account_type":{
+                    "type": "integer",
+                    "description":"Identificador del tipo de cuenta"
+                },
+                "description":{
+                    "type": "string",
+                    "description":"Nombre del tipo de cuenta"
+                },
+                "interest_rate":{
+                    "type": "number",
+                    "description": "Interes que genera el dinero en esta cuenta"
+                }
             }
         },
         "account":{
             "type": "object",
             "properties": {
-
+                "id_account":{
+                    "type":"integer",
+                    "description":"Identificador de la cuenta"
+                },
+                "cui":{
+                    "type": "integer",
+                    "description": "Cui del propietario"
+                },
+                "id_account_type":{
+                    "type": "integer",
+                    "description": "Referencia al tipo de cuenta"
+                },
+                "balance":{
+                    "type": "number",
+                    "description": "Saldo actual de la cuenta"
+                }
             }
         },
         "active_session_log":{
             "type": "object",
             "properties": {
-
-            }
-        },
-        "bank_user_status_log":{
-            "type": "object",
-            "properties": {
-
+                "token":{
+                    "type": "string",
+                    "description": "Token de autenticacion"
+                },
+                "username":{
+                    "type":"string",
+                    "description":"Referencia al usuario autenticado"
+                }
             }
         },
         "bank_user_type":{
             "type": "object",
             "properties": {
-
+                "id_bank_user_type":{
+                    "type": "integer",
+                    "description": "Identificador del tipo de usuario"
+                },
+                "description":{
+                    "type": "string",
+                    "description": "Nombre del tipo de usuario"
+                }
             }
         },
         "bank_user":{
             "type": "object",
             "properties": {
-
+                "username":{
+                    "type": "string",
+                    "description": "Nombre de usuario"
+                },
+                "password":{
+                    "type": "string",
+                    "description": "Contraseña del usuario"
+                },
+                "user_type":{
+                    "type": "integer",
+                    "description": "Referencia al tipo de usuario"
+                },
+                "cui":{
+                    "type": "integer",
+                    "description": "Cui de la persona a la que pertenece el usuario"
+                }
             }
         },
         "card_cancellation_request":{
             "type": "object",
             "properties": {
-
+                "id_resquest":{
+                    "type": "integer",
+                    "description": "Identificador de la solicitud"
+                },
+                "id_card":{
+                    "type":"integer",
+                    "description": "Identificador de la tarjeta"
+                },
+                "card_type":{
+                    "type": "integer",
+                    "enum":[1,2],
+                    "description":"Tipo de la tarjeta que se desea cancelar (Credito=1/Debito=2)"
+                },
+                "cause":{
+                    "type": "string",
+                    "description": "Motivo por el que se desea cancelar la tarjeta"
+                }
+            }
+        },
+        "card_payment_log":{
+            "type": "object",
+            "properties":{
+                "id_card_payment":{
+                    "type": "integer",
+                    "description":"Identificador del pago con tarjeta"
+                },
+                "id_card":{
+                    "type": "integer",
+                    "description": "Identificador de la tarjeta que realizo el pago"
+                },
+                "amount":{
+                    "type": "number",
+                    "description": "Cantidad de dinero que se pago"
+                },
+                "date_time":{
+                    "type": "datetime",
+                    "description": "Fecha y hora en la que se realizo el pago"
+                },
+                "description":{
+                    "type": "string",
+                    "description":"Pequeña descripcion de en qué se gasto el dienro"
+                }
+            }
+        },
+        "card":{
+            "type": "object",
+            "properties":{
+                "id_card":{
+                    "type": "integer",
+                    "description":"Identificador de la tarjeta"
+                },
+                "cui":{
+                    "type": "integer",
+                    "description": "Cui del propietario de la tarjeta"
+                },
+                "card_type":{
+                    "type": "integer",
+                    "enum":[1,2],
+                    "description": "Tipo de tarjeta (credito=1/debito=2)"
+                },
+                "expiration_date":{
+                    "type": "date",
+                    "description": "Fecha en la que la tarjeta deja de funcionar"
+                }
             }
         },
         "credit_card_request":{
             "type": "object",
             "properties": {
-
+                "id_resquest":{
+                    "type": "integer",
+                    "description": "Identificador de la solicitud"
+                },
+                "cui":{
+                    "type":"integer",
+                    "description":"Cui del propietario"
+                },
+                "monthly_income":{
+                    "type": "number",
+                    "description":"Ingresos mensuales de la persona que solicita la tarejta de credito"
+                },
+                "desire_amount":{
+                    "type": "number",
+                    "description":"Cantidad deseada que posea al tarjeta de credito"
+                }
+            }
+        },
+        "credit_card_type":{
+            "type":"object",
+            "properties":{
+                "id_credit_card_type":{
+                    "type":"integer",
+                    "description":"Identificador del tipo de tarjeta"
+                },
+                "description":{
+                    "type":"string",
+                    "description":"Nombre del tipo (platinum,gold,black)"
+                },
+                "credit_limit":{
+                    "type":"number",
+                    "description":"Limite de credito que tiene el tipo de tarjeta"
+                },
+                "interest_rate":{
+                    "type":"number",
+                    "description":"Interes que tendrá al tarjeta de credito"
+                }
+            }
+        },
+        "credit_card":{
+            "type": "object",
+            "properties":{
+                "id_card":{
+                    "type":"integer",
+                    "description":"Identificador de la tarjeta de credito"
+                },
+                "credit_card_type":{
+                    "type":"integer",
+                    "description":"Tipo de tarjeta de credito (platinum,gold,black)"
+                },
+                "credit_limit":{
+                    "type":"number",
+                    "description":"Credito máximo que pude cargarse en la tarjeta de credito"
+                },
+                "interest_rate":{
+                    "type":"number",
+                    "description":"Interes de la tarjeta de credito"
+                },
+                "minimal_payment":{
+                    "type":"number",
+                    "description":"Porcentaje del saldo gastado que se debe cubrir para que no se carge mora"
+                },
+                "payment":{
+                    "type":"number",
+                    "description":"Abonos que se han realizado al saldo de la tarjeta de credito"
+                },
+                "cutoff_date":{
+                    "type":"date",
+                    "description":"Fecha de corte"
+                },
+                "balance":{
+                    "type":"number",
+                    "description":"Saldo total gastado con la tarjeta de credito"
+                }
             }
         },
         "debit_card_request":{
             "type": "object",
             "properties": {
-
+                "id_resquest":{
+                    "type": "integer",
+                    "description": "Identificador de la solicitud"
+                },
+                "id_account":{
+                    "type":"integer",
+                    "description":"Identificador de la cuenta bancaria a la que estará ligada la tarjeta de debito"
+                }
+            }
+        },
+        "debit_card":{
+            "type": "object",
+            "properties":{
+                "id_card":{
+                    "type":"integer",
+                    "description":"Identificador de la tarjeta de debito"
+                },
+                "id_account":{
+                    "type":"integer",
+                    "description":"Identificador de la cuenta a la que se encuentra ligada"
+                }
+            }
+        },
+        "deposit":{
+            "type": "object",
+            "properties":{
+                "id_deposit":{
+                    "type":"integer",
+                    "description":"Identificador del deposito"
+                },
+                "amount":{
+                    "type":"number",
+                    "description":"Cantidad que fue depositada"
+                },
+                "destination_account":{
+                    "type":"integer",
+                    "description":"Identificador de la cuenta a la que se deposito"
+                },
+                "responsible_username":{
+                    "type":"string",
+                    "description":"Nombre de usuario del cajero que realizo la transaccion (puede ser de cliente si se realizó una transferencia por app)"
+                }
             }
         },
         "email":{
             "type": "object",
             "properties": {
-
+                "username":{
+                    "type":"string",
+                    "description":"Nombre de usuario al que estará ligado el correo electrónico"
+                },
+                "email":{
+                    "type":"string",
+                    "description":"Correo electronico"
+                }
             }
         },
         "loan_request":{
             "type": "object",
             "properties": {
-
+                "id_resquest":{
+                    "type": "integer",
+                    "description": "Identificador de la solicitud"
+                },
+                "cui":{
+                    "type":"integer",
+                    "description":"Cui de la persona que solicitó el prestamo"
+                },
+                "guarantor_cui":{
+                    "type":"integer",
+                    "description":"Cui del fiador de la persona que solicito el prestamo"
+                },
+                "amount":{
+                    "type":"number",
+                    "description":"Cantidad que solicita la persona que realizo la solicitud"
+                },
+                "monthly_income":{
+                    "type":"number",
+                    "description":"Ingresos mensuales de la persona que solicito el prestamo"
+                },
+                "cause":{
+                    "type":"string",
+                    "description":"Descripción de porqué se solicita el prestamo"
+                }
+            }
+        },
+        "loan":{
+            "type": "object",
+            "properties":{
+                "id_loan":{
+                    "type":"integer",
+                    "description":"Identificador del prestamo"
+                },
+                "cui":{
+                    "type":"integer",
+                    "description":"Cui de la persona propietaria del prestamo"
+                },
+                "guarantor_cui":{
+                    "type":"integer",
+                    "description":"Cui del fiador ligado al prestamo bancario"
+                },
+                "amount":{
+                    "type":"number",
+                    "description":"Cantidad final proporcionada a la persona que realizó el prestamo"
+                },
+                "balance":{
+                    "type":"number",
+                    "description":"Saldo del prestamo (al crear un prestamo sera la cantidad prestada + cantidad*interes)"
+                },
+                "monthly_payment":{
+                    "type":"number",
+                    "description":"Cantidad acordada que deberá pagar el propietario del prestamo mensualmente"
+                },
+                "interest_rate":{
+                    "type":"number",
+                    "description":"Interes aplicado a la cantidad prestada así como a los pagos mensuales si no se cancelan antes de la fecha establecida"
+                },
+                "cutoff_date":{
+                    "type":"date",
+                    "description":"Fecha de corte"
+                },
+                "state":{
+                    "type":"string",
+                    "description":"Si el prestamo se encuentra activo o si ya fue cancelado en su totalidad"
+                }
+            }
+        },
+        "payment_delay":{
+            "type": "object",
+            "properties":{
+                "id_payment_delay":{
+                    "type":"integer",
+                    "description":"Identificador del pago retrasado"
+                },
+                "id_card":{
+                    "type":"integer",
+                    "description":"Identificador de la tarjeta de credito que no se pago a tiempo"
+                },
+                "interest_rate":{
+                    "type":"number",
+                    "description":"Interes que se aplicará constantemente a el total de la deuda"
+                },
+                "total_debt":{
+                    "type":"number",
+                    "description":"Deuda total acumulada por no pagar"
+                },
+                "canceled":{
+                    "type":"boolean",
+                    "description":"Si fue cancelada la deuda"
+                }
+            }
+        },
+        "payment_log":{
+            "type": "object",
+            "properties":{
+                "id_payment":{
+                    "type":"integer",
+                    "description":"Identificador del pago (de prestamo) realizdo"
+                },
+                "id_loan":{
+                    "type":"integer",
+                    "description":"Identificador del prestamo al que fue realizado el pago"
+                },
+                "date":{
+                    "type":"date",
+                    "description":"Fecha en la que se realizó el pago"
+                },
+                "amount":{
+                    "type":"number",
+                    "description":"Cantidad que se pagó"
+                },
+                "balance":{
+                    "type":"number",
+                    "description":"Saldo actual del prestamo"
+                },
+                "total_payment":{
+                    "type":"number",
+                    "description":"Pago total realizado"
+                }
             }
         },
         "person":{
@@ -1611,13 +2350,72 @@
         "request":{
             "type": "object",
             "properties": {
-
+                "id_request":{
+                    "type":"integer",
+                    "description":"Identificador de la solicitud"
+                },
+                "request_type":{
+                    "type":"string",
+                    "description":"Tipo de la solicitud"
+                },
+                "date":{
+                    "type":"date",
+                    "description":"Fecha en la que se creo la solicitud"
+                }
             }
         },
         "update_data_request":{
             "type": "object",
-            "properties": {
-
+            "properties":{
+                "id_request":{
+                    "type":"integer",
+                    "description":"Identificador de la solicitud"
+                },
+                "cui":{
+                    "type":"integer",
+                    "description":"Cui de la persona que solicito actualizar datos"
+                },
+                "address":{
+                    "type":"string",
+                    "description":"Nueva direccion"
+                },
+                "phone_number":{
+                    "type":"integer",
+                    "description":"Nuevo numero telefonico"
+                },
+                "civil_status":{
+                    "type":"string",
+                    "description":"Nuevo estado civil"
+                },
+                "ocupation":{
+                    "type":"string",
+                    "description":"Nueva ocupacion"
+                }
+            }
+        },
+        "withdrawal":{
+            "type":"object",
+            "properties":{
+                "id_withdrawal":{
+                    "type":"integer",
+                    "description":"Identificador del retiro"
+                },
+                "amount":{
+                    "type":"number",
+                    "description":"Cantidad que se retiro"
+                },
+                "origin_account":{
+                    "type":"integer",
+                    "description":"Identificador de la cuenta de la que se retiro el dinero"
+                },
+                "responsible_username":{
+                    "type":"string",
+                    "description":"Username de la persona que es responsable de la operacion (cliente solo si se realizo una transferencia por app)"
+                },
+                "date_time":{
+                    "type":"datetime",
+                    "description":"Fecha y hora en la que se realizo el retiro"
+                }
             }
         }
     }
