@@ -91,7 +91,7 @@ const password_recovery = (req, res) => {
         bcrypt.hash(new_password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
             Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
                 bank_user.update({password: hashed_password});
-                send_password_recovery_email(email, hashed_password);
+                send_password_recovery_email(email, new_password);
                 res.status(200).json({information_message: 'Se ha cambiado la contraseña con éxito, por favor, revise su correo electronico.'});
             });
         });
