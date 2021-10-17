@@ -8,6 +8,7 @@ const { Loan_Request } = require("../models/loan_request");
 const { Request } = require("../models/request");
 const { Update_Data_Request } = require("../models/update_data_request");
 const { Op } = require('sequelize');
+const { Card } = require("../models/card");
 
 /**
  * @description Method that creates a update data request
@@ -56,16 +57,22 @@ const create_card_cancellation_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Cancelacion de tarjeta', date: new Date(Date.now())}).then(new_request =>{
-                    if(new_request != null){
-                        Card_Cancellation_Request.create({
-                            id_request: new_request.id_request,
-                            id_card: req.body.id_card,
-                            type: req.body.type,
-                            cause: req.body.cause
-                        }).then(()=> {
-                            res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});
+                Card.findOne({where: {id_card: req.body.id_card}, raw: true}).then(card=>{
+                    if(card.cui == bank_user.cui){
+                        Request.create({ request_type: 'Cancelacion de tarjeta', date: new Date(Date.now())}).then(new_request =>{
+                            if(new_request != null){
+                                Card_Cancellation_Request.create({
+                                    id_request: new_request.id_request,
+                                    id_card: req.body.id_card,
+                                    card_type: req.body.card_type,
+                                    cause: req.body.cause
+                                }).then(()=> {
+                                    res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});
+                                });
+                            }
                         });
+                    }else{
+                        res.status(403).json({information_message: 'No puede solicitar la cancelacion de una tarjeta que no le pertenece.'});
                     }
                 });
             });

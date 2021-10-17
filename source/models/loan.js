@@ -48,8 +48,8 @@ var Loan = sequelize.define(
             type: DataTypes.DATEONLY,
             allowNull: false
         },
-        state:{ //activo/cancelado
-            type: DataTypes.TEXT,
+        canceled:{ //activo/cancelado
+            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     }, {
