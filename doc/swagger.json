@@ -1753,7 +1753,24 @@
                     "200":{
                         "description": "ok",
                         "schema":{
-                            "type": "object"
+                            "type": "array",
+                            "items":{
+                                "type":"object",
+                                "properties":{
+                                    "id":{
+                                        "type":"integer",
+                                        "description":"Identificador/No. de (cuenta/prestamo/tarjeta/etc)"
+                                    },
+                                    "type":{
+                                        "type":"string",
+                                        "description":"Tipo del servicio (Cuenta/prestamo/tarjeta/etc)"
+                                    },
+                                    "balance":{
+                                        "type":"number",
+                                        "description":"Saldo del servicio"
+                                    }
+                                }
+                            }
                         }
                     },
                     "401":{
