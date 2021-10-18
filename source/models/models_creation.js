@@ -104,9 +104,9 @@ const syncronization = async (req, res) => {
         ]);
     });
     await Card.bulkCreate([
-        {pin: 1010, cui: 1000000000001, card_type: 'credit', expiration_date: '2025-12-12'},
-        {pin: 1010, cui: 1000000000002, card_type: 'credit', expiration_date: '2025-12-12'},
-        {pin: 1010, cui: 1000000000004, card_type: 'debit', expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000001, card_type: 1, expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000002, card_type: 1, expiration_date: '2025-12-12'},
+        {pin: 1010, cui: 1000000000004, card_type: 2, expiration_date: '2025-12-12'},
     ]);
     await Credit_Card.bulkCreate([
         {id_card: 1, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
