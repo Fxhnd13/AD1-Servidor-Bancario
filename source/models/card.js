@@ -31,6 +31,10 @@ var Card = sequelize.define(
         expiration_date:{
             type: DataTypes.DATEONLY,
             allowNull: false
+        },
+        active:{
+            type: DataTypes.BOOLEAN,
+            allowNull: false
         }
     }, {
         timestamps: false,
