@@ -8,19 +8,11 @@ const Loan_Request = sequelize.define(
         id_request: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         cui:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         amount:{
             type: DataTypes.DECIMAL,
@@ -36,11 +28,7 @@ const Loan_Request = sequelize.define(
         },
         guarantor_cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,

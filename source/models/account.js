@@ -13,19 +13,11 @@ var Account = sequelize.define(
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         id_account_type: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Account_Type,
-                key: 'id_account_type'
-            }
+            allowNull: false
         },
         balance:{
             type: DataTypes.DECIMAL,

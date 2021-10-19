@@ -18,19 +18,11 @@ var Bank_User = sequelize.define(
         },
         user_type: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Bank_User_Type,
-                key: 'id_bank_user_type'
-            }
+            allowNull: false
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         access: {
             type: DataTypes.BOOLEAN,

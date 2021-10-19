@@ -7,11 +7,7 @@ const Card_Cancellation_Request = sequelize.define(
         id_request: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         id_card: {
             type: DataTypes.BIGINT,

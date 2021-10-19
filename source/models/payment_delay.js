@@ -14,11 +14,7 @@ var Payment_Delay = sequelize.define(
         },
         id_card:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references:{
-                model: Credit_Card,
-                key: 'id_card'
-            }
+            allowNull: false
         },
         interest_rate:{
             type: DataTypes.DECIMAL,

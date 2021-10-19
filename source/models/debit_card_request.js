@@ -8,19 +8,11 @@ const Debit_Card_Request = sequelize.define(
         id_request:{
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         id_account:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Account,
-                key: 'id_account'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,

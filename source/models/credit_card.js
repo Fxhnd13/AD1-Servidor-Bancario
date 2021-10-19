@@ -10,19 +10,11 @@ var Credit_Card = sequelize.define(
         id_card:{
             type: DataTypes.BIGINT,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Card,
-                key: 'id_card'
-            }
+            allowNull: false
         },
-        credit_card_type:{
+        id_credit_card_type:{
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Credit_Card_Type,
-                key: 'id_credit_card_type'
-            }
+            allowNull: false
         },
         credit_limit:{
             type: DataTypes.DECIMAL,

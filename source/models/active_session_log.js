@@ -11,11 +11,7 @@ const Active_Session_Log = sequelize.define(
         },
         username: {
             type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,

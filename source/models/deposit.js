@@ -19,19 +19,11 @@ var Deposit = sequelize.define(
         },
         destination_account:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Account,
-                key: 'id_account'
-            }
+            allowNull: false
         },
         responsible_username:{
             type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         },
         date_time:{
             type: DataTypes.DATE,

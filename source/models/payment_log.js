@@ -14,11 +14,7 @@ var Payment_Log = sequelize.define(
         },
         id_loan:{
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Loan,
-                key: 'id_loan'
-            }
+            allowNull: false
         },
         date:{
             type: DataTypes.DATEONLY,

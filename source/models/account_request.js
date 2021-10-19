@@ -8,23 +8,15 @@ const Account_Request = sequelize.define(
         id_request:{
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         cui:{
             type: DataTypes.BIGINT,
             allowNull: false
         },
-        account_type: {
+        id_account_type: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Account_Type,
-                key: 'id_account_type'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,

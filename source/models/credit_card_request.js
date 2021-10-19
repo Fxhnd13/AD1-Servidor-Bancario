@@ -8,19 +8,11 @@ const Credit_Card_Request = sequelize.define(
         id_request: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         monthly_income: {
             type: DataTypes.DECIMAL,

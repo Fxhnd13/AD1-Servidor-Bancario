@@ -14,11 +14,7 @@ var Card_Payment_Log = sequelize.define(
         },
         id_card:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Card,
-                key: 'id_card'
-            }
+            allowNull: false
         },
         amount:{
             type: DataTypes.DECIMAL,

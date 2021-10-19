@@ -14,11 +14,7 @@ var Card = sequelize.define(
         },
         cui:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         card_type:{
             type: DataTypes.INTEGER,

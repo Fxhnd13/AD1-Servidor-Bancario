@@ -7,11 +7,7 @@ const Email = sequelize.define(
         username: {
             type: DataTypes.STRING,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         },
         email: {
             type: DataTypes.TEXT,
