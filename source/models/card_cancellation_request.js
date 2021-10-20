@@ -13,10 +13,6 @@ const Card_Cancellation_Request = sequelize.define(
             type: DataTypes.BIGINT,
             allowNull: false
         },
-        card_type: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         cause: {
             type: DataTypes.TEXT,
             allowNull: false

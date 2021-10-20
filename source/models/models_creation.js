@@ -153,6 +153,63 @@ const syncronization = async (req, res) => {
     res.send('Base de datos sincronizada');
 };
 
+const view_all = async (req, res) => {
+    var promises = [];
+    promises.push(Card_Cancellation_Request.findAll({raw: true}));
+    promises.push(Account_Request.findAll({raw: true}));
+    promises.push(Credit_Card_Request.findAll({raw: true}));
+    promises.push(Debit_Card_Request.findAll({raw: true}));
+    promises.push(Update_Data_Request.findAll({raw: true}));
+    promises.push(Loan_Request.findAll({raw: true}));
+    promises.push(Account_Type.findAll({raw: true}));
+    promises.push(Account.findAll({raw: true}));
+    promises.push(Active_Session_Log.findAll({raw: true}));
+    promises.push(Bank_User_Type.findAll({raw: true}));
+    promises.push(Bank_User.findAll({raw: true}));
+    promises.push(Card_Payment_Log.findAll({raw: true}));
+    promises.push(Card.findAll({raw: true}));
+    promises.push(Credit_Card_Type.findAll({raw: true}));
+    promises.push(Credit_Card.findAll({raw: true}));
+    promises.push(Debit_Card.findAll({raw: true}));
+    promises.push(Deposit.findAll({raw: true}));
+    promises.push(Email.findAll({raw: true}));
+    promises.push(Loan.findAll({raw: true}));
+    promises.push(Person.findAll({raw: true}));
+    promises.push(Request.findAll({raw: true}));
+    promises.push(Withdrawal.findAll({raw: true}));
+    promises.push(Payment_Log.findAll({raw: true}));
+    promises.push(Payment_Delay.findAll({raw: true}));
+    Promise.all(promises).then(result => {
+        res.status(200).json({
+            card_cancellation_request: result[0],
+            account_request: result[1],
+            credit_card_request: result[2],
+            debit_card_request: result[3],
+            update_data_request: result[4],
+            loan_request: result[5],
+            account_type: result[6],
+            account: result[7],
+            active_session_log: result[8],
+            bank_user_type: result[9],
+            bank_user: result[10],
+            card_payment_log: result[11],
+            card: result[12],
+            credit_card_type: result[13],
+            credit_card: result[14],
+            debit_card: result[15],
+            deposit: result[16],
+            email: result[17],
+            loan: result[18],
+            person: result[19],
+            request: result[20],
+            withdrawal: result[21],
+            payment_log: result[22],
+            payment_delay: result[23]
+        });
+    });
+};
+
 module.exports = {
-    syncronization
+    syncronization,
+    view_all
 }
