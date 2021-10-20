@@ -1749,6 +1749,131 @@
                 }
             }
         },
+        "/account/get_all_transactions_by_an_user":{
+            "get":{
+                "tags":["Cuenta"],
+                "summary": "Obtiene un listado de todas las transacciones realizadas por un operador bancario",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "username",
+                        "description":"Username del usuario que buscamos para verificar sus transacciones",
+                        "required": true,
+                        "type":"string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "array",
+                            "items": {
+                                "type":"object",
+                                "properties": {
+                                    "no":{
+                                        "type": "integer",
+                                        "description": "Numero de movimiento (es relativo a la consulta)"
+                                    },
+                                    "amount":{
+                                        "type": "number",
+                                        "description": "Cantidad relacionada al movimiento"
+                                    },
+                                    "responsible_username":{
+                                        "type": "string",
+                                        "description": "Username del usuario que realizó la transferencia"
+                                    },
+                                    "id_account":{
+                                        "type": "integer",
+                                        "description": "Identificador de la cuenta a la que se encuentra ligado el movimiento"
+                                    },
+                                    "movement_type":{
+                                        "type": "string",
+                                        "description": "Define si el movimiento realizado fue un retiro o un deposito"
+                                    },
+                                    "date_time":{
+                                        "type": "date",
+                                        "description": "Fecha y hora a la que se realizó la operación."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta accion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/account/get_all_transactions":{
+            "get":{
+                "tags":["Cuenta"],
+                "summary": "Obtiene un listado de todas las transacciones ligadas a las cuentas del solicitante",
+                "parameters":[
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type":"string"
+                    }
+                ],
+                "responses":{
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "array",
+                            "items": {
+                                "type":"object",
+                                "properties": {
+                                    "no":{
+                                        "type": "integer",
+                                        "description": "Numero de movimiento (es relativo a la consulta)"
+                                    },
+                                    "amount":{
+                                        "type": "number",
+                                        "description": "Cantidad relacionada al movimiento"
+                                    },
+                                    "responsible_username":{
+                                        "type": "string",
+                                        "description": "Username del usuario que realizó la transferencia"
+                                    },
+                                    "id_account":{
+                                        "type": "integer",
+                                        "description": "Identificador de la cuenta a la que se encuentra ligado el movimiento"
+                                    },
+                                    "movement_type":{
+                                        "type": "string",
+                                        "description": "Define si el movimiento realizado fue un retiro o un deposito"
+                                    },
+                                    "date_time":{
+                                        "type": "date",
+                                        "description": "Fecha y hora a la que se realizó la operación."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref":"#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
         "/services/active":{
             "get":{
                 "tags":["Servicio"],

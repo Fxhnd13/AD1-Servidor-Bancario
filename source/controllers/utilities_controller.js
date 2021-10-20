@@ -5,5 +5,5 @@ module.exports.log = function is_six_months_later(date){
 };
 
 module.exports.log = function get_credit_report(cui){
-
+    
 };
