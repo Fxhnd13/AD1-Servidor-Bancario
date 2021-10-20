@@ -14,11 +14,7 @@ var Payment_Delay = sequelize.define(
         },
         id_card:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references:{
-                model: Credit_Card,
-                key: 'id_card'
-            }
+            allowNull: false
         },
         interest_rate:{
             type: DataTypes.DECIMAL,
@@ -37,6 +33,10 @@ var Payment_Delay = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+
+//----------------------------------------------------------------------------
+Credit_Card.hasMany(Payment_Delay,{foreignKey: 'id_card'});
+Payment_Delay.belongsTo(Credit_Card,{foreignKey: 'id_card'});
 
 module.exports = {
     Payment_Delay

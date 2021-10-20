@@ -198,7 +198,7 @@ const create_account_request = (req, res) => {
                         Account_Request.create({
                             id_request: new_request.id_request,
                             cui: bank_user.cui,
-                            account_type: req.body.account_type
+                            id_account_type: req.body.account_type
                         }).then(()=> {
                             res.status(200).json({information_message:'Se ha creado una solicitud de creacion de cuenta.'});
                         });

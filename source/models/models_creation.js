@@ -30,6 +30,7 @@ const { sequelize } = require('../db/credentials');
 var BCRYPT_SALT_ROUNDS = 3;
 
 const syncronization = async (req, res) => {
+    //----------------------------------------------------------------------------
     await Bank_User_Type.sync({force: true});
     await Account_Type.sync({force: true});
     await Credit_Card_Type.sync({force: true});
@@ -37,7 +38,6 @@ const syncronization = async (req, res) => {
     await Bank_User.sync({force: true});
     await Active_Session_Log.sync({force: true});
     await Account.sync({force: true});
-    await Bank_User_Status_Log.sync({force: true});
     await Email.sync({force: true});
     await Request.sync({force: true});
     await Credit_Card_Request.sync({force: true});
@@ -54,7 +54,6 @@ const syncronization = async (req, res) => {
     await Deposit.sync({force: true});
     await Payment_Delay.sync({force: true});
     await Payment_Log.sync({force: true});
-    //await Transfer.sync({force: true});
     await Withdrawal.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
@@ -109,8 +108,8 @@ const syncronization = async (req, res) => {
         {pin: 1010, cui: 1000000000004, card_type: 2, expiration_date: '2025-12-12', active: true},
     ]);
     await Credit_Card.bulkCreate([
-        {id_card: 1, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
-        {id_card: 2, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
+        {id_card: 1, id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
+        {id_card: 2, id_credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
     ]);
     await Debit_Card.bulkCreate([
         {id_card: 3, id_account: 1}

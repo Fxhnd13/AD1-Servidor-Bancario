@@ -8,25 +8,23 @@ const Debit_Card_Request = sequelize.define(
         id_request:{
             type: DataTypes.INTEGER,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Request,
-                key: 'id_request'
-            }
+            allowNull: false
         },
         id_account:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Account,
-                key: 'id_account'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,
         freezeTableName: true
     }
 );
+
+//----------------------------------------------------------------------------
+Request.hasOne(Debit_Card_Request,{foreignKey: 'id_request'});
+Debit_Card_Request.belongsTo(Request,{foreignKey: 'id_request'});
+Account.hasMany(Debit_Card_Request,{foreignKey: 'id_account'});
+Debit_Card_Request.belongsTo(Account,{foreignKey: 'id_account'});
 
 module.exports = {
     Debit_Card_Request

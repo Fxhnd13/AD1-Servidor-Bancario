@@ -18,19 +18,11 @@ var Bank_User = sequelize.define(
         },
         user_type: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Bank_User_Type,
-                key: 'id_bank_user_type'
-            }
+            allowNull: false
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         access: {
             type: DataTypes.BOOLEAN,
@@ -41,6 +33,12 @@ var Bank_User = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+
+//----------------------------------------------------------------------------
+Bank_User_Type.hasMany(Bank_User,{foreignKey: 'user_type'});
+Bank_User.belongsTo(Bank_User_Type,{foreignKey: 'user_type'});
+Person.hasMany(Bank_User,{foreignKey: 'cui'});
+Bank_User.belongsTo(Person,{foreignKey: 'cui'});
 
 module.exports = {
     Bank_User

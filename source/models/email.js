@@ -7,11 +7,7 @@ const Email = sequelize.define(
         username: {
             type: DataTypes.STRING,
             primaryKey: true,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         },
         email: {
             type: DataTypes.TEXT,
@@ -22,6 +18,9 @@ const Email = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Bank_User.hasOne(Email,{foreignKey: 'username'});
+Email.belongsTo(Bank_User,{foreignKey: 'username'});
 
 module.exports = {
     Email
