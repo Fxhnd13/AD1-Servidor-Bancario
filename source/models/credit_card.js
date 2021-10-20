@@ -47,6 +47,12 @@ var Credit_Card = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Card.hasOne(Credit_Card,{foreignKey: 'id_card'});
+Credit_Card.belongsTo(Card,{foreignKey: 'id_card'});
+Credit_Card_Type.hasMany(Credit_Card,{foreignKey: 'id_credit_card_type'});
+Credit_Card.belongsTo(Credit_Card_Type,{foreignKey: 'id_credit_card_type'});
+
 module.exports = {
     Credit_Card
 }

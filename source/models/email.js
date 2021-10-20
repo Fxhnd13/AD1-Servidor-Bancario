@@ -18,6 +18,9 @@ const Email = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Bank_User.hasOne(Email,{foreignKey: 'username'});
+Email.belongsTo(Bank_User,{foreignKey: 'username'});
 
 module.exports = {
     Email

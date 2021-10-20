@@ -31,6 +31,12 @@ var Account = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Person.hasMany(Account,{foreignKey: 'cui'});
+Account_Type.hasMany(Account,{foreignKey: 'id_account_type'});
+Account.belongsTo(Person,{foreignKey: 'cui'});
+Account.belongsTo(Account_Type,{foreignKey: 'id_account_type'});
+
 module.exports = {
     Account
 }

@@ -20,6 +20,12 @@ const Debit_Card_Request = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Request.hasOne(Debit_Card_Request,{foreignKey: 'id_request'});
+Debit_Card_Request.belongsTo(Request,{foreignKey: 'id_request'});
+Account.hasMany(Debit_Card_Request,{foreignKey: 'id_account'});
+Debit_Card_Request.belongsTo(Account,{foreignKey: 'id_account'});
+
 module.exports = {
     Debit_Card_Request
 }

@@ -19,6 +19,10 @@ const Active_Session_Log = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Bank_User.hasOne(Active_Session_Log,{foreignKey: 'username'});
+Active_Session_Log.belongsTo(Bank_User,{foreignKey: 'username'});
+
 module.exports = {
     Active_Session_Log
 }

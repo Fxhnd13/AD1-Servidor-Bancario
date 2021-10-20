@@ -34,6 +34,12 @@ var Bank_User = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Bank_User_Type.hasMany(Bank_User,{foreignKey: 'user_type'});
+Bank_User.belongsTo(Bank_User_Type,{foreignKey: 'user_type'});
+Person.hasMany(Bank_User,{foreignKey: 'cui'});
+Bank_User.belongsTo(Person,{foreignKey: 'cui'});
+
 module.exports = {
     Bank_User
 }

@@ -34,6 +34,11 @@ var Withdrawal = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Account.hasMany(Withdrawal,{foreignKey: 'origin_account'});
+Withdrawal.belongsTo(Account,{foreignKey: 'origin_account'});
+Bank_User.hasMany(Withdrawal,{foreignKey: 'responsible_username'});
+Withdrawal.belongsTo(Bank_User,{foreignKey: 'responsible_username'});
 
 module.exports = {
     Withdrawal

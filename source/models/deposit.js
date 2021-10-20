@@ -34,6 +34,11 @@ var Deposit = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Account.hasMany(Deposit,{foreignKey: 'destination_account'});
+Deposit.belongsTo(Account,{foreignKey: 'destination_account'});
+Bank_User.hasMany(Deposit,{foreignKey: 'responsible_username'});
+Deposit.belongsTo(Bank_User,{foreignKey: 'responsible_username'});
 
 module.exports = {
     Deposit

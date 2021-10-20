@@ -33,6 +33,9 @@ var Card_Payment_Log = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Card.hasMany(Card_Payment_Log,{foreignKey: 'id_card'});
+Card_Payment_Log.belongsTo(Card,{foreignKey: 'id_card'});
 
 module.exports = {
     Card_Payment_Log

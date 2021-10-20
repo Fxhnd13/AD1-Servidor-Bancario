@@ -39,6 +39,10 @@ var Card = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Person.hasMany(Card,{foreignKey: 'cui'});
+Card.belongsTo(Person,{foreignKey: 'cui'});
+
 module.exports = {
     Card
 }

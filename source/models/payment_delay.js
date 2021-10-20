@@ -34,6 +34,10 @@ var Payment_Delay = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Credit_Card.hasMany(Payment_Delay,{foreignKey: 'id_card'});
+Payment_Delay.belongsTo(Credit_Card,{foreignKey: 'id_card'});
+
 module.exports = {
     Payment_Delay
 }

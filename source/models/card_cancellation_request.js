@@ -26,6 +26,9 @@ const Card_Cancellation_Request = sequelize.define(
         freezeTableName: true
     }
 );
+//----------------------------------------------------------------------------
+Request.hasOne(Card_Cancellation_Request,{foreignKey: 'id_request'});
+Card_Cancellation_Request.belongsTo(Request,{foreignKey: 'id_request'});
 
 module.exports = {
     Card_Cancellation_Request

@@ -35,6 +35,11 @@ const Update_Data_Request = sequelize.define(
         freezeTableName: true
     }
 );
+//----------------------------------------------------------------------------
+Request.hasOne(Update_Data_Request,{foreignKey: 'id_request'});
+Update_Data_Request.belongsTo(Request,{foreignKey: 'id_request'});
+Person.hasMany(Update_Data_Request,{foreignKey: 'cui'});
+Update_Data_Request.belongsTo(Person,{foreignKey: 'cui'});
 
 module.exports = {
     Update_Data_Request

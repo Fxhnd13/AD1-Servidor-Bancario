@@ -22,6 +22,12 @@ var Debit_Card = sequelize.define(
     }
 );
 
+//----------------------------------------------------------------------------
+Card.hasOne(Debit_Card,{foreignKey: 'id_card'});
+Debit_Card.belongsTo(Card,{foreignKey: 'id_card'});
+Account.hasMany(Debit_Card,{foreignKey: 'id_account'});
+Debit_Card.belongsTo(Account,{foreignKey: 'id_account'});
+
 module.exports = {
     Debit_Card
 }
