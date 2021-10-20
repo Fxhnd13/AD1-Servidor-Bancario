@@ -65,8 +65,30 @@ const send_withdrawal_email = (withdrawal) => {
   });
 };
 
+const send_password_update_reminder_email = (email) => {
+  var mailOptions = {
+    from: sender,
+    to: email.email,
+    subject: 'Recordatorio de actualización',
+    text: 'Este es un correo automático para notificarle que han pasado 6 o más desde la última vez que cambio su contraseña, por su seguridad le recomendamos actualizarla.'
+  }
+  send_email(mailOptions);
+};
+
+const send_update_data_reminder_email = (email) => {
+  var mailOptions = {
+    from: sender,
+    to: email.email,
+    subject: 'Recordatorio de actualización',
+    text: 'Este es un correo automático para notificarle que han pasado 6 o más desde la última vez que actualizo sus datos personales, le recomendamos llenar un formulario de actualización de datos.'
+  }
+  send_email(mailOptions);
+};
+
 module.exports = {
     send_password_recovery_email,
     send_deposit_email,
-    send_withdrawal_email
+    send_withdrawal_email,
+    send_password_update_reminder_email,
+    send_update_data_reminder_email,
 }

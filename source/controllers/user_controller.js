@@ -6,8 +6,8 @@ const { Op } = require('sequelize');
 const { generate_password } = require('./authentication_controller');
 const { send_password_recovery_email } = require('./email_controller');
 
-
 const bcrypt = require("bcrypt");
+const { is_six_months_later } = require('./utilities_controller');
 var BCRYPT_SALT_ROUNDS = 3;
 
 /**
@@ -24,7 +24,7 @@ const create_user = async(req, res) => {
                 if(req.body.user_type == 1){
                     Account.count({ where: { cui: req.body.cui }}).then(accounts => {
                         if(accounts > 0){
-                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
+                            Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true, last_update_date: new Date(Date.now())});
                             Email.create({ username: req.body.username, email: req.body.email });
                             res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
                         }else{
@@ -60,7 +60,6 @@ const create_user = async(req, res) => {
  * @param req.body.new_password New password to save in the database
  */
 const update_user_password = async (req, res) => {
-    //Active_Session_Log.findOne({ where: { token: req.body.token } }).then(session => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token que posee ha expirado, inicie sesion nuevamente."});
@@ -72,7 +71,7 @@ const update_user_password = async (req, res) => {
                             res.status(403).json({information_message:"La nueva contraseña es igual a la anterior, no se realizaron modificacioens."});
                         }else{
                             bcrypt.hash(req.body.new_password, BCRYPT_SALT_ROUNDS).then(hashed_password => {
-                                user.update({ password: hashed_password });
+                                user.update({ password: hashed_password, last_update_date: new Date(Date.now()) });
                                 res.status(200).json({information_message:"Se ha actualizado la contraseña correctamente."});
                             });
                         }
@@ -90,7 +89,7 @@ const password_recovery = (req, res) => {
         const new_password = generate_password(8);
         bcrypt.hash(new_password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
             Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
-                bank_user.update({password: hashed_password});
+                bank_user.update({password: hashed_password, last_update_date: new Date(Date.now())});
                 send_password_recovery_email(email, new_password);
                 res.status(200).json({information_message: 'Se ha cambiado la contraseña con éxito, por favor, revise su correo electronico.'});
             });
@@ -164,6 +163,18 @@ const update_email = (req, res) => {
     });
 };
 
+const update_password_reminder_verification = ()=>{
+    Bank_User.findAll().then(users=>{
+        users.forEach(user=>{
+            if(is_six_months_later(user.last_update_date)){
+                Email.findOne({where: {username: user.username}}).then(email=>{
+                    send_password_reminder_email(email);
+                });
+            }
+        });
+    });
+};
+
 module.exports = {
     create_user,
     update_user_password,
@@ -171,5 +182,6 @@ module.exports = {
     revoke_access,
     get_all_users,
     get_bank_users,
-    update_email
+    update_email,
+    update_password_reminder_verification
 };

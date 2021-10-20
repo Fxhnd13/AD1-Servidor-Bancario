@@ -1,10 +1,10 @@
 const { Active_Session_Log } = require('../models/active_session_log');
 const { Bank_User } = require('../models/bank_user');
 const { Person } = require('../models/person');
+const { is_six_months_later } = require('../controllers/utilities_controller');
 
 const create_person = (req, res) => {
     console.log(req.body.token);
-    //Active_Session_Log.findOne({where: {token: req.body.token }}).then(session => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente"});
@@ -18,9 +18,10 @@ const create_person = (req, res) => {
                         address: req.body.address,
                         phone_number: req.body.phone_number,
                         birth_day: req.body.birth_day,
-                        //civil_status: req.body.civil_status;
+                        civil_status: req.body.civil_status,
                         gender: req.body.gender,
-                        ocupation: req.body.ocupation
+                        ocupation: req.body.ocupation,
+                        last_update_date: new Date(Date.now())
                     });
                     res.status(200).json({information_message: "Se ha creado a la persona."});
                 }else{
@@ -32,7 +33,6 @@ const create_person = (req, res) => {
 };
 
 const update_person = (req, res) => {
-    //Active_Session_Log.findOne({where: {token: req.body.token}}).then(session =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente."});
@@ -40,13 +40,13 @@ const update_person = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
                 if(user.user_type >= 3){
                     Person.findOne({where: {cui: req.body.cui}}).then(person=>{
-                        person.setAttributes({
+                        person.update({
                             address: req.body.address,
                             phone_number: req.body.phone_number,
-                            //civil_status: req.body.civil_status,
-                            ocupation: req.body.ocupation
+                            civil_status: req.body.civil_status,
+                            ocupation: req.body.ocupation,
+                            last_update_date: new Date(Date.now())
                         });
-                        person.save();
                     });
                     res.status(200).json({information_message: "Se han actualizado los datos."});
                 }else{
@@ -71,8 +71,23 @@ const get_person_information = (req, res) => {
     })
 };
 
+const update_data_reminder_verification = ()=>{
+    Person.findAll().then(persons=>{
+        persons.forEach(person=>{
+            if(is_six_months_later(person.last_update_date)){
+                Bank_User.findOne({where: {cui: person.cui}}).then(user=>{
+                    Email.findOne({where: {username: user.username}}).then(email=>{
+                        send_password_reminder_email(email);
+                    });
+                });
+            }
+        });
+    });
+};
+
 module.exports = {
     create_person,
     update_person,
-    get_person_information
+    get_person_information,
+    update_data_reminder_verification
 }

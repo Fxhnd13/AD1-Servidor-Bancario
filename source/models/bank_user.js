@@ -27,6 +27,10 @@ var Bank_User = sequelize.define(
         access: {
             type: DataTypes.BOOLEAN,
             allowNull: false
+        },
+        last_update_date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false
         }
     }, {
         timestamps: false,
