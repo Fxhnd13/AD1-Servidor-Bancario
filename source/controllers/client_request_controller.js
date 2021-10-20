@@ -65,7 +65,6 @@ const create_card_cancellation_request = (req, res) => {
                                 Card_Cancellation_Request.create({
                                     id_request: new_request.id_request,
                                     id_card: req.body.id_card,
-                                    card_type: req.body.card_type,
                                     cause: req.body.cause
                                 }).then(()=> {
                                     res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});

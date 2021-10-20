@@ -432,16 +432,6 @@
                     },
                     {
                         "in": "body",
-                        "name": "card_type",
-                        "description": "Tipo de tarjeta (credito=1/debito=2)",
-                        "required": true,
-                        "schema": {
-                            "type":"integer",
-                            "enum": [1,2]
-                        }
-                    },
-                    {
-                        "in": "body",
                         "name": "cause",
                         "description": "Motivo de la cancelacion",
                         "required": true,
@@ -765,6 +755,28 @@
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
+                    }
+                }
+            }
+        },
+        "/db/view_db":{
+            "post":{
+                "tags": ["Base de datos"],
+                "summary": "Regresa TODA la información que se encuentra actualmente en la base de datos",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "description": "Password para el equipo de desarrollo",
+                        "name": "password",
+                        "required": true,
+                        "schema":{
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "Listado de toda la información"
                     }
                 }
             }
@@ -1782,7 +1794,7 @@
                 }
             }
         },
-        "/account/avaliable_for_debit_card":{
+        "/account/available_for_debit_card":{
             "get":{
                 "tags": ["Cuenta"],
                 "summary": "Obtener un listado con los identificadores/No. de cuenta que no poseen una tarjeta de credito.",
