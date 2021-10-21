@@ -39,6 +39,10 @@ const Person = sequelize.define(
         ocupation:{
             type: DataTypes.TEXT,
             allowNull: true
+        },
+        last_update_date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false
         }
     }, {
         timestamps: false,

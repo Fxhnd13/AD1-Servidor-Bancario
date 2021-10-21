@@ -36,6 +36,11 @@ var Credit_Card = sequelize.define(
             type: DataTypes.DATEONLY,
             allowNull: false
         },
+        creation_date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false,
+            defaultValue: new Date(Date.now())
+        },
         balance:{
             type: DataTypes.DECIMAL,
             allowNull: false,

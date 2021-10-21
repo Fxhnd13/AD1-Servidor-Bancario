@@ -2000,6 +2000,10 @@
                 "cui":{
                     "type": "integer",
                     "description": "Cui de la persona a la que pertenece el usuario"
+                },
+                "last_update_date":{
+                    "type": "date",
+                    "description": "Ultima fecha en la que se modifico la contraseña"
                 }
             }
         },
@@ -2145,6 +2149,10 @@
                     "type":"date",
                     "description":"Fecha de corte"
                 },
+                "creation_date":{
+                    "type":"date",
+                    "description": "Fecha en la que se autorizó la tarjeta de credito"
+                },
                 "balance":{
                     "type":"number",
                     "description":"Saldo total gastado con la tarjeta de credito"
@@ -2275,6 +2283,10 @@
                     "type":"date",
                     "description":"Fecha de corte"
                 },
+                "creation_date":{
+                    "type":"date",
+                    "description":"Fecha en la que se creo el prestamo"
+                },
                 "state":{
                     "type":"string",
                     "description":"Si el prestamo se encuentra activo o si ya fue cancelado en su totalidad"
@@ -2373,6 +2385,10 @@
                 "ocupation":{
                     "type": "string",
                     "description": "Ocupación de la persona"
+                },
+                "last_update_date":{
+                    "type": "date",
+                    "description": "Ultima fecha en la que se recordó"
                 }
             }
         },

@@ -24,6 +24,7 @@ const { Loan } = require('./loan');
 const { Credit_Card } = require('./credit_card');
 const { Debit_Card } = require('./debit_card');
 const { Card } = require('./card');
+const { Credit_Card_Payment_Log } = require('./credit_card_payment_log');
 
 const bcrypt = require("bcrypt");
 const { sequelize } = require('../db/credentials');
@@ -55,6 +56,7 @@ const syncronization = async (req, res) => {
     await Payment_Delay.sync({force: true});
     await Payment_Log.sync({force: true});
     await Withdrawal.sync({force: true});
+    await Credit_Card_Payment_Log.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
         {description: "Cliente"},
@@ -72,26 +74,27 @@ const syncronization = async (req, res) => {
         {description: 'Black', credit_limit: 12000, interest_rate: 0.3}
     ]);
     await Person.bulkCreate([
-        {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000002, name: "Carlos", surname: "Ramirez", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000003, name: "Sofia", surname: "Quintana", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante"},
-        {cui: 1000000000004, name: "Alejandra", surname: "Gutierrez", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante"},
-        {cui: 1000000000005, name: "Helmut", surname: "Luther", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000006, name: "Alexander", surname: "Montejo", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"}
+        {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000002, name: "Carlos", surname: "Ramirez", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000003, name: "Sofia", surname: "Quintana", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000004, name: "Alejandra", surname: "Gutierrez", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000005, name: "Helmut", surname: "Luther", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000006, name: "Alexander", surname: "Montejo", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())}
     ]);
     await Account.bulkCreate([
         {cui: 1000000000004, id_account_type: 1, balance: 0},
         {cui: 1000000000005, id_account_type: 1, balance: 250},
-        {cui: 1000000000006, id_account_type: 1, balance: 1000}
+        {cui: 1000000000006, id_account_type: 1, balance: 1000},
+        {cui: 1000000000001, id_account_type: 2, balance: 5000}
     ]);
     await bcrypt.hash("pass",BCRYPT_SALT_ROUNDS).then(async hashed_password => {
         await Bank_User.bulkCreate([
-            {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001, access: true},
-            {username: 'user2', password: hashed_password, user_type: 3, cui: 1000000000002, access: true},
-            {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003, access: true},
-            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004, access: true},
-            {username: 'user5', password: hashed_password, user_type: 1, cui: 1000000000005, access: true},
-            {username: 'user6', password: hashed_password, user_type: 1, cui: 1000000000006, access: true}
+            {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user2', password: hashed_password, user_type: 3, cui: 1000000000002, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user5', password: hashed_password, user_type: 1, cui: 1000000000005, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user6', password: hashed_password, user_type: 1, cui: 1000000000006, access: true, last_update_date: new Date(Date.now())}
         ]);
         await Email.bulkCreate([
             {username: 'user1', email: 'jcsru13@gmail.com'},
@@ -136,7 +139,7 @@ const syncronization = async (req, res) => {
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de limon'},
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de ron con pasas'}
     ]);
-    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', canceled: false});
+    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, id_account: 4, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', canceled: false});
     await Payment_Log.bulkCreate([
         {id_loan: 1, date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
         {id_loan: 1, date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
