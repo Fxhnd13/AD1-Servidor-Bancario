@@ -19,19 +19,11 @@ var Withdrawal = sequelize.define(
         },
         origin_account:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Account,
-                key: 'id_account'
-            }
+            allowNull: false
         },
         responsible_username:{
             type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         },
         date_time:{
             type: DataTypes.DATE,
@@ -42,6 +34,11 @@ var Withdrawal = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Account.hasMany(Withdrawal,{foreignKey: 'origin_account'});
+Withdrawal.belongsTo(Account,{foreignKey: 'origin_account'});
+Bank_User.hasMany(Withdrawal,{foreignKey: 'responsible_username'});
+Withdrawal.belongsTo(Bank_User,{foreignKey: 'responsible_username'});
 
 module.exports = {
     Withdrawal

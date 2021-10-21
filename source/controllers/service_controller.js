@@ -14,17 +14,39 @@ const active_services = (req, res) =>{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                 var services = [];
                 var accounts_promise = Account.findAll({where: {cui: bank_user.cui}, raw: true});
-                var cards_promise = Card.findAll({where: {cui: bank_user.cui, active: true}, raw: true});
+                var credit_cards_promise = Card.findAll({
+                    where: {cui: bank_user.cui, active: true, card_type: 1}, 
+                    raw: true,
+                    include: Credit_Card
+                });
+                var debit_cards_promise = Card.findAll({
+                    where: {cui: bank_user.cui, active: true, card_type: 2}, 
+                    raw: true,
+                    include: {
+                        model: Debit_Card,
+                        as: 'debit_card',
+                        include: {
+                            model: Account,
+                            as: 'account'
+                        }
+                    }
+                });
                 var loan_promise = Loan.findAll({where: {cui: bank_user.cui}, raw: true});
-                Promise.all([accounts_promise,cards_promise,loan_promise]).then(values =>{
+                Promise.all([accounts_promise,credit_cards_promise,debit_cards_promise,loan_promise]).then(values =>{
                     accounts = values[0];
-                    cards = values[1];
-                    loans = values[2];
+                    credit_cards = values[1];
+                    debit_cards = values[2];
+                    loans = values[3];
                     accounts.forEach(account =>{
                         services.push({id: account.id_account, type: 'Cuenta bancaria', balance: account.balance});
                     });
-                    cards.forEach(card =>{
-                        services.push({id: card.id_card, type: ((card.card_type == 1)? 'Tarjeta de credito':'Tarjeta de debito'), balance: '----------'});
+                    credit_cards.forEach(card =>{
+                        services.push({id: card.id_card, type: 'Tarjeta de credito', balance: '---------'});
+                    });
+                    debit_cards.forEach(card =>{
+                        console.log(JSON.stringify(card, null, 2));
+                        console.log("Probando una cosa: "+card["debit_card.account.balance"]);
+                        services.push({id: card.id_card, type: 'Tarjeta de debito', balance: '......'});
                     });
                     loans.forEach(loan =>{
                         services.push({id: loan.id_loan, type: 'Prestamo bancario', balance: loan.amount});

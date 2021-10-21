@@ -14,11 +14,7 @@ var Card_Payment_Log = sequelize.define(
         },
         id_card:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Card,
-                key: 'id_card'
-            }
+            allowNull: false
         },
         amount:{
             type: DataTypes.DECIMAL,
@@ -37,6 +33,9 @@ var Card_Payment_Log = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Card.hasMany(Card_Payment_Log,{foreignKey: 'id_card'});
+Card_Payment_Log.belongsTo(Card,{foreignKey: 'id_card'});
 
 module.exports = {
     Card_Payment_Log

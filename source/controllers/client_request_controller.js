@@ -9,6 +9,7 @@ const { Request } = require("../models/request");
 const { Update_Data_Request } = require("../models/update_data_request");
 const { Op } = require('sequelize');
 const { Card } = require("../models/card");
+const { Person } = require("../models/person");
 
 /**
  * @description Method that creates a update data request
@@ -64,7 +65,6 @@ const create_card_cancellation_request = (req, res) => {
                                 Card_Cancellation_Request.create({
                                     id_request: new_request.id_request,
                                     id_card: req.body.id_card,
-                                    card_type: req.body.card_type,
                                     cause: req.body.cause
                                 }).then(()=> {
                                     res.status(200).json({information_message:'Se ha creado una solicitud de cancelacion de tarjeta.'});
@@ -151,18 +151,28 @@ const create_loan_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Prestamo', date: new Date(Date.now())}).then(new_request =>{
-                    if(new_request != null){
-                        Loan_Request.create({
-                            id_request: new_request.id_request,
-                            cui: bank_user.cui,
-                            amount: req.body.amount,
-                            monthly_income: req.body.monthly_income,
-                            cause: req.body.cause,
-                            guarantor_cui: req.body.guarantor_cui
-                        }).then(()=> {
-                            res.status(200).json({information_message:'Se ha creado una solicitud de prestamo bancario.'});
-                        });
+                Person.findOne({where: {cui: req.body.guarantor_cui}, raw: true}).then(guarantor=>{
+                    if(guarantor == null){
+                        res.status(403).json({information_message: 'No existe la información relacionada al cui del fiador enviado.'})
+                    }else{
+                        if(bank_user.cui == guarantor.cui){
+                            res.status(403).json({information_message: 'No puede ser el solcitante y el fiador a la vez.'})
+                        }else{
+                            Request.create({ request_type: 'Prestamo', date: new Date(Date.now())}).then(new_request =>{
+                                if(new_request != null){
+                                    Loan_Request.create({
+                                        id_request: new_request.id_request,
+                                        cui: bank_user.cui,
+                                        amount: req.body.amount,
+                                        monthly_income: req.body.monthly_income,
+                                        cause: req.body.cause,
+                                        guarantor_cui: req.body.guarantor_cui
+                                    }).then(()=> {
+                                        res.status(200).json({information_message:'Se ha creado una solicitud de prestamo bancario.'});
+                                    });
+                                }
+                            });   
+                        }
                     }
                 });
             });
@@ -187,7 +197,7 @@ const create_account_request = (req, res) => {
                         Account_Request.create({
                             id_request: new_request.id_request,
                             cui: bank_user.cui,
-                            account_type: req.body.account_type
+                            id_account_type: req.body.account_type
                         }).then(()=> {
                             res.status(200).json({information_message:'Se ha creado una solicitud de creacion de cuenta.'});
                         });

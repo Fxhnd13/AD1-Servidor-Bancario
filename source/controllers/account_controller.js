@@ -7,6 +7,7 @@ const { Card_Payment_Log } = require("../models/card_payment_log");
 const { Withdrawal } = require("../models/withdrawal");
 const { Deposit } = require('../models/deposit');
 const { Debit_Card } = require('../models/debit_card');
+const jwt = require('jsonwebtoken'); //Indicamos que usaremos JsonWebToken
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -105,21 +106,21 @@ const account_statement = async (req, res) => {
     });
 };
 
-const account_avaliable_for_debit_card = (req, res) =>{
+const account_available_for_debit_card = (req, res) =>{
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session =>{
         if(session == null){
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 Account.findAll({where: {cui: bank_user.cui}, raw: true}).then(accounts=>{
-                    var accounts_avaliable_promises = [];
+                    var accounts_available_promises = [];
                     accounts.forEach(account=>{
-                        accounts_avaliable_promises.push(Debit_Card.findOne({where: {id_account: account.id_account}, raw: true}));
+                        accounts_available_promises.push(Debit_Card.findOne({where: {id_account: account.id_account}, raw: true}));
                     });
-                    Promise.all(accounts_avaliable_promises).then(avaliable_accounts =>{
+                    Promise.all(accounts_available_promises).then(available_accounts =>{
                         var result = []; var contador=0;
-                        avaliable_accounts.forEach(avaliable_account =>{
-                            if(avaliable_account == null) result.push({id_account: accounts[contador++].id_account});
+                        available_accounts.forEach(available_account =>{
+                            if(available_account == null) result.push({id_account: accounts[contador++].id_account});
                         });
                         res.status(200).json({accounts: result});
                     });
@@ -271,14 +272,106 @@ const do_withdrawal = (req, res) => {
     });  
 };
 
+const get_all_transactions_by_an_user = (req, res) =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session==null){
+            res.status(401).json({information_message: 'Token de sesion ah expirado, inicie sesion nuevamente.'});
+        }else{
+            const bank_user = jwt.decode(req.headers.token);
+            if(bank_user.user_type == 4){
+                var deposit_promise = Deposit.findAll({where:{responsible_username: req.body.username},raw: true});
+                var withdrawal_promise = Withdrawal.findAll({where:{responsible_username: req.body.username},raw: true});
+                Promise.all([deposit_promise, withdrawal_promise]).then(values=>{
+                    const transactions = values[0].concat(values[1]);
+                    var result = []; contador = 1;
+                    transactions.forEach(transaction=>{
+                        if(transaction.destination_account != undefined){
+                            result.push({
+                                no: contador++,
+                                amount: transaction.amount, 
+                                responsible_username: transaction.responsible_username,
+                                id_account: transaction.destination_account,
+                                movement_type: 'Deposito',
+                                date_time: transaction.date_time
+                            });
+                        }else{
+                            result.push({
+                                no: contador++,
+                                amount: transaction.amount, 
+                                responsible_username: transaction.responsible_username,
+                                id_account: transaction.origin_account,
+                                movement_type: 'Retiro',
+                                date_time: transaction.date_time
+                            });
+                        }
+                    });
+                    result.sort((a, b) => new Date(a.date_time).getTime() > new Date(b.date_time).getTime());
+                    res.status(200).json(result);
+                });
+            }else{
+                res.status(403).json({information_message: 'No posee permiso para realizar esta acción'});
+            }
+        }
+    });
+};
+
+const get_all_transactions = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                Account.findAll({where: {cui: bank_user.cui}, raw: true}).then(accounts=>{
+                    var deposit_promises =[];
+                    var withdrawal_promises = [];
+                    accounts.forEach(account=>{
+                        deposit_promises.push(Deposit.findAll({where:{destination_account: account.id_account}, raw: true}));
+                        withdrawal_promises.push(Withdrawal.findAll({where:{origin_account: account.id_account}, raw: true}));
+                    });
+                    Promise.all(deposit_promises.concat(withdrawal_promises)).then(transactions_array=>{
+                        var result = [], contador = 1;
+                        transactions_array.forEach(transactions=>{
+                            transactions.forEach(transaction=>{
+                                if(transaction.destination_account != undefined){
+                                    result.push({
+                                        no: contador++,
+                                        amount: transaction.amount, 
+                                        responsible_username: transaction.responsible_username,
+                                        id_account: transaction.destination_account,
+                                        movement_type: 'Deposito',
+                                        date_time: transaction.date_time
+                                    });
+                                }else{
+                                    result.push({
+                                        no: contador++,
+                                        amount: transaction.amount, 
+                                        responsible_username: transaction.responsible_username,
+                                        id_account: transaction.origin_account,
+                                        movement_type: 'Retiro',
+                                        date_time: transaction.date_time
+                                    });
+                                }
+                            });
+                        });
+                        result.sort((a, b) => new Date(a.date_time).getTime() > new Date(b.date_time).getTime());
+                        res.status(200).json(result);
+                    });
+                });
+            });
+        }
+    });
+};
+
 module.exports = {
     transfer_on_app,
     account_statement,
-    account_avaliable_for_debit_card,
+    account_available_for_debit_card,
     create_account,
     update_account,
     get_account_by_id,
     get_all_accounts,
     do_deposit,
-    do_withdrawal
+    do_withdrawal,
+    get_all_transactions,
+    get_all_transactions_by_an_user
 }

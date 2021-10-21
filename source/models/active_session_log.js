@@ -11,17 +11,17 @@ const Active_Session_Log = sequelize.define(
         },
         username: {
             type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         }
     }, {
         timestamps: false,
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+
+//----------------------------------------------------------------------------
+Bank_User.hasOne(Active_Session_Log,{foreignKey: 'username'});
+Active_Session_Log.belongsTo(Bank_User,{foreignKey: 'username'});
 
 module.exports = {
     Active_Session_Log

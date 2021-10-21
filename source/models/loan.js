@@ -3,6 +3,7 @@
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
 const { Person } = require('./person');
+const { Account } = require("./account");
 
 var Loan = sequelize.define(
     'loan', {
@@ -28,6 +29,10 @@ var Loan = sequelize.define(
                 key: 'cui'
             }
         },
+        id_account:{
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         amount: {
             type: DataTypes.DECIMAL,
             allowNull: false
@@ -48,6 +53,11 @@ var Loan = sequelize.define(
             type: DataTypes.DATEONLY,
             allowNull: false
         },
+        creation_date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false,
+            defaultValue: new Date(Date.now())
+        },
         canceled:{ //activo/cancelado
             type: DataTypes.BOOLEAN,
             allowNull: false
@@ -57,6 +67,12 @@ var Loan = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+
+Person.hasMany(Loan,{foreignKey: 'cui'});
+Loan.belongsTo(Person,{foreignKey: 'cui'});
+Person.hasMany(Loan,{foreignKey: 'guarantor_cui'});
+Loan.belongsTo(Person,{foreignKey: 'guarantor_cui'});
+Loan.belongsTo(Account,{foreignKey: 'id_account'});
 
 module.exports = {
     Loan

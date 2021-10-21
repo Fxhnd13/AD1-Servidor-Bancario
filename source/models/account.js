@@ -13,19 +13,11 @@ var Account = sequelize.define(
         },
         cui: {
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         id_account_type: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Account_Type,
-                key: 'id_account_type'
-            }
+            allowNull: false
         },
         balance:{
             type: DataTypes.DECIMAL,
@@ -38,6 +30,12 @@ var Account = sequelize.define(
         initialAutoIncrement: 100000000000
     }
 );
+
+//----------------------------------------------------------------------------
+Person.hasMany(Account,{foreignKey: 'cui'});
+Account_Type.hasMany(Account,{foreignKey: 'id_account_type'});
+Account.belongsTo(Person,{foreignKey: 'cui'});
+Account.belongsTo(Account_Type,{foreignKey: 'id_account_type'});
 
 module.exports = {
     Account

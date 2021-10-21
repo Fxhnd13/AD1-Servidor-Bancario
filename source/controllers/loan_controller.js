@@ -2,6 +2,7 @@ const { Active_Session_Log } = require('../models/active_session_log');
 const { Loan } = require('../models/loan');
 const { Bank_User } = require('../models/bank_user');
 const { Payment_Log } = require('../models/payment_log');
+const { Account } = require('../models/account');
 
 const loan_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
@@ -59,17 +60,20 @@ const create_loan = (req, res)=>{
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(bank_user.user_type > 2){
-                    Loan.create({
-                        cui: req.body.cui,
-                        guarantor_cui: req.body.guarantor_cui,
-                        amount: req.body.amount,
-                        balance: (parseFloat(req.body.amount)+(parseFloat(req.body.interest_rate)*parseFloat(req.body.amount))),
-                        monthly_payment: req.body.monthly_payment,
-                        interest_rate: req.body.interest_rate,
-                        cutoff_date: req.body.cutoff_date,
-                        canceled: false
-                    }).then(()=>{
-                        res.status(200).json({information_message: 'Se ha registrado el prestamo bancario con éxito.'});
+                    Account.create({cui: req.body.cui, id_account_type: 2, balance: amount}).then(account=>{
+                        Loan.create({
+                            cui: req.body.cui,
+                            guarantor_cui: req.body.guarantor_cui,
+                            id_account: account.id_account,
+                            amount: req.body.amount,
+                            balance: (parseFloat(req.body.amount)+(parseFloat(req.body.interest_rate)*parseFloat(req.body.amount))),
+                            monthly_payment: req.body.monthly_payment,
+                            interest_rate: req.body.interest_rate,
+                            cutoff_date: req.body.cutoff_date,
+                            canceled: false
+                        }).then(()=>{
+                            res.status(200).json({information_message: 'Se ha registrado el prestamo bancario con éxito.'});
+                        });
                     });
                 }else{
                     res.status(403).json({information_message: 'No posee permisos para realizar esta acción'});

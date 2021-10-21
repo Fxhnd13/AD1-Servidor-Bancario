@@ -2,42 +2,37 @@
 
 const { sequelize } = require("../db/credentials");
 const { DataTypes } = require('sequelize');
-const { Credit_Card } = require("./credit_card");
+const { Credit_Card } = require('./credit_card');
 
-var Payment_Delay = sequelize.define(
-    'payment_delay', {
-        id_payment_delay:{
+var Credit_Card_Payment_Log = sequelize.define(
+    'credit_card_payment_log', {
+        id_payment:{
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
             autoIncrement: true
         },
         id_card:{
-            type: DataTypes.BIGINT,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
-        interest_rate:{
+        date:{
+            type: DataTypes.DATEONLY,
+            allowNull: false
+        },
+        amount:{
             type: DataTypes.DECIMAL,
-            allowNull: false
-        },
-        total_debt:{
-            type: DataTypes.DECIMAL,
-            allowNull: false
-        },
-        canceled:{
-            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     }, {
         timestamps: false,
-        freezeTableName: true // Model tableName will be the same as the model name
+        freezeTableName: true // model tableName will be the same as the model name
     }
 );
-
 //----------------------------------------------------------------------------
-Credit_Card.hasMany(Payment_Delay,{foreignKey: 'id_card'});
-Payment_Delay.belongsTo(Credit_Card,{foreignKey: 'id_card'});
+Credit_Card.hasMany(Credit_Card_Payment_Log,{foreignKey: 'id_card'});
+Credit_Card_Payment_Log.belongsTo(Credit_Card,{foreignKey: 'id_card'});
 
 module.exports = {
-    Payment_Delay
+    Credit_Card_Payment_Log
 }

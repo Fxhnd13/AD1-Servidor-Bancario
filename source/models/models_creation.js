@@ -24,12 +24,14 @@ const { Loan } = require('./loan');
 const { Credit_Card } = require('./credit_card');
 const { Debit_Card } = require('./debit_card');
 const { Card } = require('./card');
+const { Credit_Card_Payment_Log } = require('./credit_card_payment_log');
 
 const bcrypt = require("bcrypt");
 const { sequelize } = require('../db/credentials');
 var BCRYPT_SALT_ROUNDS = 3;
 
 const syncronization = async (req, res) => {
+    //----------------------------------------------------------------------------
     await Bank_User_Type.sync({force: true});
     await Account_Type.sync({force: true});
     await Credit_Card_Type.sync({force: true});
@@ -37,7 +39,6 @@ const syncronization = async (req, res) => {
     await Bank_User.sync({force: true});
     await Active_Session_Log.sync({force: true});
     await Account.sync({force: true});
-    await Bank_User_Status_Log.sync({force: true});
     await Email.sync({force: true});
     await Request.sync({force: true});
     await Credit_Card_Request.sync({force: true});
@@ -54,8 +55,8 @@ const syncronization = async (req, res) => {
     await Deposit.sync({force: true});
     await Payment_Delay.sync({force: true});
     await Payment_Log.sync({force: true});
-    //await Transfer.sync({force: true});
     await Withdrawal.sync({force: true});
+    await Credit_Card_Payment_Log.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
         {description: "Cliente"},
@@ -73,26 +74,27 @@ const syncronization = async (req, res) => {
         {description: 'Black', credit_limit: 12000, interest_rate: 0.3}
     ]);
     await Person.bulkCreate([
-        {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000002, name: "Carlos", surname: "Ramirez", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000003, name: "Sofia", surname: "Quintana", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante"},
-        {cui: 1000000000004, name: "Alejandra", surname: "Gutierrez", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante"},
-        {cui: 1000000000005, name: "Helmut", surname: "Luther", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"},
-        {cui: 1000000000006, name: "Alexander", surname: "Montejo", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante"}
+        {cui: 1000000000001, name: "Jose", surname: "Soberanis", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000002, name: "Carlos", surname: "Ramirez", address: "direccion", phone_number: 11111111, birth_day: "1999-09-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000003, name: "Sofia", surname: "Quintana", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000004, name: "Alejandra", surname: "Gutierrez", address: "direccion", phone_number: 11111111, birth_day: "1998-04-20", gender: "F", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000005, name: "Helmut", surname: "Luther", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())},
+        {cui: 1000000000006, name: "Alexander", surname: "Montejo", address: "direccion", phone_number: 11111111, birth_day: "1998-08-20", gender: "M", ocupation: "Estudiante", last_update_date: new Date(Date.now())}
     ]);
     await Account.bulkCreate([
         {cui: 1000000000004, id_account_type: 1, balance: 0},
         {cui: 1000000000005, id_account_type: 1, balance: 250},
-        {cui: 1000000000006, id_account_type: 1, balance: 1000}
+        {cui: 1000000000006, id_account_type: 1, balance: 1000},
+        {cui: 1000000000001, id_account_type: 2, balance: 5000}
     ]);
     await bcrypt.hash("pass",BCRYPT_SALT_ROUNDS).then(async hashed_password => {
         await Bank_User.bulkCreate([
-            {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001, access: true},
-            {username: 'user2', password: hashed_password, user_type: 3, cui: 1000000000002, access: true},
-            {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003, access: true},
-            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004, access: true},
-            {username: 'user5', password: hashed_password, user_type: 1, cui: 1000000000005, access: true},
-            {username: 'user6', password: hashed_password, user_type: 1, cui: 1000000000006, access: true}
+            {username: 'user1', password: hashed_password, user_type: 4, cui: 1000000000001, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user2', password: hashed_password, user_type: 3, cui: 1000000000002, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user3', password: hashed_password, user_type: 2, cui: 1000000000003, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user4', password: hashed_password, user_type: 1, cui: 1000000000004, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user5', password: hashed_password, user_type: 1, cui: 1000000000005, access: true, last_update_date: new Date(Date.now())},
+            {username: 'user6', password: hashed_password, user_type: 1, cui: 1000000000006, access: true, last_update_date: new Date(Date.now())}
         ]);
         await Email.bulkCreate([
             {username: 'user1', email: 'jcsru13@gmail.com'},
@@ -109,8 +111,8 @@ const syncronization = async (req, res) => {
         {pin: 1010, cui: 1000000000004, card_type: 2, expiration_date: '2025-12-12', active: true},
     ]);
     await Credit_Card.bulkCreate([
-        {id_card: 1, credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
-        {id_card: 2, credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
+        {id_card: 1, id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0},
+        {id_card: 2, id_credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-10-16', balance: 0}
     ]);
     await Debit_Card.bulkCreate([
         {id_card: 3, id_account: 1}
@@ -137,7 +139,7 @@ const syncronization = async (req, res) => {
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de limon'},
         {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Helado Sarita de ron con pasas'}
     ]);
-    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', canceled: false});
+    await Loan.create({cui: 1000000000001, guarantor_cui: 1000000000006, id_account: 4, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-10-16', canceled: false});
     await Payment_Log.bulkCreate([
         {id_loan: 1, date: '2021-04-02', amount: 500, balance: 4500, total_payment: 500},
         {id_loan: 1, date: '2021-05-02', amount: 500, balance: 4000, total_payment: 1000},
@@ -154,6 +156,63 @@ const syncronization = async (req, res) => {
     res.send('Base de datos sincronizada');
 };
 
+const view_all = async (req, res) => {
+    var promises = [];
+    promises.push(Card_Cancellation_Request.findAll({raw: true}));
+    promises.push(Account_Request.findAll({raw: true}));
+    promises.push(Credit_Card_Request.findAll({raw: true}));
+    promises.push(Debit_Card_Request.findAll({raw: true}));
+    promises.push(Update_Data_Request.findAll({raw: true}));
+    promises.push(Loan_Request.findAll({raw: true}));
+    promises.push(Account_Type.findAll({raw: true}));
+    promises.push(Account.findAll({raw: true}));
+    promises.push(Active_Session_Log.findAll({raw: true}));
+    promises.push(Bank_User_Type.findAll({raw: true}));
+    promises.push(Bank_User.findAll({raw: true}));
+    promises.push(Card_Payment_Log.findAll({raw: true}));
+    promises.push(Card.findAll({raw: true}));
+    promises.push(Credit_Card_Type.findAll({raw: true}));
+    promises.push(Credit_Card.findAll({raw: true}));
+    promises.push(Debit_Card.findAll({raw: true}));
+    promises.push(Deposit.findAll({raw: true}));
+    promises.push(Email.findAll({raw: true}));
+    promises.push(Loan.findAll({raw: true}));
+    promises.push(Person.findAll({raw: true}));
+    promises.push(Request.findAll({raw: true}));
+    promises.push(Withdrawal.findAll({raw: true}));
+    promises.push(Payment_Log.findAll({raw: true}));
+    promises.push(Payment_Delay.findAll({raw: true}));
+    Promise.all(promises).then(result => {
+        res.status(200).json({
+            card_cancellation_request: result[0],
+            account_request: result[1],
+            credit_card_request: result[2],
+            debit_card_request: result[3],
+            update_data_request: result[4],
+            loan_request: result[5],
+            account_type: result[6],
+            account: result[7],
+            active_session_log: result[8],
+            bank_user_type: result[9],
+            bank_user: result[10],
+            card_payment_log: result[11],
+            card: result[12],
+            credit_card_type: result[13],
+            credit_card: result[14],
+            debit_card: result[15],
+            deposit: result[16],
+            email: result[17],
+            loan: result[18],
+            person: result[19],
+            request: result[20],
+            withdrawal: result[21],
+            payment_log: result[22],
+            payment_delay: result[23]
+        });
+    });
+};
+
 module.exports = {
-    syncronization
+    syncronization,
+    view_all
 }

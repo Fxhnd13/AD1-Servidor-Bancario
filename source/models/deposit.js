@@ -19,19 +19,11 @@ var Deposit = sequelize.define(
         },
         destination_account:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Account,
-                key: 'id_account'
-            }
+            allowNull: false
         },
         responsible_username:{
             type: DataTypes.TEXT,
-            allowNull: false,
-            references: {
-                model: Bank_User,
-                key: 'username'
-            }
+            allowNull: false
         },
         date_time:{
             type: DataTypes.DATE,
@@ -42,6 +34,11 @@ var Deposit = sequelize.define(
         freezeTableName: true // Model tableName will be the same as the model name
     }
 );
+//----------------------------------------------------------------------------
+Account.hasMany(Deposit,{foreignKey: 'destination_account'});
+Deposit.belongsTo(Account,{foreignKey: 'destination_account'});
+Bank_User.hasMany(Deposit,{foreignKey: 'responsible_username'});
+Deposit.belongsTo(Bank_User,{foreignKey: 'responsible_username'});
 
 module.exports = {
     Deposit

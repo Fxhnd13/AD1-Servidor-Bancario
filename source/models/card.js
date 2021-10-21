@@ -14,11 +14,7 @@ var Card = sequelize.define(
         },
         cui:{
             type: DataTypes.BIGINT,
-            allowNull: false,
-            references: {
-                model: Person,
-                key: 'cui'
-            }
+            allowNull: false
         },
         card_type:{
             type: DataTypes.INTEGER,
@@ -42,6 +38,10 @@ var Card = sequelize.define(
         initialAutoIncrement: 100000000000
     }
 );
+
+//----------------------------------------------------------------------------
+Person.hasMany(Card,{foreignKey: 'cui'});
+Card.belongsTo(Person,{foreignKey: 'cui'});
 
 module.exports = {
     Card
