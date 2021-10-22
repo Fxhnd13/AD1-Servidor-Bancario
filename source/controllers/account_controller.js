@@ -137,6 +137,11 @@ const create_account = (req, res)=>{
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
                 if(bank_user.user_type > 2){
+                    if(req.body.id_request != undefined){
+                        Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
+                            request.update({verified: true});
+                        });
+                    }
                     Account.create({
                         cui: req.body.cui,
                         id_account_type: req.body.id_account_type,

@@ -42,7 +42,7 @@ const loan_verification = ()=>{
             loan.cutoff_date = actual_date;
             loan.balance = parseFloat(loan.balance) + (parseFloat(loan.monthly_payment)*parseFloat(loan.interest_rate));
             loan.save();
-            Payment_Log.findOne({order: [['id_payment', 'DESC']]}).then(last_payment=>{
+            Payment_Log.findOne({order: [['id_payment', 'ASC']]}).then(last_payment=>{
                 if(last_payment == null){
                     Payment_Log.create({id_loan: loan.id_loan, date: new Date(Date.now()), amount: 0, balance: parseFloat(loan.balance), total_payment: 0});
                 }else{
@@ -60,6 +60,11 @@ const create_loan = (req, res)=>{
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(bank_user.user_type > 2){
+                    if(req.body.id_request != undefined){
+                        Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
+                            request.update({verified: true});
+                        });
+                    }
                     Account.create({cui: req.body.cui, id_account_type: 2, balance: amount}).then(account=>{
                         Loan.create({
                             cui: req.body.cui,

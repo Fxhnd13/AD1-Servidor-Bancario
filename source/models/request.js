@@ -16,6 +16,10 @@ const Request = sequelize.define(
         date: {
             type: DataTypes.DATEONLY,
             allowNull: false
+        },
+        verified:{
+            typ: DataTypes.BOOLEAN,
+            allowNull: false
         }
     }, {
         timestamps: false,

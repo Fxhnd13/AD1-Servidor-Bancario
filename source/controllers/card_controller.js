@@ -96,7 +96,46 @@ const credit_card_verfication = ()=>{
     });
 };
 
+const card_cancellation = (req, res) => {
+    Active_Session_Log.findOne({where:{token: req.headers.token},raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where:{username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type > 2){
+                    Payment_Delay.findAll({where:{id_card: req.body.id_card}, raw: true}).them(payments_delayed=>{
+                        if(payments_delayed.length > 0){
+                            res.status(403).json({information_message: 'No se puede cancelar la tarjeta solicitada, posee saldos pendientes.'});
+                        }else{
+                            Request.findOne({where:{id_request: req.body.id_request}}).then(request=>{
+                                request.update({verified: true});
+                            });
+                            Card.findOne({where: {id_card: req.body.id_card}}).then(card=>{
+                                card.update({active: false});
+                                res.status(200).json({information_message:'Se ha cancelado la tarjeta solicitada con éxito.'});
+                            });
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const create_credit_card = (req, res) => {
+
+};
+
+const create_debit_card = (req, res) => {
+
+};
+
 module.exports = {
     card_statement,
-    credit_card_verfication
+    credit_card_verfication,
+    card_cancellation,
+    create_credit_card,
+    create_debit_card
 }

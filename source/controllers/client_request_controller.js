@@ -26,7 +26,7 @@ const create_update_data_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Actualizacion de datos', date: new Date(Date.now())}).then(new_request =>{
+                Request.create({ request_type: 'Actualizacion de datos', date: new Date(Date.now()), verified: false}).then(new_request =>{
                     if(new_request != null){
                         Update_Data_Request.create({
                             id_request: new_request.id_request,
@@ -60,7 +60,7 @@ const create_card_cancellation_request = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
                 Card.findOne({where: {id_card: req.body.id_card}, raw: true}).then(card=>{
                     if(card.cui == bank_user.cui){
-                        Request.create({ request_type: 'Cancelacion de tarjeta', date: new Date(Date.now())}).then(new_request =>{
+                        Request.create({ request_type: 'Cancelacion de tarjeta', date: new Date(Date.now()), verified: false}).then(new_request =>{
                             if(new_request != null){
                                 Card_Cancellation_Request.create({
                                     id_request: new_request.id_request,
@@ -93,7 +93,7 @@ const create_credit_card_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Tarjeta de credito', date: new Date(Date.now())}).then(new_request =>{
+                Request.create({ request_type: 'Tarjeta de credito', date: new Date(Date.now()), verified: false}).then(new_request =>{
                     if(new_request != null){
                         Credit_Card_Request.create({
                             id_request: new_request.id_request,
@@ -121,7 +121,7 @@ const create_debit_card_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Tarjeta de debito', date: new Date(Date.now())}).then(new_request =>{
+                Request.create({ request_type: 'Tarjeta de debito', date: new Date(Date.now()), verified: false}).then(new_request =>{
                     if(new_request != null){
                         Debit_Card_Request.create({
                             id_request: new_request.id_request,
@@ -158,7 +158,7 @@ const create_loan_request = (req, res) => {
                         if(bank_user.cui == guarantor.cui){
                             res.status(403).json({information_message: 'No puede ser el solcitante y el fiador a la vez.'})
                         }else{
-                            Request.create({ request_type: 'Prestamo', date: new Date(Date.now())}).then(new_request =>{
+                            Request.create({ request_type: 'Prestamo', date: new Date(Date.now()), verified: false}).then(new_request =>{
                                 if(new_request != null){
                                     Loan_Request.create({
                                         id_request: new_request.id_request,
@@ -192,7 +192,7 @@ const create_account_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 'Cuenta', date: new Date(Date.now())}).then(new_request =>{
+                Request.create({ request_type: 'Cuenta', date: new Date(Date.now()), verified: false}).then(new_request =>{
                     if(new_request != null){
                         Account_Request.create({
                             id_request: new_request.id_request,
@@ -218,7 +218,7 @@ const get_all_request = (req, res) =>{
         if(session == null){
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
-            Request.findAll({raw: true}).then(requests => {
+            Request.findAll({where: {verified: false}, raw: true, order: [['date', 'ASC']]}).then(requests => {
                 res.status(200).json(requests);
             });
         }
@@ -241,9 +241,10 @@ const get_request_between_two_dates = (req, res) =>{
                     date: {
                         [Op.gte]: req.body.initial_date,
                         [Op.lte]: req.body.final_date
-                    }
+                    },
+                    verified: false
                 },
-                order: [['date', 'DESC']]
+                order: [['date', 'ASC']]
             }).then(requests => {
                 res.status(200).json(requests);
             });
