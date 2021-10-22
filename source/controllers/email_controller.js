@@ -2,7 +2,6 @@ var nodemailer = require('nodemailer');
 const { Account } = require('../models/account');
 const { Bank_User } = require('../models/bank_user');
 const { Email } = require('../models/email');
-const { Withdrawal } = require('../models/withdrawal');
 const sender = 'AD1.Bank.Server@gmail.com';
 
 var transporter = nodemailer.createTransport({
@@ -69,7 +68,7 @@ const send_password_update_reminder_email = (email) => {
   var mailOptions = {
     from: sender,
     to: email.email,
-    subject: 'Recordatorio de actualización',
+    subject: 'Recordatorio de actualización de contraseña',
     text: 'Este es un correo automático para notificarle que han pasado 6 o más desde la última vez que cambio su contraseña, por su seguridad le recomendamos actualizarla.'
   }
   send_email(mailOptions);
@@ -79,10 +78,22 @@ const send_update_data_reminder_email = (email) => {
   var mailOptions = {
     from: sender,
     to: email.email,
-    subject: 'Recordatorio de actualización',
+    subject: 'Recordatorio de actualización de datos',
     text: 'Este es un correo automático para notificarle que han pasado 6 o más desde la última vez que actualizo sus datos personales, le recomendamos llenar un formulario de actualización de datos.'
   }
   send_email(mailOptions);
+};
+
+const send_card_aprovement_email = (username, card)=>{
+  Email.findOne({where: {username: username}, raw: true}).then(email=>{
+    var mailOptions = {
+      from: sender,
+      to: email.email,
+      subject: 'Su solicitud de tarjeta ha sido aprobada',
+      text: 'Este es un correo automático para notificarle que su solicitud de tarjeta de '+((card.card_type==1)?'Credito':'Debito')+' su pin de acceso es: '+card.pin+' no comparta este pin con nadie.'
+    }
+    send_email(mailOptions);
+  });
 };
 
 module.exports = {
@@ -91,4 +102,5 @@ module.exports = {
     send_withdrawal_email,
     send_password_update_reminder_email,
     send_update_data_reminder_email,
+    send_card_aprovement_email
 }

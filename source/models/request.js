@@ -18,7 +18,7 @@ const Request = sequelize.define(
             allowNull: false
         },
         verified:{
-            typ: DataTypes.BOOLEAN,
+            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     }, {
