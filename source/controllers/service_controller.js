@@ -50,6 +50,7 @@ const active_services = (req, res) =>{
                     loans.forEach(loan =>{
                         services.push({id: loan.id_loan, type: 'Prestamo bancario', balance: loan.amount});
                     });
+                    res.writeHead(200, {'token': req.headers.token, 'services': services});
                     res.status(200).json(services);
                 });
             });
