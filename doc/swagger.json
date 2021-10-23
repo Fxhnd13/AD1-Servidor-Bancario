@@ -858,7 +858,7 @@
                 }
             }
         },
-        "/db/view_db":{
+        "/db/view_all":{
             "post":{
                 "tags": ["Base de datos"],
                 "summary": "Regresa TODA la información que se encuentra actualmente en la base de datos",
