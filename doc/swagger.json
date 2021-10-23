@@ -676,6 +676,14 @@
                         "in": "header",
                         "name": "token",
                         "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud relacionada a la actualización de datos (Si existe)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
                         "in": "body",
@@ -1062,6 +1070,144 @@
                 }
             }
         },
+        "/card":{
+            "post": {
+                "tags": ["Tarjeta"],
+                "summary": "Crea una nueva tarjeta de credito o debito",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud relacionada a la creación de la tarjeta (Si existe)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "cui",
+                        "description": "Cui del propietario de la tarjeta",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "card_type",
+                        "description": "Tipo de tarjeta (Credito=1/Debito=2)",
+                        "schema": {
+                            "enum": [1,2]
+                        }
+                    },{
+                        "in": "body",
+                        "name": "id_credit_card_type",
+                        "description": "Tipo de tarjeta de credito (SOLO PARA CREDITO)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "minimal_payment",
+                        "description": "Porcentaje que deberá pagar como minimo el propietario para la fecha de corte (SOLO PARA CREDITO)",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "cutoff_date",
+                        "description": "Proxima fecha de corte (Día del mes en el que cancelar el pago mínimo)(SOLO PARA CREDITO)",
+                        "required": true,
+                        "schema": {
+                            "type": "date"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "id_account",
+                        "description": "Identificador de la cuenta relacionada a la tarjeta (SOLO PARA DEBITO)",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }                        
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Saldos pendientes | Usuario sin permisos para realizar la accion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/card/cancellation":{
+            "post": {
+                "tags": ["Tarjeta"],
+                "summary": "Cancela una tarjeta de credito o debito",
+                "parameters": [
+                    {
+                        "in":"header",
+                        "name": "token",
+                        "type": "string"
+                    },
+                    {
+                        "in": "body",
+                        "name": "id_card",
+                        "description": "Identificador de la tarjeta a cancelar",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud relacionada a la cancelacion (Si existe)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: Saldos pendientes | Usuario sin permisos para realizar la accion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
         "/card/statement":{
             "get":{
                 "tags":["Tarjeta"],
@@ -1284,6 +1430,14 @@
                         "in": "header",
                         "name": "token",
                         "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud relacionada a la creación del prestamo (Si existe)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
                         "in": "body",
@@ -1578,6 +1732,14 @@
                         "in": "header",
                         "name": "token",
                         "type":"string"
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud relacionada a la craeción de la cuenta (Si existe)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
                     },
                     {
                         "in": "body",

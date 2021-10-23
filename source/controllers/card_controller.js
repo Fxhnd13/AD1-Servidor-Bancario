@@ -7,6 +7,9 @@ const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
 const { sequelize } = require("../db/credentials");
 const { Payment_Delay } = require("../models/payment_delay");
+const { get_random_int, MS_FOR_ONE_YEAR } = require('./utilities_controller');
+const { Credit_Card_Type } = require("../models/credit_card_type");
+const { send_card_aprovement_email } = require('./email_controller');
 
 const card_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
@@ -96,7 +99,98 @@ const credit_card_verfication = ()=>{
     });
 };
 
+const card_cancellation = (req, res) => {
+    Active_Session_Log.findOne({where:{token: req.headers.token},raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where:{username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type > 2){
+                    Payment_Delay.findAll({where:{id_card: req.body.id_card}, raw: true}).them(payments_delayed=>{
+                        if(payments_delayed.length > 0){
+                            res.status(403).json({information_message: 'No se puede cancelar la tarjeta solicitada, posee saldos pendientes.'});
+                        }else{
+                            Request.findOne({where:{id_request: req.body.id_request}}).then(request=>{
+                                request.update({verified: true});
+                            });
+                            Card.findOne({where: {id_card: req.body.id_card}}).then(card=>{
+                                card.update({active: false});
+                                res.status(200).json({information_message:'Se ha cancelado la tarjeta solicitada con éxito.'});
+                            });
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permiso para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
+const create_card = (req, res) =>{
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session =>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(bank_user.user_type > 2){
+                    if(req.body.id_request != undefined){
+                        Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
+                            request.update({verified: true});
+                        });
+                        Card.create({
+                            cui: req.body.cui,
+                            card_type: req.body.card_type,
+                            pin: get_random_int(1000,9999),
+                            expiration_date: new Date(Date.now()+(MS_FOR_ONE_YEAR*5)),
+                            active: true
+                        }).then(card=>{
+                            if(card_type == 1){
+                                create_credit_card(card, req, res);
+                            }else{
+                                create_debit_card(card, req, res);
+                            }
+                            send_card_aprovement_email(session.username, card);
+                        });
+                    }
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            })
+        }
+    })
+};
+
+const create_credit_card = (card, req, res) => {
+    Credit_Card_Type.findOne({where: {id_credit_card_type: req.body.id_credit_card_type}, raw: true}).then(credit_card_type=>{
+        Credit_Card.create({
+            id_card: card.id_card,
+            id_credit_card_type: credit_card_type.id_credit_card_type,
+            credit_limit: credit_card_type.credit_limit,
+            interest_rate: credit_card_type.interest_rate,
+            minimal_payment: req.body.minimal_payment,
+            payment: 0,
+            cutoff_date: req.body.cutoff_date,
+            creation_date: new Date(Date.now()),
+            balance: 0
+        }).then(() =>{
+            res.status(200).json({information_message: 'Se ha creado la tarjeta de credito con éxito'});
+        });
+    });
+};
+
+const create_debit_card = (card, req, res) => {
+    Debit_Card.create({
+        id_card: card.id_card,
+        id_account: req.body.id_account
+    }).then(()=>{
+        res.status(200).json({information_message: 'Se ha creado una tarjeta de debito con éxito'});
+    });
+};
+
 module.exports = {
     card_statement,
-    credit_card_verfication
+    credit_card_verfication,
+    card_cancellation,
+    create_card
 }
