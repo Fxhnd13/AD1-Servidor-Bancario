@@ -42,5 +42,6 @@ module.exports = {
     is_six_months_later,
     get_credit_score,
     get_random_int,
-    print_request_type
+    print_request_type,
+    plus_one_month
 }
