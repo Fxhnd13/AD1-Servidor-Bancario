@@ -39,6 +39,11 @@ const update_person = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
                 if(user.user_type >= 3){
+                    if(req.body.id_request != undefined){
+                        Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
+                            request.update({verified: true});
+                        });
+                    }
                     Person.findOne({where: {cui: req.body.cui}}).then(person=>{
                         person.update({
                             address: req.body.address,

@@ -10,11 +10,15 @@ const Request = sequelize.define(
             autoIncrement: true
         },
         request_type: {
-            type: DataTypes.TEXT,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         date: {
             type: DataTypes.DATEONLY,
+            allowNull: false
+        },
+        verified:{
+            type: DataTypes.BOOLEAN,
             allowNull: false
         }
     }, {
