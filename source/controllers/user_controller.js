@@ -86,14 +86,18 @@ const update_user_password = async (req, res) => {
 
 const password_recovery = (req, res) => {
     Email.findOne({ where: {username: req.body.username}, raw: true }).then(email=>{
-        const new_password = generate_password(8);
-        bcrypt.hash(new_password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
-            Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
-                bank_user.update({password: hashed_password, last_update_date: new Date(Date.now())});
-                send_password_recovery_email(email, new_password);
-                res.status(200).json({information_message: 'Se ha cambiado la contraseña con éxito, por favor, revise su correo electronico.'});
+        if(email == null){
+            res.status(404).json({information_message: 'El usuario que ingresó no se encuentra registro en la base de datos'});
+        }else{
+            const new_password = generate_password(8);
+            bcrypt.hash(new_password,BCRYPT_SALT_ROUNDS).then(hashed_password => {
+                Bank_User.findOne({ where: { username: req.body.username }}).then(bank_user=>{
+                    bank_user.update({password: hashed_password, last_update_date: new Date(Date.now())});
+                    send_password_recovery_email(email, new_password);
+                    res.status(200).json({information_message: 'Se ha cambiado la contraseña con éxito, por favor, revise su correo electronico.'});
+                });
             });
-        });
+        }
     });
 };
 

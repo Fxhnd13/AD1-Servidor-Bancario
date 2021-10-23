@@ -38,7 +38,7 @@ const loan_verification = ()=>{
     const actual_date = new Date(Date.now());
     Loan.findAll({where: {cutoff_date: actual_date, canceled: false}}).then(loans=>{
         loans.forEach(loan => {
-            actual_date.setMonth((actual_date.getMonth()==11)? 0 : actual_date.getMonth()+1);
+            actual_date = plus_one_month(actual_date);
             loan.cutoff_date = actual_date;
             loan.balance = parseFloat(loan.balance) + (parseFloat(loan.monthly_payment)*parseFloat(loan.interest_rate));
             loan.save();

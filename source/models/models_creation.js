@@ -28,6 +28,7 @@ const { Credit_Card_Payment_Log } = require('./credit_card_payment_log');
 
 const bcrypt = require("bcrypt");
 const { sequelize } = require('../db/credentials');
+const { Authorized_Institution } = require('./authorized_institution');
 var BCRYPT_SALT_ROUNDS = 3;
 
 const syncronization = async (req, res) => {
@@ -57,6 +58,7 @@ const syncronization = async (req, res) => {
     await Payment_Log.sync({force: true});
     await Withdrawal.sync({force: true});
     await Credit_Card_Payment_Log.sync({force: true});
+    await Authorized_Institution.sync({force: true});
     //----------------------------AGREGANDO DATA INICIAL------------------------------
     await Bank_User_Type.bulkCreate([
         {description: "Cliente"},
@@ -104,6 +106,13 @@ const syncronization = async (req, res) => {
             {username: 'user5', email: 'jcsru13@gmail.com'},
             {username: 'user6', email: 'jcsru13@gmail.com'}
         ]);
+        await Authorized_Institution.bulkCreate([
+            {name: 'Sarita Mazatenango', password: hashed_password},
+            {name: 'Sarita Quetzaltenango', password: hashed_password},
+            {name: 'Sarita Guatemala', password: hashed_password},
+            {name: 'Sarita Antigua', password: hashed_password},
+            {name: 'Sarita Peten', password: hashed_password},
+        ])
     });
     await Card.bulkCreate([
         {pin: 1010, cui: 1000000000001, card_type: 1, expiration_date: '2025-12-12', active: true},
@@ -182,6 +191,7 @@ const view_all = async (req, res) => {
     promises.push(Withdrawal.findAll({raw: true}));
     promises.push(Payment_Log.findAll({raw: true}));
     promises.push(Payment_Delay.findAll({raw: true}));
+    promises.push(Authorized_Institution.findAll({raw: true}));
     Promise.all(promises).then(result => {
         res.status(200).json({
             card_cancellation_request: result[0],
@@ -207,7 +217,8 @@ const view_all = async (req, res) => {
             request: result[20],
             withdrawal: result[21],
             payment_log: result[22],
-            payment_delay: result[23]
+            payment_delay: result[23],
+            authorized_institutions: result[24]
         });
     });
 };
