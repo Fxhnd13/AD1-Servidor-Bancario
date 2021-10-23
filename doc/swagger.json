@@ -95,6 +95,15 @@
                             "type": "integer",
                             "example": 1000000000001
                         }
+                    },
+                    {
+                        "in": "body",
+                        "name": "email",
+                        "description": "Email de la persona propietaria del usuario",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
                     }
                 ],
                 "responses": {
@@ -161,6 +170,88 @@
                     },
                     "403":{
                         "description": "Error: Contraseña incorrecta o antigua y nueva contraseña son iguales (no hay cambios).",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/get_by_id":{
+            "get": {
+                "tags": ["Solicitud"],
+                "summary": "Obtiene la información de una solicitud por identificador",
+                "parameters": [],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "type": "object",
+                            "properties": {
+                                "id_request":{
+                                    "type": "integer",
+                                    "description": "Identificador de la solicitud"
+                                },
+                                "request_type":{
+                                    "type": "string",
+                                    "description": "Tipo de solicitud"
+                                },
+                                "request_data":{
+                                    "type": "object",
+                                    "description": "La información especifica de la solicitud (Solo sería uno de los modelos)"
+                                }
+                            }
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para acceder a esta información",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/request/deny":{
+            "post": {
+                "tags": ["Solicitud"],
+                "summary": "Cambia el estado de una solicitud a verificada pero no crea ninguna entidad",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_request",
+                        "description": "Identificador de la solicitud denegada",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error: No posee permisos para realizar esta acción",
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
@@ -1316,6 +1407,60 @@
                         "schema":{
                             "$ref": "#/definitions/information_message"
                         }
+                    }
+                }
+            }
+        },
+        "/card/payment":{
+            "post":{
+                "tags": ["Tarjeta"],
+                "summary": "Metodo para ser consumido por instituciones autorizadas.",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "id_institution",
+                        "description": "Identificador de la institución",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "password",
+                        "description": "Contraseña de autenticación",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "id_card",
+                        "description": "Identificador de la tarjeta sobre la que se realizará el cobro",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "amount",
+                        "description": "Cantidad que se descontará de la tarjeta",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "description",
+                        "description": "Descripción del pago realizado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+
                     }
                 }
             }
@@ -2687,8 +2832,8 @@
                     "description":"Identificador de la solicitud"
                 },
                 "request_type":{
-                    "type":"string",
-                    "description":"Tipo de la solicitud"
+                    "type":"integer",
+                    "description":"Tipo de la solicitud (1-6,Actualizacion de datos,Cancelacion de tarjeta,Tarjeta de credito,Tarjeta de debito,Prestamo,Cuenta"
                 },
                 "date":{
                     "type":"date",
