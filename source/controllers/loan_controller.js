@@ -9,7 +9,7 @@ const loan_statement = (req, res) => {
         if(session == null){
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
         }else{
-            Loan.findOne({where : {id_loan: req.body.id_loan}, raw: true}).then(loan => {
+            Loan.findOne({where : {id_loan: req.query.id_loan}, raw: true}).then(loan => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                     if((loan.cui == bank_user.cui) || (bank_user.user_type > 2)){
                         Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true}).then(payments =>{
@@ -113,7 +113,7 @@ const get_loan_by_id = (req, res) =>{
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(bank_user.user_type > 2){
-                    Loan.findOne({where: {id_loan: req.body.id_loan}}).then(loan=>{
+                    Loan.findOne({where: {id_loan: req.query.id_loan}}).then(loan=>{
                         res.status(200).json(loan);
                     });
                 }else{
