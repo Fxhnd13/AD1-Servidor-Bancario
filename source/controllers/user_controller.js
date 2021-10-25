@@ -161,7 +161,9 @@ const update_email = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Email.findOne({where: {username: session.username}}).then(email => {
-                email.update({email: req.body.email});
+                email.update({email: req.body.email}).then(()=>{
+                    res.status(200).json({information_message: 'Se la dirección de correo electronico con éxito'});
+                });
             });
         }
     });
