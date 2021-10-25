@@ -10,6 +10,7 @@ const { credit_card_verfication } = require('./controllers/card_controller');
 const { payment_delay_verification } = require('./controllers/payment_delay_controller');
 const { update_data_reminder_verification } = require('./controllers/person_controller');
 const { update_password_reminder_verification } = require('./controllers/user_controller');
+const { account_verification } = require('./controllers/account_controller');
 
 app.use(express.json());//middleware -> Como se van a comunicar con este servidor, habilitamos json's
 app.use(express.urlencoded({extended: false})); //Indicamos que no se admitiran formularios complejos (imagenes, etc)
@@ -33,11 +34,16 @@ console.log('*******************************'); //Se muestra en la terminal en l
 console.log('*****Servidor iniciado*********');
 console.log('*******************************');
 
-//cron.schedule('0 0 0 * * *', () => {
+//Cosas a verificar día con día
 cron.schedule('0 0 0 * * *', () => {
   loan_verification();
   credit_card_verfication();
   payment_delay_verification();
   update_data_reminder_verification();
   update_password_reminder_verification();
+});
+
+//Cosas a realizar una vez al año
+cron.schedule('0 0 0 1 1 *', () => {
+  account_verification();
 });
