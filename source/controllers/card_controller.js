@@ -7,7 +7,7 @@ const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
 const { sequelize } = require("../db/credentials");
 const { Payment_Delay } = require("../models/payment_delay");
-const { get_random_int, MS_FOR_ONE_YEAR } = require('./utilities_controller');
+const { get_random_int, MS_FOR_ONE_YEAR, CARD_OFFSET, plus_card_offset } = require('./utilities_controller');
 const { Credit_Card_Type } = require("../models/credit_card_type");
 const { send_card_aprovement_email } = require('./email_controller');
 const { Authorized_Institution } = require('../models/authorized_institution');
@@ -135,19 +135,22 @@ const create_card = (req, res) =>{
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
                         });
-                        Card.create({
-                            cui: req.body.cui,
-                            card_type: req.body.card_type,
-                            pin: get_random_int(1000,9999),
-                            expiration_date: new Date(Date.now()+(MS_FOR_ONE_YEAR*5)),
-                            active: true
-                        }).then(card=>{
-                            if(card_type == 1){
-                                create_credit_card(card, req, res);
-                            }else{
-                                create_debit_card(card, req, res);
-                            }
-                            send_card_aprovement_email(session.username, card);
+                        Card.count().then(value=>{
+                            Card.create({
+                                id_card: plus_card_offset(value),
+                                cui: req.body.cui,
+                                card_type: req.body.card_type,
+                                pin: get_random_int(1000,9999),
+                                expiration_date: new Date(Date.now()+(MS_FOR_ONE_YEAR*5)),
+                                active: true
+                            }).then(card=>{
+                                if(card_type == 1){
+                                    create_credit_card(card, req, res);
+                                }else{
+                                    create_debit_card(card, req, res);
+                                }
+                                send_card_aprovement_email(session.username, card);
+                            });
                         });
                     }
                 }else{
