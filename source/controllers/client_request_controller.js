@@ -12,6 +12,7 @@ const { Card } = require("../models/card");
 const { Person } = require("../models/person");
 const { print_request_type, get_credit_score } = require("./utilities_controller");
 const { request } = require("express");
+const { Account } = require("../models/account");
 
 /**
  * @description Method that creates a update data request
@@ -123,15 +124,25 @@ const create_debit_card_request = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesión nuevamente.'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true }).then(bank_user=>{
-                Request.create({ request_type: 4, date: new Date(Date.now()), verified: false}).then(new_request =>{
-                    if(new_request != null){
-                        Debit_Card_Request.create({
-                            id_request: new_request.id_request,
-                            id_account: req.body.id_account
-                        }).then(()=> {
-                            res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de debito.'});
-                        });
-                    } 
+                Account.findOne({where: {id_account: req.body.id_account}, raw: true}).then(account=>{
+                    if(account == null){
+                        res.status(403).json({information_message: 'No existe una cuenta con el identificador indicado'});
+                    }else{
+                        if(bank_user.cui == account.cui){
+                            Request.create({ request_type: 4, date: new Date(Date.now()), verified: false}).then(new_request =>{
+                                if(new_request != null){
+                                    Debit_Card_Request.create({
+                                        id_request: new_request.id_request,
+                                        id_account: req.body.id_account
+                                    }).then(()=> {
+                                        res.status(200).json({information_message:'Se ha creado una solicitud de tarjeta de debito.'});
+                                    });
+                                } 
+                            });
+                        }else{
+                            res.status(403).json({information_message: 'No puede solicitar una tarjeta de debito para una cuenta que no le pertenece.'});
+                        }
+                    }
                 });
             });
         }
