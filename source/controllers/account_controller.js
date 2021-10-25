@@ -79,11 +79,11 @@ const account_statement = async (req, res) => {
         if(session == null){
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
         }else{
-            Account.findOne({where : {id_account: req.body.id_account}, raw: true}).then(account => {
+            Account.findOne({where : {id_account: req.query.id_account}, raw: true}).then(account => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                     if((account.cui == bank_user.cui) || (bank_user.user_type > 2)){
-                        var deposit_promise = Deposit.findAll({where: {destination_account: req.body.id_account}, raw: true});
-                        var withdrawal_promise = Withdrawal.findAll({where: {origin_account: req.body.id_account}, raw: true});
+                        var deposit_promise = Deposit.findAll({where: {destination_account: req.query.id_account}, raw: true});
+                        var withdrawal_promise = Withdrawal.findAll({where: {origin_account: req.query.id_account}, raw: true});
                         var debit_card_promise = Debit_Card.findOne({where: {id_account: account.id_account}, raw: true});
                         Promise.all([deposit_promise, withdrawal_promise, debit_card_promise]).then((values)=>{
                             deposits = values[0];
@@ -182,7 +182,7 @@ const get_account_by_id = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
                 if(bank_user.user_type > 2){
-                    Account.findOne({where: {id_account: req.body.id_account}}).then(account=>{
+                    Account.findOne({where: {id_account: req.query.id_account}}).then(account=>{
                         res.status(200).json(account);
                     });
                 }else{
@@ -284,8 +284,8 @@ const get_all_transactions_by_an_user = (req, res) =>{
         }else{
             const bank_user = jwt.decode(req.headers.token);
             if(bank_user.user_type == 4){
-                var deposit_promise = Deposit.findAll({where:{responsible_username: req.body.username},raw: true});
-                var withdrawal_promise = Withdrawal.findAll({where:{responsible_username: req.body.username},raw: true});
+                var deposit_promise = Deposit.findAll({where:{responsible_username: req.query.username},raw: true});
+                var withdrawal_promise = Withdrawal.findAll({where:{responsible_username: req.query.username},raw: true});
                 Promise.all([deposit_promise, withdrawal_promise]).then(values=>{
                     const transactions = values[0].concat(values[1]);
                     var result = []; contador = 1;

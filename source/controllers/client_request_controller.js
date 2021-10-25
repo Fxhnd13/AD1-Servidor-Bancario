@@ -243,8 +243,8 @@ const get_request_between_two_dates = (req, res) =>{
             Request.findAll({
                 where:{
                     date: {
-                        [Op.gte]: req.body.initial_date,
-                        [Op.lte]: req.body.final_date
+                        [Op.gte]: req.query.initial_date,
+                        [Op.lte]: req.query.final_date
                     },
                     verified: false
                 },
@@ -267,7 +267,7 @@ const get_request_by_id = (req, res) =>{
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(bank_user.user_type > 2){
-                    Request.findOne({where:{id_request: req.body.id_request}, raw: true}).then(request=>{
+                    Request.findOne({where:{id_request: req.query.id_request}, raw: true}).then(request=>{
                         var request_data_promise, credit_score_promise=null;
                         switch(request.request_type){
                             case 1:{
