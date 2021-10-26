@@ -69,6 +69,7 @@ function do_account_satement(account, deposits, withdrawals, payments, res){
     res.status(200).json({
         id_account: account.id_account,
         id_account_type: account.id_account_type,
+        account_type_description: ((account.id_account_type==1)? 'Cuenta de ahorro': 'Cuenta monetaria'),
         balance: account.balance,
         movements: movements
     });
