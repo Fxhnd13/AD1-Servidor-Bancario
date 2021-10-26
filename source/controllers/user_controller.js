@@ -7,7 +7,7 @@ const { generate_password } = require('./authentication_controller');
 const { send_password_recovery_email } = require('./email_controller');
 
 const bcrypt = require("bcrypt");
-const { is_six_months_later } = require('./utilities_controller');
+const { is_six_months_later, is_six_months_earlier } = require('./utilities_controller');
 var BCRYPT_SALT_ROUNDS = 3;
 
 /**
@@ -170,9 +170,10 @@ const update_email = (req, res) => {
 const update_password_reminder_verification = ()=>{
     Bank_User.findAll().then(users=>{
         users.forEach(user=>{
-            if(is_six_months_later(user.last_update_date)){
+            if(is_six_months_earlier(user.last_update_date)){
                 Email.findOne({where: {username: user.username}}).then(email=>{
                     send_password_reminder_email(email);
+                    user.update({last_update_date: new Date(Date.now())});
                 });
             }
         });

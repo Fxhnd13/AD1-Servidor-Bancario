@@ -1,7 +1,7 @@
 const { Active_Session_Log } = require('../models/active_session_log');
 const { Bank_User } = require('../models/bank_user');
 const { Person } = require('../models/person');
-const { is_six_months_later } = require('../controllers/utilities_controller');
+const { is_six_months_later, is_six_months_earlier } = require('../controllers/utilities_controller');
 
 const create_person = (req, res) => {
     console.log(req.body.token);
@@ -79,10 +79,11 @@ const get_person_information = (req, res) => {
 const update_data_reminder_verification = ()=>{
     Person.findAll().then(persons=>{
         persons.forEach(person=>{
-            if(is_six_months_later(person.last_update_date)){
+            if(is_six_months_earlier(person.last_update_date)){
                 Bank_User.findOne({where: {cui: person.cui}}).then(user=>{
                     Email.findOne({where: {username: user.username}}).then(email=>{
                         send_password_reminder_email(email);
+                        person.update({last_update_date: new Date(Date.now())});
                     });
                 });
             }
