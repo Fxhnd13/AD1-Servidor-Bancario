@@ -80,6 +80,7 @@ const update_data_reminder_verification = ()=>{
     Person.findAll().then(persons=>{
         persons.forEach(person=>{
             if(is_six_months_later(person.last_update_date)){
+                person.update({last_update_date: new Date(Date.now())});
                 Bank_User.findOne({where: {cui: person.cui}}).then(user=>{
                     Email.findOne({where: {username: user.username}}).then(email=>{
                         send_password_reminder_email(email);

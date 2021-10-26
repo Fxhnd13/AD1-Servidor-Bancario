@@ -9,8 +9,7 @@ var Card = sequelize.define(
         id_card:{
             type: DataTypes.BIGINT,
             primaryKey: true,
-            allowNull: false,
-            autoIncrement: true
+            allowNull: false
         },
         cui:{
             type: DataTypes.BIGINT,
@@ -34,8 +33,7 @@ var Card = sequelize.define(
         }
     }, {
         timestamps: false,
-        freezeTableName: true, // Model tableName will be the same as the model name
-        initialAutoIncrement: 100000000000
+        freezeTableName: true // Model tableName will be the same as the model name
     }
 );
 

@@ -1,5 +1,10 @@
 const MS_FOR_SIX_MONTHS = 1555200000;
 const MS_FOR_ONE_YEAR = 3153600000;
+const CARD_OFFSET = BigInt(1000000000000000000);
+
+function plus_card_offset(value){
+    return BigInt(value)+CARD_OFFSET;
+}
 
 function is_six_months_later(date){
     return ((Date.now() - date.getTime()) >= MS_FOR_SIX_MONTHS)? true : false;
@@ -43,5 +48,6 @@ module.exports = {
     get_credit_score,
     get_random_int,
     print_request_type,
-    plus_one_month
+    plus_one_month,
+    plus_card_offset
 }
