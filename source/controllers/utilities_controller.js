@@ -1,14 +1,18 @@
-const MS_FOR_SIX_MONTHS = 1555200000;
-const MS_FOR_ONE_YEAR = 3153600000;
+const MS_FOR_SIX_MONTHS = 15778800000;
+const MS_FOR_ONE_YEAR =   31557600000;
 const CARD_OFFSET = BigInt(1000000000000000000);
 
 function plus_card_offset(value){
     return BigInt(value)+CARD_OFFSET;
 }
 
-function is_six_months_later(date){
+function is_six_months_earlier(date){
     return ((Date.now() - date.getTime()) >= MS_FOR_SIX_MONTHS)? true : false;
 };
+
+function is_six_months_later(date){
+    return ((date.getTime() - Date.now()) >= MS_FOR_SIX_MONTHS)? true : false;
+}
 
 function get_credit_score(cui){
     return new Promise((resolve, reject) =>{
@@ -32,22 +36,38 @@ function print_request_type(type){
     }
 };
 
+function has_bureaucratic_or_admin_access(user_type){
+    return (user_type == 3 || user_type == 4)? true : false;
+}
+
+function has_admin_access(user_type){
+    return user_type == 4;
+}
+
+function is_owner(person_cui, owner_cui){
+    return person_cui == owner_cui;
+}
+
 function plus_one_month(date){
     if(date.getMonth()==11){
-        date.setYear(date.getYear()+1);
+        date.setFullYear(date.getFullYear()+1);
         date.setMonth(0);
     }else{
         date.setMonth(date.getMonth()+1);
     }
-    return date;
+    return new Date(date);
 }
 
 module.exports = {
     MS_FOR_ONE_YEAR,
     is_six_months_later,
+    is_six_months_earlier,
     get_credit_score,
     get_random_int,
     print_request_type,
     plus_one_month,
+    has_admin_access,
+    has_bureaucratic_or_admin_access,
+    is_owner,
     plus_card_offset
 }
