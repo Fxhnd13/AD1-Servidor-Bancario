@@ -8,6 +8,7 @@ const { Withdrawal } = require("../models/withdrawal");
 const { Deposit } = require('../models/deposit');
 const { Debit_Card } = require('../models/debit_card');
 const jwt = require('jsonwebtoken'); //Indicamos que usaremos JsonWebToken
+const { Account_Type } = require("../models/account_type");
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -368,6 +369,16 @@ const get_all_transactions = (req, res) => {
     });
 };
 
+const account_verification = () =>{
+    Account.findAll({where: {id_account_type: 1}, include: Account_Type}).then(accounts=>{
+        accounts.forEach(account=>{
+            account.update({
+                balance: parseFloat(account.balance)+(parseFloat(account.balance)*parseFloat(account.account_type.interest_rate))
+            });
+        });
+    });
+};
+
 module.exports = {
     transfer_on_app,
     account_statement,
@@ -379,5 +390,6 @@ module.exports = {
     do_deposit,
     do_withdrawal,
     get_all_transactions,
-    get_all_transactions_by_an_user
+    get_all_transactions_by_an_user,
+    account_verification
 }

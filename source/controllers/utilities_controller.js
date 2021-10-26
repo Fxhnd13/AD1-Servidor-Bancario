@@ -1,5 +1,10 @@
 const MS_FOR_SIX_MONTHS = 15778800000;
 const MS_FOR_ONE_YEAR =   31557600000;
+const CARD_OFFSET = BigInt(1000000000000000000);
+
+function plus_card_offset(value){
+    return BigInt(value)+CARD_OFFSET;
+}
 
 function is_six_months_earlier(date){
     return ((Date.now() - date.getTime()) >= MS_FOR_SIX_MONTHS)? true : false;
@@ -63,5 +68,6 @@ module.exports = {
     plus_one_month,
     has_admin_access,
     has_bureaucratic_or_admin_access,
-    is_owner
+    is_owner,
+    plus_card_offset
 }
