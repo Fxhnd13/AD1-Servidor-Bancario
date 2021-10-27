@@ -7,7 +7,7 @@ const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
 const { sequelize } = require("../db/credentials");
 const { Payment_Delay } = require("../models/payment_delay");
-const { get_random_int, MS_FOR_ONE_YEAR, CARD_OFFSET, plus_card_offset } = require('./utilities_controller');
+const { get_random_int, MS_FOR_ONE_YEAR, plus_card_offset, is_owner, has_bureaucratic_or_admin_access } = require('./utilities_controller');
 const { Credit_Card_Type } = require("../models/credit_card_type");
 const { send_card_aprovement_email } = require('./email_controller');
 const { Authorized_Institution } = require('../models/authorized_institution');
@@ -20,7 +20,7 @@ const card_statement = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                 Card.findOne({where: {id_card: req.query.id_card}, raw: true}).then(card =>{
-                    if((card.cui == bank_user.cui) || (bank_user.user_type > 2)){
+                    if(is_owner(bank_user.cui, card.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
                         if(card.card_type == 1){
                             credit_card_statement(req, res, session);
                         }else if(card.card_type == 2){
@@ -102,7 +102,7 @@ const card_cancellation = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where:{username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Payment_Delay.findAll({where:{id_card: req.body.id_card}, raw: true}).them(payments_delayed=>{
                         if(payments_delayed.length > 0){
                             res.status(403).json({information_message: 'No se puede cancelar la tarjeta solicitada, posee saldos pendientes.'});
@@ -130,7 +130,7 @@ const create_card = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     if(req.body.id_request != undefined){
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
