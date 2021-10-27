@@ -7,7 +7,7 @@ const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
 const { sequelize } = require("../db/credentials");
 const { Payment_Delay } = require("../models/payment_delay");
-const { get_random_int, MS_FOR_ONE_YEAR, plus_card_offset, is_owner, has_bureaucratic_or_admin_access } = require('./utilities_controller');
+const { get_random_int, MS_FOR_ONE_YEAR, plus_card_offset, is_owner, has_bureaucratic_or_admin_access, has_cashier_access } = require('./utilities_controller');
 const { Credit_Card_Type } = require("../models/credit_card_type");
 const { send_card_aprovement_email } = require('./email_controller');
 const { Authorized_Institution } = require('../models/authorized_institution');
@@ -259,10 +259,47 @@ const do_payment = (req, res) =>{
     });
 };
 
+const do_credit_card_payment_to_bank = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null) {
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(has_cashier_access(bank_user.user_type)){
+                    Credit_Card.findOne({where: {id_card: req.body.id_card}}).then(credit_card=>{
+                        if(credit_card != null){
+                            if(parseFloat(credit_card.balance) < parseFloat(req.body.amount)){
+                                res.status(400).json({information_message: 'Su tarjeta no posee saldos pendientes en el corriente mes.'});
+                            }else{
+                                Credit_Card_Payment_Log.create({
+                                    id_card: credit_card.id_card,
+                                    date: new Date(Date.now()),
+                                    amount: req.body.amount
+                                }).then(()=>{
+                                    credit_card.update({
+                                        payment: parseFloat(credit_card.payment)+parseFloat(req.body.amount)
+                                    }).then(()=>{
+                                        res.status(200).json({information_message: 'Se ha registrado el pago correctamente.'});
+                                    });
+                                });
+                            }
+                        }else{
+                            res.status(403).json({information_message: 'El número de tarjeta de credito ingresado no existe.'});
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
 module.exports = {
     card_statement,
     credit_card_verfication,
     card_cancellation,
     create_card,
-    do_payment
+    do_payment, 
+    do_credit_card_payment_to_bank
 }

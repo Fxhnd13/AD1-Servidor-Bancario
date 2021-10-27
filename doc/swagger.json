@@ -1299,6 +1299,55 @@
                 }
             }
         },
+        "/card/credit_payment":{
+            "post": {
+                "tags": ["Tarjeta"],
+                "summary": "Registar un abono hacia el saldo de la tarjeta de credito seleccionada",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_card",
+                        "required": true,
+                        "description": "Identificador de la tarjeta a la que se pagara",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "amount",
+                        "required": true,
+                        "description": "Cantidad de dinero que se abonará a la cuenta.",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error:\nSin permiso\nTarjeta inexistente",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
         "/card/statement":{
             "get":{
                 "tags":["Tarjeta"],
@@ -1462,6 +1511,55 @@
                     "200":{
                         "description": "ok",
                         "schema": {
+                            "$ref": "#/definitions/information_message"
+                        }
+                    }
+                }
+            }
+        },
+        "/loan/payment":{
+            "post":{
+                "tags": ["Prestamo"],
+                "summary": "Realiza un pago para abonar un prestamo bancario",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "token",
+                        "type": "string"
+                    },{
+                        "in": "body",
+                        "name": "id_loan",
+                        "description": "Identificador del prestamo al que se abonara",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },{
+                        "in": "body",
+                        "name": "amount",
+                        "description": "Cantidad que se abonará",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200":{
+                        "description": "ok",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "401":{
+                        "description": "Error: Expiracion de token de sesion",
+                        "schema":{
+                            "$ref": "#/definitions/information_message"
+                        }
+                    },
+                    "403":{
+                        "description": "Error:\nSin permiso\nTarjeta inexistente",
+                        "schema":{
                             "$ref": "#/definitions/information_message"
                         }
                     }
