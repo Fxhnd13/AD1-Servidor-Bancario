@@ -68,6 +68,7 @@ function do_account_satement(account, deposits, withdrawals, payments, res){
             movements.push({movement_type: 'Retiro con tarjeta', amount: payment.amount, date_time: payment.date_time});
         });
     }
+    movements.sort(function(o1,o2){return (o1.date_time < o2.date_time)? -1 : (o1.date_time > o2.date_time)? 1 : 0;});
     res.status(200).json({
         id_account: account.id_account,
         id_account_type: account.id_account_type,
@@ -313,7 +314,7 @@ const get_all_transactions_by_an_user = (req, res) =>{
                             });
                         }
                     });
-                    result.sort((a, b) => new Date(a.date_time).getTime() > new Date(b.date_time).getTime());
+                    result.sort(function(o1,o2){return (o1.date_time < o2.date_time)? -1 : (o1.date_time > o2.date_time)? 1 : 0;});
                     res.status(200).json(result);
                 });
             }else{
@@ -361,7 +362,7 @@ const get_all_transactions = (req, res) => {
                                 }
                             });
                         });
-                        result.sort((a, b) => new Date(a.date_time).getTime() > new Date(b.date_time).getTime());
+                        result.sort(function(o1,o2){return (o1.date_time < o2.date_time)? -1 : (o1.date_time > o2.date_time)? 1 : 0;});
                         res.status(200).json(result);
                     });
                 });
