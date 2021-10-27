@@ -9,6 +9,7 @@ const { Deposit } = require('../models/deposit');
 const { Debit_Card } = require('../models/debit_card');
 const jwt = require('jsonwebtoken'); //Indicamos que usaremos JsonWebToken
 const { Account_Type } = require("../models/account_type");
+const { has_client_access, is_owner, has_bureaucratic_or_admin_access, has_cashier_access, has_admin_access } = require("./utilities_controller");
 
 const transfer_on_app = (req, res) => {
     Active_Session_Log.findOne({ where: {token: req.headers.token}, raw: true}).then(session => {
@@ -16,7 +17,7 @@ const transfer_on_app = (req, res) => {
             res.status(401).json({information_message: 'El token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type == 1){
+                if(has_client_access(bank_user.user_type)){
                     Account.findAndCountAll({where:{[Op.or]: [{id_account: req.body.id_origin_account},{id_account: req.body.id_destination_account}]}}).then(accounts => {
                         if(accounts.count == 2){
                             var origin_account = (accounts.rows[0].id_account == req.body.id_origin_account)? accounts.rows[0] : accounts.rows[1];
@@ -83,7 +84,7 @@ const account_statement = async (req, res) => {
         }else{
             Account.findOne({where : {id_account: req.query.id_account}, raw: true}).then(account => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
-                    if((account.cui == bank_user.cui) || (bank_user.user_type > 2)){
+                    if(is_owner(bank_user.cui, account.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
                         var deposit_promise = Deposit.findAll({where: {destination_account: req.query.id_account}, raw: true});
                         var withdrawal_promise = Withdrawal.findAll({where: {origin_account: req.query.id_account}, raw: true});
                         var debit_card_promise = Debit_Card.findOne({where: {id_account: account.id_account}, raw: true});
@@ -138,7 +139,7 @@ const create_account = (req, res)=>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     if(req.body.id_request != undefined){
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
@@ -165,7 +166,7 @@ const get_all_accounts = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Account.findAll().then(accounts=>{
                         res.status(200).json({accounts: accounts});
                     });
@@ -183,7 +184,7 @@ const get_account_by_id = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Account.findOne({where: {id_account: req.query.id_account}}).then(account=>{
                         res.status(200).json(account);
                     });
@@ -201,7 +202,7 @@ const update_account = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     res.status(500).json({information_message: 'Sin implementar aún.'});
                 }else{
                     res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
@@ -217,7 +218,7 @@ const do_deposit = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type == 2){
+                if(has_cashier_access(bank_user.user_type)){
                     Account.findOne({where: {id_account: req.body.destination_account}}).then(account=>{
                         if(account != null){
                             Deposit.create({
@@ -249,7 +250,7 @@ const do_withdrawal = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user => {
-                if(bank_user.user_type == 2){
+                if(has_cashier_access(bank_user.user_type)){
                     Account.findOne({where: {id_account: req.body.destination_account}}).then(account=>{
                         if(account != null){
                             if(parseFloat(account.balance) >= parseFloat(req.body.amount)){
@@ -285,7 +286,7 @@ const get_all_transactions_by_an_user = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ah expirado, inicie sesion nuevamente.'});
         }else{
             const bank_user = jwt.decode(req.headers.token);
-            if(bank_user.user_type == 4){
+            if(has_admin_access(bank_user.user_type)){
                 var deposit_promise = Deposit.findAll({where:{responsible_username: req.query.username},raw: true});
                 var withdrawal_promise = Withdrawal.findAll({where:{responsible_username: req.query.username},raw: true});
                 Promise.all([deposit_promise, withdrawal_promise]).then(values=>{

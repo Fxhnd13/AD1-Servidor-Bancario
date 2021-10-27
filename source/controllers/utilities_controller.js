@@ -44,6 +44,14 @@ function has_admin_access(user_type){
     return user_type == 4;
 }
 
+function has_cashier_access(user_type){
+    return user_type == 2;
+}
+
+function has_client_access(user_type){
+    return user_type == 1;
+}
+
 function is_owner(person_cui, owner_cui){
     return person_cui == owner_cui;
 }
@@ -69,5 +77,7 @@ module.exports = {
     has_admin_access,
     has_bureaucratic_or_admin_access,
     is_owner,
-    plus_card_offset
+    plus_card_offset,
+    has_client_access,
+    has_cashier_access
 }

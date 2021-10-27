@@ -3,6 +3,7 @@ const { Loan } = require('../models/loan');
 const { Bank_User } = require('../models/bank_user');
 const { Payment_Log } = require('../models/payment_log');
 const { Account } = require('../models/account');
+const { is_owner, has_bureaucratic_or_admin_access } = require('./utilities_controller');
 
 const loan_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
@@ -11,8 +12,8 @@ const loan_statement = (req, res) => {
         }else{
             Loan.findOne({where : {id_loan: req.query.id_loan}, raw: true}).then(loan => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
-                    if((loan.cui == bank_user.cui) || (bank_user.user_type > 2)){
-                        Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true}).then(payments =>{
+                    if(is_owner(bank_user.cui, loan.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
+                        Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true, order: [['date', 'ASC']]}).then(payments =>{
                             res.status(200).json({
                                 id_loan: loan.id_loan,
                                 cui: loan.cui,
@@ -59,7 +60,7 @@ const create_loan = (req, res)=>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     if(req.body.id_request != undefined){
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
@@ -94,7 +95,7 @@ const get_all_loans = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Loan.findAll().then(loans=>{
                         res.status(200).json({loans: loans});
                     });
@@ -112,7 +113,7 @@ const get_loan_by_id = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Loan.findOne({where: {id_loan: req.query.id_loan}}).then(loan=>{
                         res.status(200).json(loan);
                     });
