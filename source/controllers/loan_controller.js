@@ -162,6 +162,8 @@ const do_loan_payment = (req, res) => {
                                 }).then(payment=>{
                                     loan.update({balance: payment.balance});
                                     if(payment.balance == 0) loan.update({canceled: true});
+                                }).then(()=>{
+                                    res.status(200).json({information_message: 'Se ha registrado el pago con éxito.'});
                                 });
                             });
                         }
