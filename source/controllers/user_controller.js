@@ -109,6 +109,7 @@ const get_all_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll().then(users=>{
+                        users.forEach(user=>{user.password = ""});
                         res.status(200).json({users: users});
                     });
                 }else{
@@ -127,6 +128,7 @@ const get_bank_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
+                        users.forEach(user=>{user.password = ""});
                         res.status(200).json({users: users});
                     });
                 }else{
@@ -190,6 +192,7 @@ const get_denied_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where: {access: false}, raw: true}).then(users=>{
+                        users.forEach(user=>{user.password = ""});
                         res.status(200).json(users);
                     });
                 }else{
