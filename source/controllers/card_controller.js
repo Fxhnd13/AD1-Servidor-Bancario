@@ -39,8 +39,8 @@ const card_statement = (req, res) => {
 
 const credit_card_statement = (req, res, session) => {
     Credit_Card.findOne({where : {id_card: req.query.id_card}, raw: true}).then(credit_card => {
-        Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments =>{
-            Payment_Delay.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments_delayed =>{
+        Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true, order: [['date_time', 'ASC']]}).then(payments =>{
+            Payment_Delay.findAll({where: {id_card: credit_card.id_card, canceled: false}, raw: true}).then(payments_delayed =>{
                 res.status(200).json({
                     id_card: credit_card.id_card,
                     cui: credit_card.cui,
@@ -60,7 +60,7 @@ const credit_card_statement = (req, res, session) => {
 const debit_card_statement = (req, res, session) => {
     Debit_Card.findOne({where: {id_card: req.query.id_card}, raw: true}).then(debit_card =>{
         Account.findOne({where: {id_account: debit_card.id_account}, raw: true}).then(account => {
-            Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true}).then(payments =>{
+            Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true, order: [['date_time', 'ASC']]}).then(payments =>{
                 res.status(200).json({
                     id_card: debit_card.id_card,
                     cui: account.cui,

@@ -13,7 +13,7 @@ const loan_statement = (req, res) => {
             Loan.findOne({where : {id_loan: req.query.id_loan}, raw: true}).then(loan => {
                 Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                     if(is_owner(bank_user.cui, loan.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
-                        Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true}).then(payments =>{
+                        Payment_Log.findAll({where: {id_loan: loan.id_loan}, raw: true, order: [['date', 'ASC']]}).then(payments =>{
                             res.status(200).json({
                                 id_loan: loan.id_loan,
                                 cui: loan.cui,
