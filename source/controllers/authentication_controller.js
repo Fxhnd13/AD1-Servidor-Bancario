@@ -18,7 +18,7 @@ const login = async (req, res) => {
             if(user.access){
                 bcrypt.compare(req.body.password,user.password).then(areEqual =>{
                     if(areEqual){
-                        Active_Session_Log.findOne({where:{username: req.body.username}, raw: true}).then(session =>{
+                        Active_Session_Log.findOne({where:{username: req.body.username}}).then(session =>{
                             if(session == null){
                                 const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
                                 Active_Session_Log.create({username: user.username, token: token}).then(()=>{
