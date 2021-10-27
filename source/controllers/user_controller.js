@@ -7,7 +7,7 @@ const { generate_password } = require('./authentication_controller');
 const { send_password_recovery_email } = require('./email_controller');
 
 const bcrypt = require("bcrypt");
-const { is_six_months_later, is_six_months_earlier, has_admin_access } = require('./utilities_controller');
+const { print_user_type, is_six_months_earlier, has_admin_access } = require('./utilities_controller');
 var BCRYPT_SALT_ROUNDS = 3;
 
 /**
@@ -109,8 +109,18 @@ const get_all_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll().then(users=>{
-                        users.forEach(user=>{user.password = ""});
-                        res.status(200).json({users: users});
+                        let result = [];
+                        users.forEach(user=>{
+                            result.push({
+                                username: user.username,
+                                user_type: user.user_type,
+                                user_type_description: print_user_type(user.user_type),
+                                cui: user.cui,
+                                access: user.access,
+                                last_update_date: user.last_update_date
+                            })
+                        });
+                        res.status(200).json(result);
                     });
                 }else{
                     res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
@@ -128,8 +138,18 @@ const get_bank_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
-                        users.forEach(user=>{user.password = ""});
-                        res.status(200).json({users: users});
+                        let result = [];
+                        users.forEach(user=>{
+                            result.push({
+                                username: user.username,
+                                user_type: user.user_type,
+                                user_type_description: print_user_type(user.user_type),
+                                cui: user.cui,
+                                access: user.access,
+                                last_update_date: user.last_update_date
+                            })
+                        });
+                        res.status(200).json(result);
                     });
                 }else{
                     res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
@@ -192,8 +212,18 @@ const get_denied_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where: {access: false}, raw: true}).then(users=>{
-                        users.forEach(user=>{user.password = ""});
-                        res.status(200).json(users);
+                        let result = [];
+                        users.forEach(user=>{
+                            result.push({
+                                username: user.username,
+                                user_type: user.user_type,
+                                user_type_description: print_user_type(user.user_type),
+                                cui: user.cui,
+                                access: user.access,
+                                last_update_date: user.last_update_date
+                            })
+                        });
+                        res.status(200).json(result);
                     });
                 }else{
                     res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});

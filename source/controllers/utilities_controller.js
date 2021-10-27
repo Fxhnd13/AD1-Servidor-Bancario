@@ -36,6 +36,15 @@ function print_request_type(type){
     }
 };
 
+function print_user_type(type){
+    switch(type){
+        case 1: return 'Cliente'
+        case 2: return 'Cajero'
+        case 3: return 'Burocratico'
+        case 4: return 'Administrador'
+    }
+}
+
 function has_bureaucratic_or_admin_access(user_type){
     return (user_type > 2) ? true : false;
 }
@@ -79,5 +88,6 @@ module.exports = {
     is_owner,
     plus_card_offset,
     has_client_access,
-    has_cashier_access
+    has_cashier_access,
+    print_user_type
 }
