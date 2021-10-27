@@ -1,7 +1,7 @@
 const { Active_Session_Log } = require('../models/active_session_log');
 const { Bank_User } = require('../models/bank_user');
 const { Person } = require('../models/person');
-const { is_six_months_later } = require('../controllers/utilities_controller');
+const { is_six_months_later, is_six_months_earlier, has_admin_access, is_owner, has_bureaucratic_or_admin_access } = require('../controllers/utilities_controller');
 
 const create_person = (req, res) => {
     console.log(req.body.token);
@@ -10,7 +10,7 @@ const create_person = (req, res) => {
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente"});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
-                if(user.user_type >= 3){
+                if(has_admin_access(user.user_type)){
                     Person.create({
                         cui: req.body.cui,
                         name: req.body.name,
@@ -38,7 +38,7 @@ const update_person = (req, res) => {
             res.status(401).json({information_message:"El token de sesion ha expirado, inicie sesión nuevamente."});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(user => {
-                if(user.user_type >= 3){
+                if(has_admin_access(user.user_type)){
                     if(req.body.id_request != undefined){
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
@@ -69,7 +69,11 @@ const get_person_information = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 Person.findOne({where: {cui: bank_user.cui}, raw: true}).then(person=>{
-                    res.status(200).json(person);
+                    if(is_owner(bank_user.cui, person.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
+                        res.status(200).json(person);
+                    }else{
+                        res.status(403).json({information_message: 'No posee acceso a esta información.'});
+                    }
                 })
             })
         }
@@ -79,10 +83,11 @@ const get_person_information = (req, res) => {
 const update_data_reminder_verification = ()=>{
     Person.findAll().then(persons=>{
         persons.forEach(person=>{
-            if(is_six_months_later(person.last_update_date)){
+            if(is_six_months_earlier(person.last_update_date)){
                 Bank_User.findOne({where: {cui: person.cui}}).then(user=>{
                     Email.findOne({where: {username: user.username}}).then(email=>{
                         send_password_reminder_email(email);
+                        person.update({last_update_date: new Date(Date.now())});
                     });
                 });
             }

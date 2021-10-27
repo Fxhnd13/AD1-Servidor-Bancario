@@ -7,7 +7,7 @@ const { generate_password } = require('./authentication_controller');
 const { send_password_recovery_email } = require('./email_controller');
 
 const bcrypt = require("bcrypt");
-const { is_six_months_later } = require('./utilities_controller');
+const { is_six_months_later, is_six_months_earlier, has_admin_access } = require('./utilities_controller');
 var BCRYPT_SALT_ROUNDS = 3;
 
 /**
@@ -37,7 +37,7 @@ const create_user = async(req, res) => {
                             res.status(401).json({information_message: "El token que posee ha expirado, inicie sesion nuevamente."})
                         }else{
                             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                            if(bank_user.user_type >=3 ){
+                            if(has_admin_access(bank_user.user_type)){
                                 Bank_User.create({ username: req.body.username, password: hashed_password, user_type: req.body.user_type, cui: req.body.cui, access: true});
                                 Email.create({ username: req.body.username, email: req.body.email });
                                 res.status(200).json({information_message:"Se ha creado su usuario correctamente."});
@@ -107,7 +107,7 @@ const get_all_users = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type == 4){
+                if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll().then(users=>{
                         res.status(200).json({users: users});
                     });
@@ -125,7 +125,7 @@ const get_bank_users = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type == 4){
+                if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
                         res.status(200).json({users: users});
                     });
@@ -143,7 +143,7 @@ const revoke_access = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type == 4){
+                if(has_admin_access(bank_user.user_type)){
                     Bank_User.findOne({where: {username: req.body.username}}).then(bank_user_to_revoke_access=>{
                         bank_user_to_revoke_access.update({access: false});
                     });
@@ -172,9 +172,10 @@ const update_email = (req, res) => {
 const update_password_reminder_verification = ()=>{
     Bank_User.findAll().then(users=>{
         users.forEach(user=>{
-            if(is_six_months_later(user.last_update_date)){
+            if(is_six_months_earlier(user.last_update_date)){
                 Email.findOne({where: {username: user.username}}).then(email=>{
                     send_password_reminder_email(email);
+                    user.update({last_update_date: new Date(Date.now())});
                 });
             }
         });

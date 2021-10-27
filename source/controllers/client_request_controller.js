@@ -10,7 +10,7 @@ const { Update_Data_Request } = require("../models/update_data_request");
 const { Op } = require('sequelize');
 const { Card } = require("../models/card");
 const { Person } = require("../models/person");
-const { print_request_type, get_credit_score } = require("./utilities_controller");
+const { print_request_type, get_credit_score, is_owner, has_bureaucratic_or_admin_access } = require("./utilities_controller");
 const { request } = require("express");
 const { Account } = require("../models/account");
 
@@ -128,7 +128,7 @@ const create_debit_card_request = (req, res) => {
                     if(account == null){
                         res.status(403).json({information_message: 'No existe una cuenta con el identificador indicado'});
                     }else{
-                        if(bank_user.cui == account.cui){
+                        if(is_owner(bank_user.cui, account.cui)){
                             Request.create({ request_type: 4, date: new Date(Date.now()), verified: false}).then(new_request =>{
                                 if(new_request != null){
                                     Debit_Card_Request.create({
@@ -277,7 +277,7 @@ const get_request_by_id = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Request.findOne({where:{id_request: req.query.id_request}, raw: true}).then(request=>{
                         var request_data_promise, credit_score_promise=null;
                         switch(request.request_type){
@@ -345,7 +345,7 @@ const deny_request = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                         request.update({verified: true});
                     }).then(()=>{

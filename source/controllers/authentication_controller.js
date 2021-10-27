@@ -25,7 +25,11 @@ const login = async (req, res) => {
                                     res.status(200).json({username: user.username,user_type: user.user_type, token: token});
                                 });
                             }else{
-                                res.status(403).json({information_message:"Ya se encuentra una sesion activa para el usuario: "+req.body.username});
+                                session.destroy();
+                                const token = jwt.sign({user_type: user.user_type}, authentication_conf.key);
+                                Active_Session_Log.create({username: user.username, token: token}).then(()=>{
+                                    res.status(200).json({username: user.username,user_type: user.user_type, token: token});
+                                });
                             }
                         });
                     }else{

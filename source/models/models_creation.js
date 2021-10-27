@@ -25,6 +25,7 @@ const { Credit_Card } = require('./credit_card');
 const { Debit_Card } = require('./debit_card');
 const { Card } = require('./card');
 const { Credit_Card_Payment_Log } = require('./credit_card_payment_log');
+const { CARD_OFFSET, plus_card_offset } = require('../controllers/utilities_controller');
 
 const bcrypt = require("bcrypt");
 const { sequelize } = require('../db/credentials');
@@ -129,30 +130,50 @@ const syncronization = async (req, res) => {
         ])
     });
     await Card.bulkCreate([
-        {pin: 1000, cui: 1000000000004, card_type: 1, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000005, card_type: 1, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000006, card_type: 1, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000006, card_type: 2, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000007, card_type: 2, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000008, card_type: 1, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000008, card_type: 2, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000008, card_type: 2, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000009, card_type: 2, expiration_date: '2025-12-12', active: true},
-        {pin: 1000, cui: 1000000000010, card_type: 2, expiration_date: '2025-12-12', active: true}
+        {id_card: plus_card_offset(0), pin: 1000, cui: 1000000000004, card_type: 1, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(1), pin: 1000, cui: 1000000000005, card_type: 1, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(2), pin: 1000, cui: 1000000000006, card_type: 1, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(3), pin: 1000, cui: 1000000000006, card_type: 2, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(4), pin: 1000, cui: 1000000000007, card_type: 2, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(5), pin: 1000, cui: 1000000000008, card_type: 1, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(6), pin: 1000, cui: 1000000000008, card_type: 2, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(7), pin: 1000, cui: 1000000000008, card_type: 2, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(8), pin: 1000, cui: 1000000000009, card_type: 2, expiration_date: '2025-12-12', active: true},
+        {id_card: plus_card_offset(9), pin: 1000, cui: 1000000000010, card_type: 2, expiration_date: '2025-12-12', active: true}
     ]);
     await Credit_Card.bulkCreate([
-        {id_card: 1, id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
-        {id_card: 2, id_credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
-        {id_card: 3, id_credit_card_type: 3, credit_limit: 12000, interest_rate: 0.3, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
-        {id_card: 6, id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0}
+        {id_card: plus_card_offset(0), id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
+        {id_card: plus_card_offset(1), id_credit_card_type: 2, credit_limit: 5000, interest_rate: 0.2, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
+        {id_card: plus_card_offset(2), id_credit_card_type: 3, credit_limit: 12000, interest_rate: 0.3, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0},
+        {id_card: plus_card_offset(5), id_credit_card_type: 1, credit_limit: 2000, interest_rate: 0.1, minimal_payment: 0.3, payment: 0, cutoff_date: '2021-11-02', balance: 0}
     ]);
     await Debit_Card.bulkCreate([
-        {id_card: 4, id_account: 3},
-        {id_card: 5, id_account: 5},
-        {id_card: 7, id_account: 7},
-        {id_card: 8, id_account: 8},
-        {id_card: 9, id_account: 9},
-        {id_card: 10, id_account: 10}
+        {id_card: plus_card_offset(3), id_account: 3},
+        {id_card: plus_card_offset(4), id_account: 5},
+        {id_card: plus_card_offset(6), id_account: 7},
+        {id_card: plus_card_offset(7), id_account: 8},
+        {id_card: plus_card_offset(8), id_account: 9},
+        {id_card: plus_card_offset(9), id_account: 10}
+    ]);
+    await Card_Payment_Log.bulkCreate([
+        {id_card: plus_card_offset(1), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
+        {id_card: plus_card_offset(0), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
+        {id_card: plus_card_offset(1), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
+        {id_card: plus_card_offset(2), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
+        {id_card: plus_card_offset(3), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
+        {id_card: plus_card_offset(4), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'},
+        {id_card: plus_card_offset(1), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
+        {id_card: plus_card_offset(1), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
+        {id_card: plus_card_offset(4), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
+        {id_card: plus_card_offset(5), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
+        {id_card: plus_card_offset(5), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
+        {id_card: plus_card_offset(6), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'},
+        {id_card: plus_card_offset(0), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
+        {id_card: plus_card_offset(3), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
+        {id_card: plus_card_offset(6), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
+        {id_card: plus_card_offset(4), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
+        {id_card: plus_card_offset(8), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
+        {id_card: plus_card_offset(3), amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'}
     ]);
     await Deposit.bulkCreate([
         {amount: 200, destination_account: 1, responsible_username: 'user2', date_time: new Date(Date.now())},
@@ -201,26 +222,6 @@ const syncronization = async (req, res) => {
         {amount: 200, origin_account: 6, responsible_username: 'user2', date_time: new Date(Date.now())},
         {amount: 200, origin_account: 9, responsible_username: 'user2', date_time: new Date(Date.now())}
     ]);
-    await Card_Payment_Log.bulkCreate([
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
-        {id_card: 2, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
-        {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
-        {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'},
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
-        {id_card: 4, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
-        {id_card: 5, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
-        {id_card: 5, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
-        {id_card: 6, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'},
-        {id_card: 1, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de chocolate'},
-        {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de vainilla'},
-        {id_card: 6, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Mazatenango: Helado Sarita de fresa'},
-        {id_card: 4, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de cafe'},
-        {id_card: 8, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de limon'},
-        {id_card: 3, amount: 10, date_time: new Date(Date.now()), description: 'Sarita Quetzaltenango: Helado Sarita de ron con pasas'}
-    ]);
     await Loan.bulkCreate([
         {cui: 1000000000004, guarantor_cui: 1000000000006, id_account: 4, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-11-02', canceled: false},
         {cui: 1000000000004, guarantor_cui: 1000000000006, id_account: 4, amount: 5000, balance: 5500, monthly_payment: 200, interest_rate: 0.3, cutoff_date: '2021-11-02', canceled: false},
@@ -249,8 +250,8 @@ const syncronization = async (req, res) => {
         {id_loan: 4, date: '2021-10-02', amount: 500, balance: 1500, total_payment: 3500}
     ]);
     await Payment_Delay.bulkCreate([
-        {id_card: 1, interest_rate: 0.05, total_debt: 200, canceled: false},
-        {id_card: 2, interest_rate: 0.05, total_debt: 120, canceled: false}
+        {id_card: plus_card_offset(0), interest_rate: 0.05, total_debt: 200, canceled: false},
+        {id_card: plus_card_offset(1), interest_rate: 0.05, total_debt: 120, canceled: false}
     ]);
     res.send('Base de datos sincronizada');
 };

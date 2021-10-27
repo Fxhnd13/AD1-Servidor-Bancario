@@ -7,7 +7,7 @@ const { Account } = require('../models/account');
 const { Card_Payment_Log } = require('../models/card_payment_log');
 const { sequelize } = require("../db/credentials");
 const { Payment_Delay } = require("../models/payment_delay");
-const { get_random_int, MS_FOR_ONE_YEAR } = require('./utilities_controller');
+const { get_random_int, MS_FOR_ONE_YEAR, plus_card_offset, is_owner, has_bureaucratic_or_admin_access } = require('./utilities_controller');
 const { Credit_Card_Type } = require("../models/credit_card_type");
 const { send_card_aprovement_email } = require('./email_controller');
 const { Authorized_Institution } = require('../models/authorized_institution');
@@ -20,7 +20,7 @@ const card_statement = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user =>{
                 Card.findOne({where: {id_card: req.query.id_card}, raw: true}).then(card =>{
-                    if((card.cui == bank_user.cui) || (bank_user.user_type > 2)){
+                    if(is_owner(bank_user.cui, card.cui) || has_bureaucratic_or_admin_access(bank_user.user_type)){
                         if(card.card_type == 1){
                             credit_card_statement(req, res, session);
                         }else if(card.card_type == 2){
@@ -39,8 +39,8 @@ const card_statement = (req, res) => {
 
 const credit_card_statement = (req, res, session) => {
     Credit_Card.findOne({where : {id_card: req.query.id_card}, raw: true}).then(credit_card => {
-        Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments =>{
-            Payment_Delay.findAll({where: {id_card: credit_card.id_card}, raw: true}).then(payments_delayed =>{
+        Card_Payment_Log.findAll({where: {id_card: credit_card.id_card}, raw: true, order: [['date_time', 'ASC']]}).then(payments =>{
+            Payment_Delay.findAll({where: {id_card: credit_card.id_card, canceled: false}, raw: true}).then(payments_delayed =>{
                 res.status(200).json({
                     id_card: credit_card.id_card,
                     cui: credit_card.cui,
@@ -60,7 +60,7 @@ const credit_card_statement = (req, res, session) => {
 const debit_card_statement = (req, res, session) => {
     Debit_Card.findOne({where: {id_card: req.query.id_card}, raw: true}).then(debit_card =>{
         Account.findOne({where: {id_account: debit_card.id_account}, raw: true}).then(account => {
-            Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true}).then(payments =>{
+            Card_Payment_Log.findAll({where: {id_card: debit_card.id_card}, raw: true, order: [['date_time', 'ASC']]}).then(payments =>{
                 res.status(200).json({
                     id_card: debit_card.id_card,
                     cui: account.cui,
@@ -102,7 +102,7 @@ const card_cancellation = (req, res) => {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where:{username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     Payment_Delay.findAll({where:{id_card: req.body.id_card}, raw: true}).them(payments_delayed=>{
                         if(payments_delayed.length > 0){
                             res.status(403).json({information_message: 'No se puede cancelar la tarjeta solicitada, posee saldos pendientes.'});
@@ -130,24 +130,27 @@ const create_card = (req, res) =>{
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
-                if(bank_user.user_type > 2){
+                if(has_bureaucratic_or_admin_access(bank_user.user_type)){
                     if(req.body.id_request != undefined){
                         Request.findOne({where: {id_request: req.body.id_request}}).then(request=>{
                             request.update({verified: true});
                         });
-                        Card.create({
-                            cui: req.body.cui,
-                            card_type: req.body.card_type,
-                            pin: get_random_int(1000,9999),
-                            expiration_date: new Date(Date.now()+(MS_FOR_ONE_YEAR*5)),
-                            active: true
-                        }).then(card=>{
-                            if(card_type == 1){
-                                create_credit_card(card, req, res);
-                            }else{
-                                create_debit_card(card, req, res);
-                            }
-                            send_card_aprovement_email(session.username, card);
+                        Card.count().then(value=>{
+                            Card.create({
+                                id_card: plus_card_offset(value),
+                                cui: req.body.cui,
+                                card_type: req.body.card_type,
+                                pin: get_random_int(1000,9999),
+                                expiration_date: new Date(Date.now()+(MS_FOR_ONE_YEAR*5)),
+                                active: true
+                            }).then(card=>{
+                                if(card_type == 1){
+                                    create_credit_card(card, req, res);
+                                }else{
+                                    create_debit_card(card, req, res);
+                                }
+                                send_card_aprovement_email(session.username, card);
+                            });
                         });
                     }
                 }else{
