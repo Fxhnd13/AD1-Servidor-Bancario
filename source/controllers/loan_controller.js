@@ -3,7 +3,7 @@ const { Loan } = require('../models/loan');
 const { Bank_User } = require('../models/bank_user');
 const { Payment_Log } = require('../models/payment_log');
 const { Account } = require('../models/account');
-const { is_owner, has_bureaucratic_or_admin_access } = require('./utilities_controller');
+const { is_owner, has_bureaucratic_or_admin_access, has_cashier_access } = require('./utilities_controller');
 
 const loan_statement = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session => {
@@ -141,11 +141,47 @@ const update_loan = (req, res)=>{
     });
 };
 
+const do_loan_payment_to_bank = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(has_cashier_access(bank_user.user_type)){
+                    Loan.findOne({where: {id_loan: req.body.id_loan}}).then(loan=>{
+                        if(loan == null){
+                            res.status(403).json({information_message: 'No existe el prestamo con el id enviado.'});
+                        }else{
+                            Payment_Log.findOne({where: {id_loan: loan.id_loan}, order: [['date','DESC']]}).then(last_payment=>{
+                                Payment_Log.create({
+                                    id_loan: loan.id_loan,
+                                    date: new Date(Date.now()),
+                                    amount: req.body.amount,
+                                    balance: parseFloat(loan.balance)-parseFloat(req.body.amount),
+                                    total_payment: parseFloat(last_payment.total_payment)+parseFloat(req.body.amount)
+                                }).then(payment=>{
+                                    loan.update({balance: payment.balance});
+                                    if(payment.balance == 0) loan.update({canceled: true});
+                                }).then(()=>{
+                                    res.status(200).json({information_message: 'Se ha registrado el pago con éxito.'});
+                                });
+                            });
+                        }
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    });
+};
+
 module.exports = {
     loan_statement,
     loan_verification,
     create_loan,
     update_loan,
     get_all_loans,
-    get_loan_by_id
+    get_loan_by_id,
+    do_loan_payment_to_bank
 }

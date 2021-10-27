@@ -37,7 +37,7 @@ function print_request_type(type){
 };
 
 function has_bureaucratic_or_admin_access(user_type){
-    return (user_type == 3 || user_type == 4)? true : false;
+    return (user_type > 2) ? true : false;
 }
 
 function has_admin_access(user_type){
@@ -45,7 +45,7 @@ function has_admin_access(user_type){
 }
 
 function has_cashier_access(user_type){
-    return user_type == 2;
+    return user_type > 1;
 }
 
 function has_client_access(user_type){

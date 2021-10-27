@@ -109,6 +109,7 @@ const get_all_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll().then(users=>{
+                        users.forEach(user=>{user.password = ""});
                         res.status(200).json({users: users});
                     });
                 }else{
@@ -127,6 +128,7 @@ const get_bank_users = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
+                        users.forEach(user=>{user.password = ""});
                         res.status(200).json({users: users});
                     });
                 }else{
@@ -182,6 +184,25 @@ const update_password_reminder_verification = ()=>{
     });
 };
 
+const get_denied_users = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session =>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
+        }else{
+            Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
+                if(has_admin_access(bank_user.user_type)){
+                    Bank_User.findAll({where: {access: false}, raw: true}).then(users=>{
+                        users.forEach(user=>{user.password = ""});
+                        res.status(200).json(users);
+                    });
+                }else{
+                    res.status(403).json({information_message: 'No posee permisos para realizar esta acción.'});
+                }
+            });
+        }
+    })
+};
+
 module.exports = {
     create_user,
     update_user_password,
@@ -190,5 +211,6 @@ module.exports = {
     get_all_users,
     get_bank_users,
     update_email,
-    update_password_reminder_verification
+    update_password_reminder_verification,
+    get_denied_users
 };
