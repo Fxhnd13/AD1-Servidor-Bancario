@@ -137,7 +137,7 @@ const get_bank_users = (req, res) => {
         }else{
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
-                    Bank_User.findAll({where:{user_type: {[Op.gt]: 1}}}).then(users=>{
+                    Bank_User.findAll({where:{user_type: {[Op.gt]: 1, [Op.lt]: 4}}}).then(users=>{
                         let result = [];
                         users.forEach(user=>{
                             result.push({
@@ -167,7 +167,12 @@ const revoke_access = (req, res) => {
             Bank_User.findOne({where: {username: session.username}, raw: true}).then(bank_user=>{
                 if(has_admin_access(bank_user.user_type)){
                     Bank_User.findOne({where: {username: req.body.username}}).then(bank_user_to_revoke_access=>{
-                        bank_user_to_revoke_access.update({access: false});
+                        bank_user_to_revoke_access.update({access: false}).then(()=>{
+                            Active_Session_Log.findOne({where: {username: req.body.username}}).then(bank_user_session=>{
+                                if(bank_user_session != null) bank_user_session.destroy();
+                            });
+                            res.status(200).json({information_message: 'Se ha revocado el acceso exitosamente.'});
+                        });
                     });
                 }else{
                     res.status(403).json({information_message: 'No tienes permiso para realizar esta acción.'});
