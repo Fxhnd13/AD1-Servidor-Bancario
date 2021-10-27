@@ -21,7 +21,7 @@ const transfer_on_app = (req, res) => {
                     if(accounts.count == 2){
                         var origin_account = (accounts.rows[0].id_account == req.body.id_origin_account)? accounts.rows[0] : accounts.rows[1];
                         var destination_account = (accounts.rows[0].id_account == req.body.id_destination_account)? accounts.rows[0] : accounts.rows[1];
-                        if(origin_account.cui == bank_user.cui){
+                        if(is_owner(bank_user.cui, origin_account) || has_cashier_access(bank_user.user_type)){
                             if(parseFloat(origin_account.balance) >= parseFloat(req.body.amount)){
                                 origin_account.update({balance: parseFloat(origin_account.balance)-parseFloat(req.body.amount)});
                                 destination_account.update({balance: parseFloat(destination_account.balance)+parseFloat(req.body.amount)});
