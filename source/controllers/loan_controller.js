@@ -141,11 +141,39 @@ const update_loan = (req, res)=>{
     });
 };
 
+const do_loan_payment = (req, res) => {
+    Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
+        if(session == null){
+            res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
+        }else{
+            Loan.findOne({where: {id_loan: req.body.id_loan}}).then(loan=>{
+                if(loan == null){
+                    res.status(403).json({information_message: 'No existe el prestamo con el id enviado.'});
+                }else{
+                    Payment_Log.findOne({where: {id_loan: loan.id_loan}, order: [['date','DESC']]}).then(last_payment=>{
+                        Payment_Log.create({
+                            id_loan: loan.id_loan,
+                            date: new Date(Date.now()),
+                            amount: req.body.amount,
+                            balance: parseFloat(loan.balance)-parseFloat(req.body.amount),
+                            total_payment: parseFloat(last_payment.total_payment)+parseFloat(req.body.amount)
+                        }).then(payment=>{
+                            loan.update({balance: payment.balance});
+                            if(payment.balance == 0) loan.update({canceled: true});
+                        });
+                    });
+                }
+            });
+        }
+    });
+};
+
 module.exports = {
     loan_statement,
     loan_verification,
     create_loan,
     update_loan,
     get_all_loans,
-    get_loan_by_id
+    get_loan_by_id,
+    do_loan_payment
 }
