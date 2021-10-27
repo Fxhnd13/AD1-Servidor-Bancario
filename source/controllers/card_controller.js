@@ -259,7 +259,7 @@ const do_payment = (req, res) =>{
     });
 };
 
-const do_credit_card_payment = (req, res) => {
+const do_credit_card_payment_to_bank = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null) {
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente'});
@@ -301,5 +301,5 @@ module.exports = {
     card_cancellation,
     create_card,
     do_payment, 
-    do_credit_card_payment
+    do_credit_card_payment_to_bank
 }

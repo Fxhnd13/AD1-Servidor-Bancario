@@ -141,7 +141,7 @@ const update_loan = (req, res)=>{
     });
 };
 
-const do_loan_payment = (req, res) => {
+const do_loan_payment_to_bank = (req, res) => {
     Active_Session_Log.findOne({where: {token: req.headers.token}, raw: true}).then(session=>{
         if(session == null){
             res.status(401).json({information_message: 'Token de sesion ha expirado, inicie sesion nuevamente.'});
@@ -183,5 +183,5 @@ module.exports = {
     update_loan,
     get_all_loans,
     get_loan_by_id,
-    do_loan_payment
+    do_loan_payment_to_bank
 }
