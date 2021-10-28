@@ -234,7 +234,18 @@ const get_all_request = (req, res) =>{
             Request.findAll({where: {verified: false}, raw: true, order: [['date', 'ASC']]}).then(requests => {
                 var result = [];
                 requests.forEach(request=>{
-                    result.push({id_request:request.id_request, request_type: print_request_type(request.request_type), date: request.date, verified: request.verified});
+                    if(req.query.request_type != undefined){
+                        console.log('-----------------------------------');
+                        console.log(req.query.request_type);
+                        console.log(request.request_type);
+                        if((req.query.request_type == 3) && (request.request_type == 3 || request.request_type == 4)){
+                            result.push({id_request:request.id_request, request_type: print_request_type(request.request_type), date: request.date, verified: request.verified});
+                        }else if(req.query.request_type == request.request_type){
+                            result.push({id_request:request.id_request, request_type: print_request_type(request.request_type), date: request.date, verified: request.verified});
+                        }
+                    }else{
+                        result.push({id_request:request.id_request, request_type: print_request_type(request.request_type), date: request.date, verified: request.verified});
+                    }
                 })
                 res.status(200).json(result);
             });
