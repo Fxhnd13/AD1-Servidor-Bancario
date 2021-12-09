@@ -1,0 +1,38 @@
+{
+  "name": "bank-software-server",
+  "version": "1.0.0",
+  "description": "Server for a bank application",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "nodemon source/index.js",
+    "start": "node source/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fxhnd13/bank-software-server.git"
+  },
+  "author": "Jose Soberanis, Sofia Quintana, Helmut Luther",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Fxhnd13/bank-software-server/issues"
+  },
+  "homepage": "https://github.com/Fxhnd13/bank-software-server#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "node-cron": "^3.0.0",
+    "nodemailer": "^6.6.5",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.5",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.1.6"
+  },
+  "devDependencies": {
+    "jest": "^27.3.1",
+    "nodemon": "^2.0.12"
+  }
+}
