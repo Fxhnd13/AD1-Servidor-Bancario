@@ -1,5 +1,9 @@
 # Bank Software Server
-Server for a bank-software, using node as backEnd and Sequelize as our ORM
+Server for a bank-software, using node as backEnd and Sequelize as our ORM, you can check it on
+
+* Web app [bank-app](https://pa1-bank-client.herokuapp.com/login)
+* Android app [bank-app](https://github.com/AlexanderLuther/bank-software-android-client)
+* API documentation on swagger [bank-api-doc](https://analisis-bank-server.herokuapp.com/api-docs/)
 
 ## Installing
 
